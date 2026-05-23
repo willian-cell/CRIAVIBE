@@ -143,7 +143,7 @@
 
     /* ── HERO ── */
     .hero {
-      min-height: 90vh;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -155,11 +155,50 @@
 
     .hero-bg {
       position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+      top: -12vh;
+      left: 50%;
+      width: 100vw;
+      height: 124vh;
+      min-width: 220vh;
+      transform: translate3d(-50%, 0, 0) scale(1.06);
+      transform-origin: center;
       z-index: 1;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .hero-bg iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      pointer-events: none;
+    }
+
+    .hero-audio {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      left: -9999px;
+      top: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .hero-audio iframe {
+      width: 1px;
+      height: 1px;
+      border: 0;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        linear-gradient(180deg, rgba(7, 7, 17, .2) 0%, rgba(7, 7, 17, .1) 45%, rgba(7, 7, 17, .72) 100%),
+        radial-gradient(circle at 50% 35%, rgba(255, 255, 255, .12), transparent 46%);
+      pointer-events: none;
     }
 
     .hero-dots {
@@ -167,8 +206,8 @@
       inset: 0;
       background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
       background-size: 40px 40px;
-      z-index: 2;
-      opacity: 0.5;
+      z-index: 3;
+      opacity: 0.22;
     }
 
     .hero-aura {
@@ -182,7 +221,7 @@
       max-height: 1000px;
       background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
       filter: blur(100px);
-      z-index: 3;
+      z-index: 4;
       pointer-events: none;
     }
 
@@ -655,8 +694,15 @@
       }
 
       .hero {
-        padding-top: 170px;
+        min-height: 100svh;
+        padding-top: 120px;
         padding-bottom: 60px;
+      }
+
+      .hero-bg {
+        top: -8vh;
+        height: 116vh;
+        min-width: 206vh;
       }
 
       .hero-content {
@@ -681,19 +727,6 @@
       .hero-badge {
         font-size: .75rem;
         padding: 4px 12px;
-      }
-
-      .hero-actions {
-        flex-direction: column;
-        width: 100%;
-        max-width: 320px;
-        margin: 0 auto;
-        justify-content: center;
-      }
-
-      .btn-hero {
-        width: 100%;
-        justify-content: center;
       }
 
       .section {
@@ -746,26 +779,26 @@
   <!-- HERO -->
   <section class="hero">
 
-    <div class="hero-bg"></div>
+    <div class="hero-bg" id="heroVideo">
+      <!-- SRC do video visual de fundo do hero. Troque o ID 6yDSHC0EPyc pelo ID de outro video do YouTube se precisar. -->
+      <iframe
+        src="https://www.youtube.com/embed/6yDSHC0EPyc?autoplay=1&mute=1&loop=1&playlist=6yDSHC0EPyc&controls=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1"
+        title="Video de fundo CriaVibe"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+
+    <div class="hero-audio" aria-hidden="true">
+      <!-- SRC do audio de fundo invisivel. Troque o ID SS4nmufzsxU e tambem o playlist=SS4nmufzsxU para mudar a trilha. -->
+      <iframe
+        id="heroAudio"
+        src="https://www.youtube.com/embed/SS4nmufzsxU?autoplay=1&loop=1&playlist=SS4nmufzsxU&controls=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1"
+        title="Audio de fundo CriaVibe"
+        allow="autoplay; encrypted-media"
+        referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
 
     <div class="hero-overlay"></div>
-
-    <!-- BOTÕES MANTIDOS SOBRE A IMAGEM -->
-    <div class="hero-actions">
-
-      <button class="btn-hero btn-hero-primary" onclick="location.href='/entrar.html#cadastro'">
-
-        Começar Agora
-
-      </button>
-
-      <button class="btn-hero btn-hero-ghost" onclick="location.href='/saiba_mais.html'">
-
-        Conhecer Mais
-
-      </button>
-
-    </div>
 
   </section>
 
@@ -979,6 +1012,31 @@
     }
 
     window.addEventListener('scroll', updateNavBg);
+
+    const heroVideo = document.getElementById('heroVideo');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function updateHeroParallax() {
+      if (!heroVideo || reduceMotion.matches) return;
+      const offset = Math.min(window.scrollY * 0.22, 120);
+      heroVideo.style.transform = `translate3d(-50%, ${offset}px, 0) scale(1.06)`;
+    }
+
+    updateHeroParallax();
+    window.addEventListener('scroll', updateHeroParallax, { passive: true });
+
+    const heroAudio = document.getElementById('heroAudio');
+    const heroAudioSrc = heroAudio ? heroAudio.src : '';
+
+    function retryHeroAudio() {
+      if (!heroAudio || !heroAudioSrc) return;
+      heroAudio.src = heroAudioSrc.includes('&resume=1') ? heroAudioSrc : `${heroAudioSrc}&resume=1`;
+      window.removeEventListener('pointerdown', retryHeroAudio);
+      window.removeEventListener('keydown', retryHeroAudio);
+    }
+
+    window.addEventListener('pointerdown', retryHeroAudio, { once: true });
+    window.addEventListener('keydown', retryHeroAudio, { once: true });
 
     // Mobile Menu Toggle
     const menuToggle = document.getElementById('menuToggle');
