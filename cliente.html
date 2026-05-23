@@ -360,6 +360,19 @@
       aspect-ratio: 1.5;
     }
 
+    .foto-item.quadrada,
+    .foto-item.desconhecida {
+      grid-column: span var(--span-v, 2);
+      aspect-ratio: 1;
+    }
+
+    .gallery-load-more {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      padding: 28px 0 44px;
+    }
+
     @media(max-width: 800px) {
       #gallery {
         --grid-cols: 6;
@@ -1320,10 +1333,30 @@
     let dlCount = 0;
     let dlMax = 0;
     let isModoSelecao = false;
+    let fotosRenderizadas = 0;
+    const loteFotosCliente = 50;
 
     function mediaSrc(caminho) {
       if (!caminho) return '';
       return caminho.startsWith('http') ? caminho : '/' + caminho;
+    }
+
+    function fotoPreviewSrc(f) {
+      return mediaSrc(f.caminho_thumb_medium || f.caminho_thumb_large || f.caminho_thumb_small || f.caminho_arquivo);
+    }
+
+    function orientacaoPorDimensoes(largura, altura) {
+      const w = Number(largura || 0);
+      const h = Number(altura || 0);
+      if (!w || !h) return '';
+      if (w === h) return 'quadrada';
+      return w > h ? 'horizontal' : 'vertical';
+    }
+
+    function normalizarOrientacaoFoto(f) {
+      if (['vertical', 'horizontal', 'quadrada'].includes(f.orientacao)) return f;
+      f.orientacao = orientacaoPorDimensoes(f.largura, f.altura) || 'desconhecida';
+      return f;
     }
 
     // Configuração de Grade (Variáveis Globais)
@@ -1457,30 +1490,28 @@
         grid.style.setProperty('--span-h', spanH);
 
         // Processamento de orientação paralelo
-        const processadas = await Promise.all(rawFotos.map(f => {
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-              f.orientacao = img.naturalWidth > img.naturalHeight ? 'horizontal' : 'vertical';
-              resolve(f);
-            };
-            img.onerror = () => { f.orientacao = 'vertical'; resolve(f); };
-            img.src = mediaSrc(f.caminho_arquivo);
-          });
-        }));
-
         // Mantemos a ordem original (sem agrupar por orientação) para parecer o exemplo da CriaVibe
-        FOTOS = processadas;
+        FOTOS = rawFotos.map(normalizarOrientacaoFoto);
         selecionadas.clear();
         FOTOS.forEach((f, i) => { if (f.selecionada) selecionadas.add(f.id); });
 
-        grid.innerHTML = FOTOS.map((f, i) => {
-          const src = mediaSrc(f.caminho_arquivo);
-          const nome = f.nome_arquivo || 'foto_' + f.id;
-          const jaiBaixada = getBaixadas().has(String(f.id));
-          return `
+        grid.innerHTML = '';
+        fotosRenderizadas = 0;
+        renderizarProximoLoteFotos(true);
+        atualizarToolbar();
+      } catch (e) {
+        console.error('Erro ao carregar galeria:', e);
+        grid.innerHTML = '<div class="loading" style="color:#f87171"><i class="fa-solid fa-triangle-exclamation"></i><br>Erro ao carregar fotos.</div>';
+      }
+    }
+
+    function templateFotoCliente(f, i) {
+      const src = fotoPreviewSrc(f);
+      const nome = f.nome_arquivo || 'foto_' + f.id;
+      const jaiBaixada = getBaixadas().has(String(f.id));
+      return `
         <div class="foto-item ${f.selecionada ? 'selected' : ''} ${f.is_capa == 1 ? 'is-capa' : ''} ${f.orientacao}" data-id="${f.id}" data-idx="${i}" id="foto-${f.id}" onclick="clicarFoto(event,${i})">
-          <img src="${src}" alt="${nome}" loading="lazy">
+          <img src="${src}" alt="${nome}" loading="lazy" decoding="async">
           <div class="sel-check"><i class="fa-solid fa-check"></i></div>
           ${jaiBaixada ? `
           <div class="foto-baixada-badge">
@@ -1491,11 +1522,27 @@
             <i class="fa-solid fa-download"></i>
           </button>` : ''}
         </div>`;
-        }).join('');
-        atualizarToolbar();
-      } catch (e) {
-        console.error('Erro ao carregar galeria:', e);
-        grid.innerHTML = '<div class="loading" style="color:#f87171"><i class="fa-solid fa-triangle-exclamation"></i><br>Erro ao carregar fotos.</div>';
+    }
+
+    function renderizarProximoLoteFotos(reset = false) {
+      const grid = document.getElementById('gallery');
+      if (!grid) return;
+      document.getElementById('btn-carregar-mais-fotos')?.closest('.gallery-load-more')?.remove();
+      if (reset) fotosRenderizadas = 0;
+
+      const inicio = fotosRenderizadas;
+      const fim = Math.min(inicio + loteFotosCliente, FOTOS.length);
+      const html = FOTOS.slice(inicio, fim).map((f, idx) => templateFotoCliente(f, inicio + idx)).join('');
+      grid.insertAdjacentHTML('beforeend', html);
+      fotosRenderizadas = fim;
+
+      if (fotosRenderizadas < FOTOS.length) {
+        grid.insertAdjacentHTML('beforeend', `
+          <div class="gallery-load-more">
+            <button class="btn-zip" id="btn-carregar-mais-fotos" onclick="renderizarProximoLoteFotos()">
+              <i class="fa-solid fa-plus"></i> Carregar mais fotos (${fotosRenderizadas}/${FOTOS.length})
+            </button>
+          </div>`);
       }
     }
 
@@ -1661,9 +1708,11 @@
           return;
         }
         selecionadas.add(id);
+        FOTOS[idx].selecionada = 1;
         el?.classList.add('selected');
       } else {
         selecionadas.delete(id);
+        FOTOS[idx].selecionada = 0;
         el?.classList.remove('selected');
       }
       atualizarToolbar();
@@ -1682,6 +1731,7 @@
       FOTOS.forEach((f, i) => {
         if (maxSel > 0 && selecionadas.size >= maxSel) return;
         selecionadas.add(f.id);
+        f.selecionada = 1;
         document.querySelector(`.foto-item[data-idx="${i}"]`)?.classList.add('selected');
       });
       atualizarToolbar();
@@ -1694,6 +1744,7 @@
 
     function limparSelecao() {
       selecionadas.clear();
+      FOTOS.forEach(f => f.selecionada = 0);
       document.querySelectorAll('.foto-item.selected').forEach(el => el.classList.remove('selected'));
       atualizarToolbar();
 

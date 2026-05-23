@@ -904,6 +904,10 @@
       return /^https?:\/\//i.test(path) ? path : '/' + path.replace(/^\/+/, '');
     }
 
+    function fotoPreviewSrc(f) {
+      return mediaSrc(f.caminho_thumb_medium || f.caminho_thumb_large || f.caminho_thumb_small || f.caminho_arquivo);
+    }
+
     function orientacaoPorDimensoes(largura, altura) {
       const w = Number(largura || 0);
       const h = Number(altura || 0);
@@ -1010,7 +1014,7 @@
       <div class="photo-capa-badge">
         <i class="fa-solid fa-crown"></i> CAPA
       </div>` : ''}
-      <img src="${mediaSrc(f.caminho_arquivo)}" alt="${f.nome_arquivo}" loading="lazy" onclick="abrirLightbox(${i})">
+      <img src="${fotoPreviewSrc(f)}" alt="${f.nome_arquivo}" loading="lazy" decoding="async" onclick="abrirLightbox(${i})">
       <div class="photo-overlay">
         <button class="photo-btn danger" onclick="excluirFoto(${f.id})" title="Excluir">
           <i class="fa-solid fa-trash"></i>
