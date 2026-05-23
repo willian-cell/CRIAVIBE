@@ -87,9 +87,24 @@ function aplicarFotoPerfil(path) {
   const navAvatar = document.getElementById('nav-avatar');
   const preview = document.getElementById('perfil-preview');
   const fallback = '<i class="fa-solid fa-user-circle"></i>';
-  if (navAvatar) navAvatar.innerHTML = src ? `<img src="${src}" alt="Foto de perfil">` : '<i class="fa-solid fa-user-circle" style="font-size:1.2rem"></i>';
-  if (preview) preview.innerHTML = src ? `<img src="${src}" alt="Foto de perfil" style="width:100%;height:100%;object-fit:cover">` : fallback;
+  if (navAvatar) navAvatar.innerHTML = src ? `<img src="${src}" alt="Foto de perfil" onerror="fallbackFotoPerfil(this, 'nav')">` : '<i class="fa-solid fa-user-circle" style="font-size:1.2rem"></i>';
+  if (preview) preview.innerHTML = src ? `<img src="${src}" alt="Foto de perfil" style="width:100%;height:100%;object-fit:cover" onerror="fallbackFotoPerfil(this, 'preview')">` : fallback;
 }
+
+function fallbackFotoPerfil(img, tipo) {
+  if (tipo === 'nav') {
+    img.parentElement.innerHTML = '<i class="fa-solid fa-user-circle" style="font-size:1.2rem"></i>';
+    return;
+  }
+  img.parentElement.innerHTML = '<i class="fa-solid fa-user-circle"></i>';
+}
+
+document.getElementById('foto-perfil-input')?.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const previewUrl = URL.createObjectURL(file);
+  aplicarFotoPerfil(previewUrl);
+});
 
 async function salvarNome() {
   const nome = document.getElementById('cfg-nome').value.trim();
