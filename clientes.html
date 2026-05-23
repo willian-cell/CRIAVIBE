@@ -391,6 +391,12 @@
       color: var(--muted);
     }
 
+    .cliente-modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
     .clientes-empty-cell {
       padding: 56px 20px !important;
       text-align: center;
@@ -404,6 +410,60 @@
     @media(max-width: 768px) {
       .clientes-page {
         padding: 20px 16px;
+      }
+
+      #modal-novo.modal-backdrop {
+        align-items: center;
+        justify-content: center;
+        padding: 14px;
+      }
+
+      #modal-novo .modal {
+        position: relative;
+        bottom: auto;
+        width: min(420px, 100%);
+        max-width: 100%;
+        max-height: calc(100dvh - 28px);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        animation: clienteModalCenterIn .18s ease;
+      }
+
+      #modal-novo .modal-header {
+        flex: 0 0 auto;
+        padding: 18px 24px 8px;
+      }
+
+      #modal-novo .modal-body {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 12px 24px 20px;
+        max-height: none;
+      }
+
+      #modal-novo .form-group {
+        margin-bottom: 14px;
+      }
+
+      #modal-novo .form-control {
+        min-height: 38px;
+      }
+
+      #modal-novo .cliente-photo-field {
+        align-items: center;
+        padding: 14px;
+      }
+
+      #modal-novo .cliente-modal-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        margin: 4px -24px -20px;
+        padding: 12px 24px 16px;
+        background: linear-gradient(180deg, rgba(255,255,255,.86), #fff 38%);
+        border-top: 1px solid #eef1fb;
       }
 
       .clientes-hero {
@@ -475,6 +535,54 @@
 
       .cliente-actions-cell {
         justify-content: flex-end;
+      }
+
+      @keyframes clienteModalCenterIn {
+        from {
+          opacity: 0;
+          transform: scale(.96) translateY(8px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    }
+
+    @media(max-width: 420px) {
+      #modal-novo.modal-backdrop {
+        padding: 10px;
+      }
+
+      #modal-novo .modal {
+        max-height: calc(100dvh - 20px);
+      }
+
+      #modal-novo .modal-header {
+        padding: 16px 20px 6px;
+      }
+
+      #modal-novo .modal-body {
+        padding: 10px 20px 18px;
+      }
+
+      #modal-novo .cliente-photo-field {
+        gap: 10px;
+      }
+
+      #modal-novo .cliente-photo-copy strong {
+        font-size: .82rem;
+      }
+
+      #modal-novo .cliente-photo-copy span {
+        font-size: .72rem;
+        line-height: 1.35;
+      }
+
+      #modal-novo .cliente-modal-actions {
+        margin: 2px -20px -18px;
+        padding: 12px 20px 14px;
       }
     }
   </style>
@@ -582,7 +690,7 @@
       <div class="form-group"><label>E-mail</label><input id="c-email" class="form-control" type="email" placeholder="email@exemplo.com"></div>
       <div class="form-group"><label>Telefone / WhatsApp</label><input id="c-tel" class="form-control" type="tel" placeholder="+55 (11) 99999-9999"></div>
       <div id="c-err" class="form-error"></div>
-      <div style="display:flex;gap:10px;margin-top:8px">
+      <div class="cliente-modal-actions">
         <button class="btn btn-primary" style="flex:1" onclick="criarCliente()"><i class="fa-solid fa-plus"></i> Criar</button>
         <button class="btn btn-secondary" onclick="document.getElementById('modal-novo').classList.remove('open')">Cancelar</button>
       </div>
