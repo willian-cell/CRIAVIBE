@@ -3,9 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clientes — CriaVibe</title>
+  <title>Clientes - CriaVibe</title>
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .cliente-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 190px;
+    }
+
+    .cliente-avatar,
+    .cliente-photo-preview {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex: 0 0 42px;
+      background: var(--primary-lt);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .cliente-avatar img,
+    .cliente-photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cliente-edit-stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cliente-photo-field {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1.5px dashed var(--border-2);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+    }
+
+    .cliente-photo-field input {
+      font-size: .8rem;
+      max-width: 100%;
+    }
+  </style>
 </head>
 <body>
 <nav class="topnav">
@@ -16,7 +67,7 @@
   <div class="topnav-spacer"></div>
   <div class="topnav-user">
     <span class="topnav-avatar" id="nav-avatar"><i class="fa-solid fa-user-circle" style="font-size:1.2rem"></i></span>
-    <span>Olá, <strong id="nav-nome">...</strong></span>
+    <span>Ola, <strong id="nav-nome">...</strong></span>
     <button class="topnav-logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
   </div>
 </nav>
@@ -27,13 +78,13 @@
     <a href="/painel.html" class="sidebar-link"><i class="fa-solid fa-images"></i> Galerias</a>
     <a href="/clientes.html" class="sidebar-link active"><i class="fa-solid fa-users"></i> Clientes</a>
     <h3 style="margin-top:20px">Conta</h3>
-    <a href="/configuracoes.html" class="sidebar-link"><i class="fa-solid fa-gear"></i> Configurações da Conta</a>
+    <a href="/configuracoes.html" class="sidebar-link"><i class="fa-solid fa-gear"></i> Configuracoes da Conta</a>
   </aside>
 
   <main class="painel-main">
     <div class="painel-header">
       <h2><i class="fa-solid fa-users" style="color:var(--primary)"></i> Clientes</h2>
-      <button class="btn btn-primary" onclick="document.getElementById('modal-novo').classList.add('open')">
+      <button class="btn btn-primary" onclick="abrirNovoCliente()">
         <i class="fa-solid fa-plus"></i> Novo Cliente
       </button>
     </div>
@@ -47,7 +98,7 @@
               <th>E-mail</th>
               <th>Telefone</th>
               <th>Senha de Acesso</th>
-              <th style="width:50px">Ações</th>
+              <th style="width:50px">Acoes</th>
             </tr>
           </thead>
           <tbody id="clientes-tbody">
@@ -67,6 +118,13 @@
       <button class="modal-close" onclick="document.getElementById('modal-novo').classList.remove('open')">&times;</button>
     </div>
     <div class="modal-body">
+      <div class="form-group">
+        <label>Foto do cliente</label>
+        <div class="cliente-photo-field">
+          <span class="cliente-photo-preview" id="c-foto-preview"><i class="fa-solid fa-user"></i></span>
+          <input id="c-foto" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onchange="previewClienteFoto(this,'c-foto-preview')">
+        </div>
+      </div>
       <div class="form-group"><label>Nome completo</label><input id="c-nome" class="form-control" type="text" placeholder="Nome do cliente"></div>
       <div class="form-group"><label>E-mail</label><input id="c-email" class="form-control" type="email" placeholder="email@exemplo.com"></div>
       <div class="form-group"><label>Telefone / WhatsApp</label><input id="c-tel" class="form-control" type="tel" placeholder="+55 (11) 99999-9999"></div>
@@ -95,12 +153,61 @@ function mediaSrc(path) {
   return '/' + path.replace(/^\/+/, '');
 }
 
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+}
+
+function jsStr(value) {
+  return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
 function aplicarFotoPerfil(path) {
   const src = mediaSrc(path);
   const navAvatar = document.getElementById('nav-avatar');
   if (navAvatar && src) {
-    navAvatar.innerHTML = `<img src="${src}" alt="Foto de perfil">`;
+    navAvatar.innerHTML = `<img src="${esc(src)}" alt="Foto de perfil">`;
   }
+}
+
+function clienteAvatar(c) {
+  const src = mediaSrc(c.foto_cliente);
+  if (src) return `<span class="cliente-avatar"><img src="${esc(src)}" alt="Foto de ${esc(c.nome)}"></span>`;
+  return `<span class="cliente-avatar"><i class="fa-solid fa-user"></i></span>`;
+}
+
+function previewClienteFoto(input, previewId) {
+  const preview = document.getElementById(previewId);
+  const file = input.files && input.files[0];
+  if (!preview || !file) return;
+  preview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Previa da foto">`;
+}
+
+async function uploadFotoCliente(clienteId, inputId) {
+  const input = document.getElementById(inputId);
+  if (!input || !input.files || !input.files[0]) return null;
+
+  const formData = new FormData();
+  formData.append('cliente_id', clienteId);
+  formData.append('foto_cliente', input.files[0]);
+  return API.upload('/clientes/upload_foto.php', formData);
+}
+
+function abrirNovoCliente() {
+  document.getElementById('modal-novo').classList.add('open');
+}
+
+function limparNovoCliente() {
+  document.getElementById('c-nome').value = '';
+  document.getElementById('c-email').value = '';
+  document.getElementById('c-tel').value = '';
+  document.getElementById('c-foto').value = '';
+  document.getElementById('c-foto-preview').innerHTML = '<i class="fa-solid fa-user"></i>';
 }
 
 let listaClientes = [];
@@ -122,11 +229,19 @@ function renderTable() {
     if (c.editando) {
       return `
         <tr>
-          <td><input type="text" id="edit-n-${c.id}" class="form-control" value="${c.nome}" style="padding:4px 8px; width:100%"></td>
-          <td><input type="email" id="edit-e-${c.id}" class="form-control" value="${c.email||''}" style="padding:4px 8px; width:100%"></td>
-          <td><input type="tel" id="edit-t-${c.id}" class="form-control" value="${c.telefone||''}" style="padding:4px 8px; width:100%"></td>
           <td>
-            <input type="text" id="edit-s-${c.id}" class="form-control" value="${c.senha_acesso}" style="padding:4px 8px; width:100px; display:inline-block">
+            <div class="cliente-edit-stack">
+              <div class="cliente-cell">
+                ${clienteAvatar(c)}
+                <input type="text" id="edit-n-${c.id}" class="form-control" value="${esc(c.nome)}" style="padding:4px 8px; width:100%">
+              </div>
+              <input type="file" id="edit-foto-${c.id}" accept="image/jpeg,image/png,image/webp,image/gif" style="font-size:.78rem">
+            </div>
+          </td>
+          <td><input type="email" id="edit-e-${c.id}" class="form-control" value="${esc(c.email||'')}" style="padding:4px 8px; width:100%"></td>
+          <td><input type="tel" id="edit-t-${c.id}" class="form-control" value="${esc(c.telefone||'')}" style="padding:4px 8px; width:100%"></td>
+          <td>
+            <input type="text" id="edit-s-${c.id}" class="form-control" value="${esc(c.senha_acesso)}" style="padding:4px 8px; width:100px; display:inline-block">
           </td>
           <td style="white-space:nowrap">
             <button class="btn btn-primary btn-sm" onclick="salvarEdicao(${c.id})" title="Salvar"><i class="fa-solid fa-check"></i></button>
@@ -137,12 +252,17 @@ function renderTable() {
     }
     return `
       <tr>
-        <td><strong>${c.nome}</strong></td>
-        <td style="color:var(--muted)">${c.email||'—'}</td>
-        <td style="color:var(--muted)">${c.telefone||'—'}</td>
         <td>
-          <code style="background:var(--bg);padding:3px 8px;border-radius:4px;font-size:.85rem">${c.senha_acesso}</code>
-          <button class="copy-btn" onclick="navigator.clipboard.writeText('${c.senha_acesso}').then(()=>showToast('Senha copiada!'))">
+          <div class="cliente-cell">
+            ${clienteAvatar(c)}
+            <strong>${esc(c.nome)}</strong>
+          </div>
+        </td>
+        <td style="color:var(--muted)">${c.email ? esc(c.email) : '-'}</td>
+        <td style="color:var(--muted)">${c.telefone ? esc(c.telefone) : '-'}</td>
+        <td>
+          <code style="background:var(--bg);padding:3px 8px;border-radius:4px;font-size:.85rem">${esc(c.senha_acesso)}</code>
+          <button class="copy-btn" onclick="copiarSenha('${jsStr(c.senha_acesso)}')">
              <i class="fa-solid fa-copy"></i>
           </button>
         </td>
@@ -150,13 +270,17 @@ function renderTable() {
           <button class="btn btn-secondary btn-sm" onclick="iniciarEdicao(${c.id})" title="Editar inline">
             <i class="fa-solid fa-pen"></i>
           </button>
-          <button class="btn btn-danger btn-sm" onclick="excluirCliente(${c.id},'${c.nome.replace(/'/g,"\\'")}')" title="Excluir">
+          <button class="btn btn-danger btn-sm" onclick="excluirCliente(${c.id},'${jsStr(c.nome)}')" title="Excluir">
             <i class="fa-solid fa-trash"></i>
           </button>
         </td>
       </tr>
     `;
   }).join('');
+}
+
+function copiarSenha(senha) {
+  navigator.clipboard.writeText(senha).then(() => showToast('Senha copiada!'));
 }
 
 function iniciarEdicao(id) {
@@ -174,18 +298,23 @@ async function salvarEdicao(id) {
   const email = document.getElementById('edit-e-'+id).value.trim();
   const tel = document.getElementById('edit-t-'+id).value.trim();
   const senha = document.getElementById('edit-s-'+id).value.trim();
-  if(!nome || !senha) return showToast('Nome e senha são obrigatórios!');
-  
+  if(!nome || !senha) return showToast('Nome e senha sao obrigatorios!');
+
   try {
     const d = await API.post('/clientes/update.php', {id, nome, email, telefone: tel, senha_acesso: senha});
     if(d.status === 'ok') {
-      showToast('Cliente atualizado com sucesso!');
+      try {
+        await uploadFotoCliente(id, 'edit-foto-'+id);
+        showToast('Cliente atualizado com sucesso!');
+      } catch(e) {
+        showToast('Dados salvos, mas a foto nao foi atualizada: ' + e.message, 'error');
+      }
       await carregarClientes();
     } else {
       showToast(d.mensagem);
     }
   } catch(e) {
-    showToast(e.message);
+    showToast(e.message, 'error');
   }
 }
 
@@ -195,12 +324,23 @@ async function criarCliente() {
   const tel   = document.getElementById('c-tel').value.trim();
   const err   = document.getElementById('c-err');
   err.classList.remove('show');
-  if (!nome) { err.textContent='Nome obrigatório.'; err.classList.add('show'); return; }
+  if (!nome) { err.textContent='Nome obrigatorio.'; err.classList.add('show'); return; }
   try {
     const d = await API.post('/clientes/create.php', {nome,email,telefone:tel});
     if (d.status==='ok') {
+      let fotoErro = '';
+      try {
+        await uploadFotoCliente(d.id, 'c-foto');
+      } catch(e) {
+        fotoErro = e.message;
+      }
       document.getElementById('modal-novo').classList.remove('open');
-      showToast(`Cliente criado! Senha: ${d.senha_acesso}`);
+      limparNovoCliente();
+      if (fotoErro) {
+        showToast('Cliente criado, mas a foto nao foi salva: ' + fotoErro, 'error');
+      } else {
+        showToast(`Cliente criado! Senha: ${d.senha_acesso}`);
+      }
       await carregarClientes();
     } else { err.textContent=d.mensagem; err.classList.add('show'); }
   } catch(e) { err.textContent=e.message; err.classList.add('show'); }
@@ -209,7 +349,7 @@ async function criarCliente() {
 async function excluirCliente(id, nome) {
   if (!confirm(`Excluir cliente "${nome}"?`)) return;
   await API.post('/clientes/delete.php', {id});
-  showToast('Cliente excluído.'); await carregarClientes();
+  showToast('Cliente excluido.'); await carregarClientes();
 }
 </script>
 </body>

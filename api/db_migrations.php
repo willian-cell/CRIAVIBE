@@ -76,6 +76,7 @@ try {
             nome VARCHAR(160) NOT NULL,
             email VARCHAR(190) DEFAULT NULL,
             telefone VARCHAR(40) DEFAULT NULL,
+            foto_cliente VARCHAR(512) DEFAULT NULL,
             senha_acesso VARCHAR(40) NOT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_clientes_fotografo (fotografo_email)
@@ -145,6 +146,7 @@ try {
     add_column_if_missing($db, 'usuarios', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'usuarios', 'foto_perfil', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'clientes', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+    add_column_if_missing($db, 'clientes', 'foto_cliente', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'galerias', 'cliente_id', 'INT DEFAULT NULL');
     add_column_if_missing($db, 'galerias', 'entrega_em_alta', 'TINYINT(1) NOT NULL DEFAULT 1');
     add_column_if_missing($db, 'galerias', 'selecao_ativa', 'TINYINT(1) NOT NULL DEFAULT 1');
