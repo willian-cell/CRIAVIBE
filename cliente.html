@@ -1452,8 +1452,16 @@
       return caminho.startsWith('http') ? caminho : '/' + caminho;
     }
 
-    function fotoPreviewSrc(f) {
-      return mediaSrc(f.caminho_thumb_medium || f.caminho_thumb_large || f.caminho_thumb_small || f.caminho_arquivo);
+    function fotoGridSrc(f) {
+      return mediaSrc(f.caminho_thumb_small || f.caminho_thumb_medium || f.caminho_thumb_large || f.caminho_arquivo);
+    }
+
+    function fotoLightboxSrc(f) {
+      return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
+    }
+
+    function fotoHeroSrc(f) {
+      return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
     }
 
     function orientacaoPorDimensoes(largura, altura) {
@@ -1579,7 +1587,7 @@
         const rawFotos = d.fotos || [];
         if (rawFotos.length > 0 && !GALERIA.capa_apresentacao) {
           const fotoCapa = rawFotos.find(f => f.is_capa == 1) || rawFotos[0];
-          document.getElementById('hero-bg').style.backgroundImage = `url('${mediaSrc(fotoCapa.caminho_arquivo)}')`;
+          document.getElementById('hero-bg').style.backgroundImage = `url('${fotoHeroSrc(fotoCapa)}')`;
         }
 
         if (!rawFotos.length) {
@@ -1617,7 +1625,7 @@
     }
 
     function templateFotoCliente(f, i) {
-      const src = fotoPreviewSrc(f);
+      const src = fotoGridSrc(f);
       const nome = f.nome_arquivo || 'foto_' + f.id;
       const jaiBaixada = getBaixadas().has(String(f.id));
       return `
@@ -2114,7 +2122,7 @@
     // ── LIGHTBOX ───────────────────────────────────────────────
     function abrirLightbox(idx) {
       lbIndex = idx;
-      document.getElementById('lb-img').src = mediaSrc(FOTOS[idx].caminho_arquivo);
+      document.getElementById('lb-img').src = fotoLightboxSrc(FOTOS[idx]);
       document.getElementById('lightbox').classList.add('open');
       atualizarControlesLightbox();
     }
@@ -2125,7 +2133,7 @@
 
     function navLightbox(dir) {
       lbIndex = (lbIndex + dir + FOTOS.length) % FOTOS.length;
-      document.getElementById('lb-img').src = mediaSrc(FOTOS[lbIndex].caminho_arquivo);
+      document.getElementById('lb-img').src = fotoLightboxSrc(FOTOS[lbIndex]);
       atualizarControlesLightbox();
     }
 

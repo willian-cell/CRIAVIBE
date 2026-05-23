@@ -29,7 +29,8 @@ while (true) {
     $r2_path = $job['r2_path'] ?? null;
     $public_url = $job['public_url'] ?? null;
     $orig_name = $job['original_name'] ?? '';
-    $sizes = $job['sizes'] ?? ['small'=>200,'medium'=>800,'large'=>1600];
+    $sizes = $job['sizes'] ?? ['small'=>360,'medium'=>900,'large'=>1600];
+    $qualities = $job['qualities'] ?? ['small'=>68,'medium'=>72,'large'=>76];
 
     if (!$r2_path && $public_url) {
         // tentar derivar r2_path a partir da public_url
@@ -60,7 +61,7 @@ while (true) {
                 $img->thumbnailImage($w, 0);
                 $img->setImageFormat('jpeg');
                 $img->setImageCompression(Imagick::COMPRESSION_JPEG);
-                $img->setImageCompressionQuality(82);
+                $img->setImageCompressionQuality((int)($qualities[$label] ?? 72));
                 $img->stripImage();
                 $img->writeImage($outTmp);
                 $img->clear();
@@ -75,7 +76,7 @@ while (true) {
                 $nh = intval($sh * ($nw / $sw));
                 $dst = imagecreatetruecolor($nw, $nh);
                 imagecopyresampled($dst, $src, 0,0,0,0,$nw,$nh,$sw,$sh);
-                imagejpeg($dst, $outTmp, 82);
+                imagejpeg($dst, $outTmp, (int)($qualities[$label] ?? 72));
                 imagedestroy($dst);
                 imagedestroy($src);
             }

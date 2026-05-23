@@ -904,8 +904,12 @@
       return /^https?:\/\//i.test(path) ? path : '/' + path.replace(/^\/+/, '');
     }
 
-    function fotoPreviewSrc(f) {
-      return mediaSrc(f.caminho_thumb_medium || f.caminho_thumb_large || f.caminho_thumb_small || f.caminho_arquivo);
+    function fotoGridSrc(f) {
+      return mediaSrc(f.caminho_thumb_small || f.caminho_thumb_medium || f.caminho_thumb_large || f.caminho_arquivo);
+    }
+
+    function fotoLightboxSrc(f) {
+      return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
     }
 
     function orientacaoPorDimensoes(largura, altura) {
@@ -947,17 +951,8 @@
         return Promise.resolve(f);
       }
 
-      return new Promise(resolve => {
-        const img = new Image();
-        img.onload = () => {
-          f.largura = img.naturalWidth || null;
-          f.altura = img.naturalHeight || null;
-          f.orientacao = orientacaoPorDimensoes(f.largura, f.altura) || 'horizontal';
-          resolve(f);
-        };
-        img.onerror = () => { f.orientacao = 'desconhecida'; resolve(f); };
-        img.src = mediaSrc(f.caminho_arquivo);
-      });
+      f.orientacao = 'desconhecida';
+      return Promise.resolve(f);
     }
 
     function atualizarResumoFiltros() {
@@ -1014,7 +1009,7 @@
       <div class="photo-capa-badge">
         <i class="fa-solid fa-crown"></i> CAPA
       </div>` : ''}
-      <img src="${fotoPreviewSrc(f)}" alt="${f.nome_arquivo}" loading="lazy" decoding="async" onclick="abrirLightbox(${i})">
+      <img src="${fotoGridSrc(f)}" alt="${f.nome_arquivo}" loading="lazy" decoding="async" onclick="abrirLightbox(${i})">
       <div class="photo-overlay">
         <button class="photo-btn danger" onclick="excluirFoto(${f.id})" title="Excluir">
           <i class="fa-solid fa-trash"></i>
@@ -1365,7 +1360,7 @@
     function abrirLightbox(i) {
       lbIdx = i;
       const f = fotosVisiveis[i];
-      document.getElementById('lb-img').src = f.caminho_arquivo.startsWith('http') ? f.caminho_arquivo : '/' + f.caminho_arquivo;
+      document.getElementById('lb-img').src = fotoLightboxSrc(f);
       document.getElementById('lb-filename').textContent = f.nome_arquivo;
       document.getElementById('lightbox').classList.add('open');
     }
@@ -1373,7 +1368,7 @@
     function navLightbox(d) {
       lbIdx = (lbIdx + d + fotosVisiveis.length) % fotosVisiveis.length;
       const f = fotosVisiveis[lbIdx];
-      document.getElementById('lb-img').src = f.caminho_arquivo.startsWith('http') ? f.caminho_arquivo : '/' + f.caminho_arquivo;
+      document.getElementById('lb-img').src = fotoLightboxSrc(f);
       document.getElementById('lb-filename').textContent = f.nome_arquivo;
     }
     document.addEventListener('keydown', e => {
