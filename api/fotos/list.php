@@ -8,6 +8,10 @@ if (!$galeria_id) json_out(['status'=>'erro','mensagem'=>'galeria_id obrigatóri
 
 // As migrações devem ser rodadas via db_migrations.php
 
+try { db()->exec("ALTER TABLE imagens ADD COLUMN largura INT DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN altura INT DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN orientacao VARCHAR(20) DEFAULT NULL"); } catch (Exception $e) {}
+
 $ordem = $_GET['ordem'] ?? 'ordem';
 $col   = $ordem === 'data' ? 'id' : 'ordem'; // id é sequencial como data
 

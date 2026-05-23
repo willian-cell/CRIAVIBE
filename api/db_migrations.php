@@ -114,6 +114,9 @@ try {
             nome_arquivo VARCHAR(255) NOT NULL,
             caminho_arquivo VARCHAR(1024) NOT NULL,
             tamanho_bytes BIGINT DEFAULT 0,
+            largura INT DEFAULT NULL,
+            altura INT DEFAULT NULL,
+            orientacao VARCHAR(20) DEFAULT NULL,
             ordem INT NOT NULL DEFAULT 0,
             selecionada TINYINT(1) NOT NULL DEFAULT 0,
             eh_publica TINYINT(1) NOT NULL DEFAULT 1,
@@ -156,6 +159,9 @@ try {
     add_column_if_missing($db, 'imagens', 'is_capa', 'TINYINT(1) NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'imagens', 'downloads', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'imagens', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+    add_column_if_missing($db, 'imagens', 'largura', 'INT DEFAULT NULL');
+    add_column_if_missing($db, 'imagens', 'altura', 'INT DEFAULT NULL');
+    add_column_if_missing($db, 'imagens', 'orientacao', 'VARCHAR(20) DEFAULT NULL');
 
     // Adicionar colunas para caminhos de thumbnails
     add_column_if_missing($db, 'imagens', 'caminho_thumb_small', 'VARCHAR(1024) DEFAULT NULL');

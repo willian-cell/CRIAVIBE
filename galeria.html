@@ -576,12 +576,12 @@
               </button>
               <div class="actions-dropdown filtro-dd" id="filtro-dropdown"
                 style="top:calc(100% + 5px); right:0; min-width:160px; text-align:left;">
-                <button type="button" class="dd-item" onclick="setFiltro('todas', '&#9688; Formato da Foto')">&#9688;
+                <button type="button" class="dd-item" id="filtro-todas" onclick="setFiltro('todas', '&#9688; Formato da Foto')">&#9688;
                   Todas as
                   Fotos</button>
-                <button type="button" class="dd-item" onclick="setFiltro('vertical', 'Verticais')">Apenas
+                <button type="button" class="dd-item" id="filtro-vertical" onclick="setFiltro('vertical', 'Verticais')">Apenas
                   Verticais</button>
-                <button type="button" class="dd-item" onclick="setFiltro('horizontal', 'Horizontais')">Apenas
+                <button type="button" class="dd-item" id="filtro-horizontal" onclick="setFiltro('horizontal', 'Horizontais')">Apenas
                   Horizontais</button>
               </div>
             </div>
@@ -893,20 +893,83 @@
       // Resetar página ao carregar novas fotos
       paginaAtual = 1;
 
-      // Detect orientaton to calculate spans properly
-      fotos = await Promise.all(rawFotos.map(f => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => {
-            f.orientacao = img.naturalWidth > img.naturalHeight ? 'horizontal' : 'vertical';
-            resolve(f);
-          };
-          img.onerror = () => { f.orientacao = 'horizontal'; resolve(f); };
-          img.src = '/' + f.caminho_arquivo;
-        });
-      }));
+      fotos = await Promise.all(rawFotos.map(normalizarOrientacaoFoto));
+      atualizarResumoFiltros();
 
       renderFotos();
+    }
+
+    function mediaSrc(path) {
+      if (!path) return '';
+      return /^https?:\/\//i.test(path) ? path : '/' + path.replace(/^\/+/, '');
+    }
+
+    function orientacaoPorDimensoes(largura, altura) {
+      const w = Number(largura || 0);
+      const h = Number(altura || 0);
+      if (!w || !h) return '';
+      if (w === h) return 'quadrada';
+      return w > h ? 'horizontal' : 'vertical';
+    }
+
+    function medirImagemLocal(file) {
+      return new Promise(resolve => {
+        if (!file || !file.type || !file.type.startsWith('image/')) {
+          resolve({ largura: null, altura: null, orientacao: null });
+          return;
+        }
+
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          const largura = img.naturalWidth || null;
+          const altura = img.naturalHeight || null;
+          resolve({ largura, altura, orientacao: orientacaoPorDimensoes(largura, altura) || null });
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          resolve({ largura: null, altura: null, orientacao: null });
+        };
+        img.src = url;
+      });
+    }
+
+    function normalizarOrientacaoFoto(f) {
+      const orientacaoBanco = ['vertical', 'horizontal', 'quadrada'].includes(f.orientacao) ? f.orientacao : '';
+      const orientacaoDimensoes = orientacaoPorDimensoes(f.largura, f.altura);
+      if (orientacaoBanco || orientacaoDimensoes) {
+        f.orientacao = orientacaoBanco || orientacaoDimensoes;
+        return Promise.resolve(f);
+      }
+
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+          f.largura = img.naturalWidth || null;
+          f.altura = img.naturalHeight || null;
+          f.orientacao = orientacaoPorDimensoes(f.largura, f.altura) || 'horizontal';
+          resolve(f);
+        };
+        img.onerror = () => { f.orientacao = 'desconhecida'; resolve(f); };
+        img.src = mediaSrc(f.caminho_arquivo);
+      });
+    }
+
+    function atualizarResumoFiltros() {
+      const total = fotos.length;
+      const verticais = fotos.filter(f => f.orientacao === 'vertical').length;
+      const horizontais = fotos.filter(f => f.orientacao === 'horizontal' || f.orientacao === 'quadrada').length;
+      const desconhecidas = fotos.filter(f => f.orientacao === 'desconhecida').length;
+      const sufixoDesconhecidas = desconhecidas ? ` (${desconhecidas} sem formato)` : '';
+
+      const elTodas = document.getElementById('filtro-todas');
+      const elVertical = document.getElementById('filtro-vertical');
+      const elHorizontal = document.getElementById('filtro-horizontal');
+
+      if (elTodas) elTodas.innerHTML = `&#9688; Todas as Fotos (${total})${sufixoDesconhecidas}`;
+      if (elVertical) elVertical.textContent = `Apenas Verticais (${verticais})`;
+      if (elHorizontal) elHorizontal.textContent = `Apenas Horizontais (${horizontais})`;
     }
 
     function renderFotos() {
@@ -916,7 +979,7 @@
 
       // 1. Filtrar
       const fotosFiltradas = fotos.filter(f => {
-        const matchesFiltro = filtro === 'todas' || f.orientacao === filtro;
+        const matchesFiltro = filtro === 'todas' || f.orientacao === filtro || (filtro === 'horizontal' && f.orientacao === 'quadrada');
         const matchesBusca = f.nome_arquivo.toLowerCase().includes(busca);
         return matchesFiltro && matchesBusca;
       });
@@ -947,7 +1010,7 @@
       <div class="photo-capa-badge">
         <i class="fa-solid fa-crown"></i> CAPA
       </div>` : ''}
-      <img src="${f.caminho_arquivo.startsWith('http') ? f.caminho_arquivo : '/' + f.caminho_arquivo}" alt="${f.nome_arquivo}" loading="lazy" onclick="abrirLightbox(${i})">
+      <img src="${mediaSrc(f.caminho_arquivo)}" alt="${f.nome_arquivo}" loading="lazy" onclick="abrirLightbox(${i})">
       <div class="photo-overlay">
         <button class="photo-btn danger" onclick="excluirFoto(${f.id})" title="Excluir">
           <i class="fa-solid fa-trash"></i>
@@ -1134,10 +1197,14 @@
         txt.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Preparando lote <b>${batchNum} de ${totalBatches}</b>...`;
 
         try {
-          const payload = batch.map(file => ({
+          const medidas = await Promise.all(batch.map(medirImagemLocal));
+          const payload = batch.map((file, idx) => ({
             name: file.name,
             type: file.type,
             size: file.size,
+            largura: medidas[idx].largura,
+            altura: medidas[idx].altura,
+            orientacao: medidas[idx].orientacao,
           }));
           // Save progress
           persisted.currentBatch = batchNum;
@@ -1167,6 +1234,9 @@
                 r2_path: item.r2_path,
                 original_name: item.original_name,
                 size: item.size,
+                largura: item.largura,
+                altura: item.altura,
+                orientacao: item.orientacao,
               })),
             });
 

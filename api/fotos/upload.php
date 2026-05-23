@@ -66,6 +66,9 @@ if (!empty($missing)) {
 }
 
 $r2 = new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
+try { db()->exec("ALTER TABLE imagens ADD COLUMN largura INT DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN altura INT DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN orientacao VARCHAR(20) DEFAULT NULL"); } catch (Exception $e) {}
 
 $allowed = ['image/jpeg','image/png','image/webp','image/gif'];
 $enviadas = 0;
@@ -82,6 +85,16 @@ for ($i = 0; $i < $total; $i++) {
 
     if ($error !== UPLOAD_ERR_OK) { $erros[] = $name; continue; }
     if (!in_array($type, $allowed))  { $erros[] = $name; continue; }
+
+    $largura = null;
+    $altura = null;
+    $orientacao = null;
+    $info = @getimagesize($tmp);
+    if ($info && !empty($info[0]) && !empty($info[1])) {
+        $largura = (int)$info[0];
+        $altura = (int)$info[1];
+        $orientacao = $largura > $altura ? 'horizontal' : ($altura > $largura ? 'vertical' : 'quadrada');
+    }
 
     $ext      = strtolower(pathinfo($name, PATHINFO_EXTENSION));
     $filename = uniqid('foto_', true).'.'.$ext;
@@ -103,8 +116,8 @@ for ($i = 0; $i < $total; $i++) {
     $ord->execute([$galeria_id]);
     $ordem = (int)$ord->fetchColumn();
 
-    $stmt = db()->prepare("INSERT INTO imagens (galeria_id,nome_arquivo,caminho_arquivo,tamanho_bytes,ordem) VALUES (?,?,?,?,?)");
-    $stmt->execute([$galeria_id, $name, $caminho, $size, $ordem]);
+    $stmt = db()->prepare("INSERT INTO imagens (galeria_id,nome_arquivo,caminho_arquivo,tamanho_bytes,largura,altura,orientacao,ordem) VALUES (?,?,?,?,?,?,?,?)");
+    $stmt->execute([$galeria_id, $name, $caminho, $size, $largura, $altura, $orientacao, $ordem]);
     $enviadas++;
 }
 

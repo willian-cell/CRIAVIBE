@@ -79,6 +79,9 @@ foreach ($files as $idx => $file) {
     $name = trim((string)($file['name'] ?? ''));
     $type = strtolower(trim((string)($file['type'] ?? '')));
     $size = (int)($file['size'] ?? 0);
+    $largura = max(0, (int)($file['largura'] ?? 0));
+    $altura = max(0, (int)($file['altura'] ?? 0));
+    $orientacao = $largura && $altura ? ($largura > $altura ? 'horizontal' : ($altura > $largura ? 'vertical' : 'quadrada')) : null;
     $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 
     if ((!$type || !isset($allowed[$type])) && $ext && isset($extensionMap[$ext])) {
@@ -101,6 +104,9 @@ foreach ($files as $idx => $file) {
         'original_name' => $name,
         'mime_type' => $type,
         'size' => $size,
+        'largura' => $largura ?: null,
+        'altura' => $altura ?: null,
+        'orientacao' => $orientacao,
         'r2_path' => $r2Path,
         'public_url' => R2_PUBLIC_URL . '/' . $r2Path,
         'upload_url' => $presigner->signedPutUrl($r2Path, 900, $type),

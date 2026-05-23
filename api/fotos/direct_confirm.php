@@ -15,6 +15,10 @@ $chk = db()->prepare("SELECT id FROM galerias WHERE id=? AND usuario_email=? LIM
 $chk->execute([$galeria_id, $u['email']]);
 if (!$chk->fetch()) json_out(['status'=>'erro','mensagem'=>'Galeria nao encontrada.'], 404);
 
+try { db()->exec("ALTER TABLE imagens ADD COLUMN largura INT DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN altura INT DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN orientacao VARCHAR(20) DEFAULT NULL"); } catch (Exception $e) {}
+
 $allowedPrefix = "galerias/{$galeria_id}/";
 try {
     $db = db();
@@ -32,13 +36,19 @@ try {
         $r2Path = trim((string)($item['r2_path'] ?? ''));
         $name = trim((string)($item['original_name'] ?? ''));
         $size = (int)($item['size'] ?? 0);
+        $largura = max(0, (int)($item['largura'] ?? 0));
+        $altura = max(0, (int)($item['altura'] ?? 0));
+        $orientacao = trim((string)($item['orientacao'] ?? ''));
+        if (!in_array($orientacao, ['vertical', 'horizontal', 'quadrada'], true)) {
+            $orientacao = $largura && $altura ? ($largura > $altura ? 'horizontal' : ($altura > $largura ? 'vertical' : 'quadrada')) : null;
+        }
 
         if (!$r2Path || strpos($r2Path, $allowedPrefix) !== 0 || !$name) {
             continue;
         }
 
         $publicUrl = rtrim(R2_PUBLIC_URL, '/') . '/' . ltrim($r2Path, '/');
-        $toInsert[] = ['name' => $name, 'r2_path' => $r2Path, 'public_url' => $publicUrl, 'size' => max(0, $size)];
+        $toInsert[] = ['name' => $name, 'r2_path' => $r2Path, 'public_url' => $publicUrl, 'size' => max(0, $size), 'largura' => $largura ?: null, 'altura' => $altura ?: null, 'orientacao' => $orientacao ?: null];
         $publicUrls[] = $publicUrl;
     }
 
@@ -65,7 +75,7 @@ try {
     foreach ($toInsert as $it) {
         if (in_array($it['public_url'], $existing, true)) continue;
         $ordem++;
-        $finalRows[] = [$galeria_id, $it['name'], $it['public_url'], $it['size'], $ordem];
+        $finalRows[] = [$galeria_id, $it['name'], $it['public_url'], $it['size'], $it['largura'], $it['altura'], $it['orientacao'], $ordem];
     }
 
     $registradas = 0;
@@ -76,10 +86,10 @@ try {
             $placeholders = [];
             $params = [];
             foreach ($rows as $r) {
-                $placeholders[] = '(?,?,?,?,?)';
+                $placeholders[] = '(?,?,?,?,?,?,?,?)';
                 foreach ($r as $p) $params[] = $p;
             }
-            $sql = 'INSERT INTO imagens (galeria_id,nome_arquivo,caminho_arquivo,tamanho_bytes,ordem) VALUES ' . implode(',', $placeholders);
+            $sql = 'INSERT INTO imagens (galeria_id,nome_arquivo,caminho_arquivo,tamanho_bytes,largura,altura,orientacao,ordem) VALUES ' . implode(',', $placeholders);
             $ins = $db->prepare($sql);
             $ins->execute($params);
             $registradas += $ins->rowCount();
