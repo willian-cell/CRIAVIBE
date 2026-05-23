@@ -18,6 +18,10 @@
     .auth-panel { display: none; }
     .auth-panel.active { display: block; }
     #msg { margin-top: 12px; }
+    .password-container { position: relative; display: flex; align-items: center; width: 100%; }
+    .password-container .form-control { padding-right: 44px; }
+    .password-toggle { position: absolute; right: 12px; background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: var(--tr); z-index: 5; }
+    .password-toggle:hover { color: var(--primary); }
   </style>
 </head>
 <body>
@@ -38,7 +42,12 @@
     </div>
     <div class="form-group">
       <label for="l-senha">Senha</label>
-      <input id="l-senha" class="form-control" type="password" placeholder="••••••••" autocomplete="current-password">
+      <div class="password-container">
+        <input id="l-senha" class="form-control" type="password" placeholder="••••••••" autocomplete="current-password">
+        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('l-senha', this)">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
     </div>
     <div id="msg-login" class="form-error"></div>
     <button class="btn btn-primary btn-block" style="margin-top:8px" onclick="fazerLogin()">
@@ -61,7 +70,12 @@
     </div>
     <div class="form-group">
       <label for="r-senha">Senha</label>
-      <input id="r-senha" class="form-control" type="password" placeholder="Mínimo 6 caracteres">
+      <div class="password-container">
+        <input id="r-senha" class="form-control" type="password" placeholder="Mínimo 6 caracteres">
+        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('r-senha', this)">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
     </div>
     <div id="msg-register" class="form-error"></div>
     <button class="btn btn-primary btn-block" style="margin-top:8px" onclick="fazerCadastro()">
@@ -72,6 +86,19 @@
 
 <script src="/assets/js/api.js"></script>
 <script>
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const icon = btn.querySelector('i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.remove('fa-eye');
+    icon.classList.add('fa-eye-slash');
+  } else {
+    input.type = 'password';
+    icon.classList.remove('fa-eye-slash');
+    icon.classList.add('fa-eye');
+  }
+}
 function switchTab(tab) {
   document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
   document.getElementById('panel-login').classList.toggle('active', tab==='login');

@@ -10,7 +10,10 @@ $chk = db()->prepare("SELECT id FROM galerias WHERE id=? AND usuario_email=? LIM
 $chk->execute([$galeria_id, $u['email']]);
 if (!$chk->fetch()) json_out(['status'=>'erro','mensagem'=>'Galeria não encontrada.'], 404);
 
-// Suporte a definir capa puxando foto já existente da galeria
+// Suporte a definir capa puxando foto já existente da galeria ou por novo upload
+$caminho = null;
+$fid = null;
+
 if (isset($_POST['foto_id'])) {
     $fid = (int)$_POST['foto_id'];
     $stmtF = db()->prepare("SELECT caminho_arquivo FROM imagens WHERE id=? AND galeria_id=?");
@@ -21,38 +24,37 @@ if (isset($_POST['foto_id'])) {
         $caminho = $foto['caminho_arquivo'];
         $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ? WHERE id = ?");
         $stmt->execute([$caminho, $galeria_id]);
-        json_out(['status'=>'ok', 'caminho' => $caminho, 'mensagem'=>'Capa puxada da galeria com sucesso!']);
     } else {
         json_out(['status'=>'erro','mensagem'=>'Foto não encontrada ou não pertence a esta galeria.'], 404);
     }
+} else {
+    $file = $_FILES['capa'] ?? null;
+    if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+        // Se nenhum $_FILES e também nenhum foto_id, dispara erro
+        json_out(['status'=>'erro','mensagem'=>'Nenhum arquivo ou foto enviado (tente uma imagem menor).'], 400);
+    }
+
+    $uploadDir = __DIR__.'/../../uploads/capas/';
+    if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
+
+    $allowed = ['image/jpeg','image/png','image/webp','image/gif'];
+    if (!in_array($file['type'], $allowed)) {
+        json_out(['status'=>'erro','mensagem'=>'Tipo de arquivo não permitido. Aceito: JPEG, PNG, WEBP.'], 400);
+    }
+
+    $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $filename = uniqid('capa_', true).'.'.$ext;
+    $dest     = $uploadDir.$filename;
+    $caminho  = 'uploads/capas/'.$filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $dest)) {
+        json_out(['status'=>'erro','mensagem'=>'Falha ao salvar a imagem no servidor.'], 500);
+    }
+
+    // Atualizar o banco de dados (Capa da Galeria)
+    $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ? WHERE id = ?");
+    $stmt->execute([$caminho, $galeria_id]);
 }
-
-$file = $_FILES['capa'] ?? null;
-if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-    // Se nenhum $_FILES e também nenhum foto_id, dispara erro
-    json_out(['status'=>'erro','mensagem'=>'Nenhum arquivo ou foto enviado (tente uma imagem menor).'], 400);
-}
-
-$uploadDir = __DIR__.'/../../uploads/capas/';
-if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
-
-$allowed = ['image/jpeg','image/png','image/webp','image/gif'];
-if (!in_array($file['type'], $allowed)) {
-    json_out(['status'=>'erro','mensagem'=>'Tipo de arquivo não permitido. Aceito: JPEG, PNG, WEBP.'], 400);
-}
-
-$ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-$filename = uniqid('capa_', true).'.'.$ext;
-$dest     = $uploadDir.$filename;
-$caminho  = 'uploads/capas/'.$filename;
-
-if (!move_uploaded_file($file['tmp_name'], $dest)) {
-    json_out(['status'=>'erro','mensagem'=>'Falha ao salvar a imagem no servidor.'], 500);
-}
-
-// Atualizar o banco de dados (Capa da Galeria)
-$stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ? WHERE id = ?");
-$stmt->execute([$caminho, $galeria_id]);
 
 // Sincronizar o selo de "Coroa" (is_capa) na tabela de imagens de forma ATÔMICA
 $db = db();
@@ -64,9 +66,9 @@ try {
     $stmt1->execute([$galeria_id]);
     
     // 2. Marca a nova capa
-    if (isset($_POST['foto_id'])) {
+    if ($fid !== null) {
         $stmt2 = $db->prepare("UPDATE imagens SET is_capa = 1 WHERE id = ? AND galeria_id = ?");
-        $stmt2->execute([(int)$_POST['foto_id'], $galeria_id]);
+        $stmt2->execute([$fid, $galeria_id]);
     } else {
         $stmt3 = $db->prepare("UPDATE imagens SET is_capa = 1 WHERE caminho_arquivo = ? AND galeria_id = ?");
         $stmt3->execute([$caminho, $galeria_id]);
@@ -79,3 +81,4 @@ try {
 }
 
 json_out(['status'=>'ok', 'caminho' => $caminho, 'mensagem'=>'Capa definida e sincronizada com sucesso!']);
+?>
