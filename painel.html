@@ -168,6 +168,102 @@
         transform: scale(1);
       }
     }
+
+    .gallery-modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    @media(max-width: 768px) {
+      #modal-nova.modal-backdrop {
+        align-items: center;
+        justify-content: center;
+        padding: 14px;
+      }
+
+      #modal-nova .modal {
+        position: relative;
+        bottom: auto;
+        width: min(420px, 100%);
+        max-width: 100%;
+        max-height: calc(100dvh - 28px);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        animation: galleryModalCenterIn .18s ease;
+      }
+
+      #modal-nova .modal-header {
+        flex: 0 0 auto;
+        padding: 18px 24px 8px;
+      }
+
+      #modal-nova .modal-body {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 12px 24px 20px;
+        max-height: none;
+      }
+
+      #modal-nova .form-group {
+        margin-bottom: 14px;
+      }
+
+      #modal-nova .form-control {
+        min-height: 38px;
+      }
+
+      #modal-nova textarea.form-control {
+        min-height: 78px;
+      }
+
+      #modal-nova .gallery-modal-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        margin: 4px -24px -20px;
+        padding: 12px 24px 16px;
+        background: linear-gradient(180deg, rgba(255,255,255,.86), #fff 38%);
+        border-top: 1px solid #eef1fb;
+      }
+
+      @keyframes galleryModalCenterIn {
+        from {
+          opacity: 0;
+          transform: scale(.96) translateY(8px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    }
+
+    @media(max-width: 420px) {
+      #modal-nova.modal-backdrop {
+        padding: 10px;
+      }
+
+      #modal-nova .modal {
+        max-height: calc(100dvh - 20px);
+      }
+
+      #modal-nova .modal-header {
+        padding: 16px 20px 6px;
+      }
+
+      #modal-nova .modal-body {
+        padding: 10px 20px 18px;
+      }
+
+      #modal-nova .gallery-modal-actions {
+        margin: 2px -20px -18px;
+        padding: 12px 20px 14px;
+      }
+    }
   </style>
 </head>
 
@@ -280,7 +376,7 @@
           <input id="n-senha" class="form-control" type="password" placeholder="Senha para o cliente">
         </div>
         <div id="n-err" class="form-error"></div>
-        <div style="display:flex;gap:10px;margin-top:8px">
+        <div class="gallery-modal-actions">
           <button id="btn-new-save" class="btn btn-primary" style="flex:1" onclick="criarGaleria()">
             <i class="fa-solid fa-floppy-disk"></i> Criar Galeria
           </button>
