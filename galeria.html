@@ -77,7 +77,7 @@
 
     .photos-grid {
       display: grid;
-      grid-template-columns: repeat(var(--grid-cols, 10), 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
       padding: 24px
     }
@@ -97,13 +97,27 @@
     }
 
     .photo-card.vertical {
-      grid-column: span var(--span-v, 2);
+      grid-column: span 1;
       aspect-ratio: 2/3;
     }
 
     .photo-card.horizontal {
-      grid-column: span var(--span-h, 5);
+      grid-column: span 1;
       aspect-ratio: 3/2;
+    }
+
+    @media (max-width: 1024px) {
+      .photos-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .photos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 12px;
+      }
     }
 
     .photo-card img {
@@ -921,9 +935,7 @@
         return;
       }
 
-      grid.style.setProperty('--grid-cols', 15);
-      grid.style.setProperty('--span-v', 3);
-      grid.style.setProperty('--span-h', 5);
+      // Grid columns and responsive rules managed entirely via CSS media queries
 
       grid.innerHTML = fotosVisiveis.map((f, i) => `
     <div class="photo-card ${f.selecionada ? 'sel' : ''} ${f.is_capa == 1 ? 'is-capa' : ''} ${f.orientacao}" id="pc-${f.id}" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', 'foto_' + ${f.id})">
