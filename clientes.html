@@ -358,15 +358,37 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px;
-      border: 1.5px dashed var(--border-2);
-      border-radius: var(--radius-sm);
-      background: var(--surface-2);
+      padding: 16px;
+      border: 1.5px dashed #dbe3f4;
+      border-radius: 10px;
+      background: #fbfcff;
+      transition: var(--tr);
     }
 
-    .cliente-photo-field input {
-      font-size: .8rem;
-      max-width: 100%;
+    .cliente-photo-field:hover {
+      border-color: var(--primary);
+      background: #f8faff;
+    }
+
+    .cliente-photo-field .cliente-avatar-wrap {
+      flex: 0 0 64px;
+    }
+
+    .cliente-photo-copy {
+      min-width: 0;
+    }
+
+    .cliente-photo-copy strong {
+      display: block;
+      font-size: .86rem;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .cliente-photo-copy span {
+      display: block;
+      font-size: .75rem;
+      color: var(--muted);
     }
 
     .clientes-empty-cell {
@@ -537,8 +559,23 @@
       <div class="form-group">
         <label>Foto do cliente</label>
         <div class="cliente-photo-field">
-          <span class="cliente-photo-preview" id="c-foto-preview"><i class="fa-solid fa-user"></i></span>
-          <input id="c-foto" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onchange="previewClienteFoto(this,'c-foto-preview')">
+          <span class="cliente-avatar-wrap">
+            <span class="cliente-photo-preview" id="c-foto-preview"><i class="fa-solid fa-user"></i></span>
+            <label class="cliente-camera-badge" for="c-foto" title="Escolher foto">
+              <i class="fa-solid fa-camera"></i>
+            </label>
+            <input
+              id="c-foto"
+              class="cliente-file-hidden"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onchange="previewClienteFoto(this,'c-foto-preview')"
+            >
+          </span>
+          <span class="cliente-photo-copy">
+            <strong>Imagem de identificacao</strong>
+            <span>Clique na camera para escolher uma foto</span>
+          </span>
         </div>
       </div>
       <div class="form-group"><label>Nome completo</label><input id="c-nome" class="form-control" type="text" placeholder="Nome do cliente"></div>
