@@ -6,6 +6,121 @@
   <title>Configurações — CriaVibe</title>
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .brand-photo-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 1.5px dashed #dbe3f4;
+      border-radius: 12px;
+      background: #fbfcff;
+      transition: var(--tr);
+    }
+
+    .brand-photo-card:hover {
+      border-color: var(--primary);
+      background: #f8faff;
+    }
+
+    .brand-photo-wrap {
+      position: relative;
+      display: inline-block;
+      width: 86px;
+      height: 86px;
+      flex: 0 0 86px;
+    }
+
+    .brand-photo-preview {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f8fafc, #eef2ff);
+      border: 1px solid #e7ebff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: var(--primary);
+      font-size: 2rem;
+      box-shadow: 0 12px 28px rgba(99, 102, 241, .10);
+    }
+
+    .brand-photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .brand-camera-btn {
+      position: absolute;
+      right: 0;
+      bottom: 6px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: #fff;
+      border: 2px solid #fff;
+      box-shadow: 0 10px 22px rgba(99, 102, 241, .28);
+      cursor: pointer;
+      transition: var(--tr);
+      font-size: .85rem;
+    }
+
+    .brand-camera-btn:hover {
+      background: var(--primary-dk);
+      transform: translateY(-1px);
+    }
+
+    .brand-file-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .brand-photo-copy {
+      min-width: 0;
+    }
+
+    .brand-photo-copy strong {
+      display: block;
+      font-size: .92rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .brand-photo-copy span {
+      display: block;
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    @media(max-width: 520px) {
+      .brand-photo-card {
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px;
+      }
+
+      .brand-photo-wrap {
+        width: 78px;
+        height: 78px;
+        flex-basis: 78px;
+      }
+
+      .brand-photo-preview {
+        width: 74px;
+        height: 74px;
+      }
+    }
+  </style>
 </head>
 <body>
 <nav class="topnav">
@@ -43,16 +158,22 @@
       <hr style="margin:28px 0;border-color:var(--border)">
 
       <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px">Foto, Logo ou Marca</h3>
-      <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:18px">
-        <div id="perfil-preview" style="width:76px;height:76px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--primary);font-size:2rem">
-          <i class="fa-solid fa-user-circle"></i>
-        </div>
-        <div style="flex:1;min-width:220px">
-          <input id="foto-perfil-input" class="form-control" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+      <div class="brand-photo-card">
+        <span class="brand-photo-wrap">
+          <span id="perfil-preview" class="brand-photo-preview">
+            <i class="fa-solid fa-user-circle"></i>
+          </span>
+          <label class="brand-camera-btn" for="foto-perfil-input" title="Alterar foto, logo ou marca">
+            <i class="fa-solid fa-camera"></i>
+          </label>
+          <input id="foto-perfil-input" class="brand-file-hidden" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        </span>
+        <span class="brand-photo-copy">
+          <strong>Imagem da sua marca</strong>
+          <span>Ela aparece no painel e na galeria entregue ao cliente. Clique na camera para trocar.</span>
           <div id="foto-msg" class="form-error"></div>
-        </div>
+        </span>
       </div>
-      <button class="btn btn-secondary" id="btn-foto-perfil" onclick="alterarFotoPerfil()"><i class="fa-solid fa-camera"></i> Alterar Foto de Perfil</button>
 
       <hr style="margin:28px 0;border-color:var(--border)">
 
@@ -104,6 +225,7 @@ document.getElementById('foto-perfil-input')?.addEventListener('change', (e) => 
   if (!file || !file.type.startsWith('image/')) return;
   const previewUrl = URL.createObjectURL(file);
   aplicarFotoPerfil(previewUrl);
+  alterarFotoPerfil();
 });
 
 async function salvarNome() {
@@ -146,8 +268,8 @@ async function salvarPerfil() {
 async function alterarFotoPerfil() {
   const input = document.getElementById('foto-perfil-input');
   const err = document.getElementById('foto-msg');
-  const btn = document.getElementById('btn-foto-perfil');
-  const original = btn.innerHTML;
+  const camera = document.querySelector('.brand-camera-btn');
+  const original = camera ? camera.innerHTML : '';
   err.classList.remove('show');
   if (!input.files.length) { err.textContent = 'Selecione uma imagem.'; err.classList.add('show'); return; }
 
@@ -155,8 +277,10 @@ async function alterarFotoPerfil() {
   formData.append('foto_perfil', input.files[0]);
 
   try {
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+    if (camera) {
+      camera.style.pointerEvents = 'none';
+      camera.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    }
     const d = await API.upload('/auth/upload_profile_image.php', formData);
     currentUser = d.usuario;
     aplicarFotoPerfil(d.foto_perfil);
@@ -167,8 +291,10 @@ async function alterarFotoPerfil() {
     err.classList.add('show');
     showToast(e.message, 'error');
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = original;
+    if (camera) {
+      camera.style.pointerEvents = '';
+      camera.innerHTML = original;
+    }
   }
 }
 
