@@ -1394,6 +1394,10 @@
         document.getElementById('hero-subtitle').textContent = GALERIA.descricao;
       }
 
+      if (GALERIA.foto_perfil) {
+        document.querySelector('.hero-logo-img').src = mediaSrc(GALERIA.foto_perfil);
+      }
+
       if (GALERIA.capa_apresentacao) {
         document.getElementById('hero-bg').style.backgroundImage = `url('${mediaSrc(GALERIA.capa_apresentacao)}')`;
       }

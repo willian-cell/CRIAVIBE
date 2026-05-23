@@ -34,4 +34,11 @@ if (!$token && $id) {
 
 // Retorna galeria sem expor a senha hash
 unset($g['senha']);
+
+try { db()->exec("ALTER TABLE usuarios ADD COLUMN foto_perfil VARCHAR(512) DEFAULT NULL"); } catch (Exception $e) {}
+$stmtLogo = db()->prepare("SELECT foto_perfil FROM usuarios WHERE email = ? LIMIT 1");
+$stmtLogo->execute([$g['usuario_email']]);
+$dono = $stmtLogo->fetch();
+$g['foto_perfil'] = $dono['foto_perfil'] ?? null;
+
 json_out(['status'=>'ok','galeria'=>$g]);

@@ -15,7 +15,7 @@
   <div class="topnav-logo"><i class="fa-solid fa-images"></i> <span>CriaVibe</span></div>
   <div class="topnav-spacer"></div>
   <div class="topnav-user">
-    <i class="fa-solid fa-user-circle" style="font-size:1.2rem;color:var(--primary)"></i>
+    <span class="topnav-avatar" id="nav-avatar"><i class="fa-solid fa-user-circle" style="font-size:1.2rem"></i></span>
     <span>Olá, <strong id="nav-nome">...</strong></span>
     <button class="topnav-logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
   </div>
@@ -85,8 +85,23 @@
 (async () => {
   const u = await requireAuth();
   document.getElementById('nav-nome').textContent = u.nome;
+  aplicarFotoPerfil(u.foto_perfil);
   await carregarClientes();
 })();
+
+function mediaSrc(path) {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  return '/' + path.replace(/^\/+/, '');
+}
+
+function aplicarFotoPerfil(path) {
+  const src = mediaSrc(path);
+  const navAvatar = document.getElementById('nav-avatar');
+  if (navAvatar && src) {
+    navAvatar.innerHTML = `<img src="${src}" alt="Foto de perfil">`;
+  }
+}
 
 let listaClientes = [];
 

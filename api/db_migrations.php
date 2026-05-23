@@ -64,6 +64,7 @@ try {
             email VARCHAR(190) NOT NULL UNIQUE,
             senha VARCHAR(255) NOT NULL,
             tipo VARCHAR(30) NOT NULL DEFAULT 'fotografo',
+            foto_perfil VARCHAR(512) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
@@ -139,6 +140,7 @@ try {
     ");
 
     add_column_if_missing($db, 'usuarios', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+    add_column_if_missing($db, 'usuarios', 'foto_perfil', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'clientes', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'galerias', 'cliente_id', 'INT DEFAULT NULL');
     add_column_if_missing($db, 'galerias', 'entrega_em_alta', 'TINYINT(1) NOT NULL DEFAULT 1');

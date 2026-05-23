@@ -15,6 +15,7 @@
   <div class="topnav-logo"><i class="fa-solid fa-images"></i> <span>CriaVibe</span></div>
   <div class="topnav-spacer"></div>
   <div class="topnav-user">
+    <span class="topnav-avatar" id="nav-avatar"><i class="fa-solid fa-user-circle" style="font-size:1.2rem"></i></span>
     <span>Olá, <strong id="nav-nome">...</strong></span>
     <button class="topnav-logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
   </div>
@@ -41,6 +42,20 @@
 
       <hr style="margin:28px 0;border-color:var(--border)">
 
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px">Foto, Logo ou Marca</h3>
+      <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:18px">
+        <div id="perfil-preview" style="width:76px;height:76px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--primary);font-size:2rem">
+          <i class="fa-solid fa-user-circle"></i>
+        </div>
+        <div style="flex:1;min-width:220px">
+          <input id="foto-perfil-input" class="form-control" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+          <div id="foto-msg" class="form-error"></div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" id="btn-foto-perfil" onclick="alterarFotoPerfil()"><i class="fa-solid fa-camera"></i> Alterar Foto de Perfil</button>
+
+      <hr style="margin:28px 0;border-color:var(--border)">
+
       <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px">Alterar Senha</h3>
       <div class="form-group"><label>Nova Senha</label><input id="nova-senha" class="form-control" type="password" placeholder="Mínimo 6 caracteres"></div>
       <div class="form-group"><label>Confirmar Senha</label><input id="confirma-senha" class="form-control" type="password" placeholder="Repita a nova senha"></div>
@@ -58,7 +73,23 @@
   document.getElementById('nav-nome').textContent  = u.nome;
   document.getElementById('cfg-nome').value  = u.nome;
   document.getElementById('cfg-email').value = u.email;
+  aplicarFotoPerfil(u.foto_perfil);
 })();
+
+function mediaSrc(path) {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  return '/' + path.replace(/^\/+/, '');
+}
+
+function aplicarFotoPerfil(path) {
+  const src = mediaSrc(path);
+  const navAvatar = document.getElementById('nav-avatar');
+  const preview = document.getElementById('perfil-preview');
+  const fallback = '<i class="fa-solid fa-user-circle"></i>';
+  if (navAvatar) navAvatar.innerHTML = src ? `<img src="${src}" alt="Foto de perfil">` : '<i class="fa-solid fa-user-circle" style="font-size:1.2rem"></i>';
+  if (preview) preview.innerHTML = src ? `<img src="${src}" alt="Foto de perfil" style="width:100%;height:100%;object-fit:cover">` : fallback;
+}
 
 async function salvarNome() {
   const nome = document.getElementById('cfg-nome').value.trim();
@@ -87,6 +118,35 @@ async function salvarPerfil() {
     document.getElementById('cfg-nome').value = d.usuario.nome;
     document.getElementById('cfg-email').value = d.usuario.email;
     showToast(d.mensagem || 'Dados atualizados!');
+  } catch (e) {
+    err.textContent = e.message;
+    err.classList.add('show');
+    showToast(e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+async function alterarFotoPerfil() {
+  const input = document.getElementById('foto-perfil-input');
+  const err = document.getElementById('foto-msg');
+  const btn = document.getElementById('btn-foto-perfil');
+  const original = btn.innerHTML;
+  err.classList.remove('show');
+  if (!input.files.length) { err.textContent = 'Selecione uma imagem.'; err.classList.add('show'); return; }
+
+  const formData = new FormData();
+  formData.append('foto_perfil', input.files[0]);
+
+  try {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+    const d = await API.upload('/auth/upload_profile_image.php', formData);
+    currentUser = d.usuario;
+    aplicarFotoPerfil(d.foto_perfil);
+    input.value = '';
+    showToast(d.mensagem || 'Foto atualizada!');
   } catch (e) {
     err.textContent = e.message;
     err.classList.add('show');

@@ -19,6 +19,7 @@ $_SESSION['usuario'] = [
     'nome'  => $u['nome'],
     'email' => $u['email'],
     'tipo'  => $u['tipo'],
+    'foto_perfil' => $u['foto_perfil'] ?? null,
 ];
 
 json_out(['status'=>'ok','usuario'=>$_SESSION['usuario']]);
