@@ -319,6 +319,43 @@
       transition: width .2s
     }
 
+    .cover-preview-frame {
+      width: 100%;
+      min-height: 118px;
+      margin-top: 14px;
+      border: 1px solid rgba(184, 134, 11, .28);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .75);
+    }
+
+    .cover-preview-img {
+      display: block;
+      width: 100%;
+      height: 118px;
+      object-fit: cover;
+    }
+
+    .cover-preview-empty {
+      min-height: 118px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #b8860b;
+      font-weight: 700;
+      font-size: .85rem;
+      background: linear-gradient(135deg, rgba(255, 215, 0, .08), rgba(99, 102, 241, .06));
+    }
+
+    .cover-preview-empty i {
+      color: #b8860b;
+      font-size: 1.25rem;
+      margin: 0;
+    }
+
     /* Tabs */
     .tabs {
       display: flex;
@@ -619,8 +656,14 @@
               <p><strong style="color: #b8860b">Capa de Apresentação</strong></p>
               <p>Exibida no topo p/ o cliente</p>
               <p id="prog-txt-capa" style="font-size:.75rem;margin-top:6px;color:#b8860b"></p>
-              <img id="preview-capa"
-                style="display:none; width:100%; height:100px; object-fit:cover; border-radius: 8px; margin-top: 10px;" />
+              <div class="cover-preview-frame" id="preview-capa-frame" style="display:none">
+                <img id="preview-capa" class="cover-preview-img" alt="Previa da capa"
+                  onerror="mostrarPreviewCapaVazio()">
+                <div class="cover-preview-empty" id="preview-capa-empty" style="display:none">
+                  <i class="fa-solid fa-image"></i>
+                  <span>Previa indisponivel</span>
+                </div>
+              </div>
             </div>
           </div>
           <input id="file-input" type="file" accept="image/*" multiple style="display:none"
@@ -837,14 +880,7 @@
         if (galeria.link_token) {
           document.getElementById('btn-ver').href = `/cliente.html?token=${galeria.link_token}`;
         }
-        if (galeria.capa_apresentacao) {
-          const preview = document.getElementById('preview-capa');
-          if (preview) {
-            const capaPath = galeria.capa_apresentacao;
-            preview.src = capaPath.startsWith('http') ? capaPath : '/' + capaPath;
-            preview.style.display = 'block';
-          }
-        }
+        aplicarPreviewCapa(galeria.capa_preview || galeria.capa_apresentacao);
         preencherConfig();
         await carregarFotos();
         await carregarMusicas();
@@ -895,6 +931,9 @@
 
       fotos = await Promise.all(rawFotos.map(normalizarOrientacaoFoto));
       atualizarResumoFiltros();
+      if (!galeria?.capa_preview && !galeria?.capa_apresentacao) {
+        atualizarPreviewCapaDaGrade();
+      }
 
       renderFotos();
     }
@@ -902,6 +941,46 @@
     function mediaSrc(path) {
       if (!path) return '';
       return /^https?:\/\//i.test(path) ? path : '/' + path.replace(/^\/+/, '');
+    }
+
+    function capaPreviewSrcFromFoto(f) {
+      if (!f) return '';
+      return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo || '');
+    }
+
+    function aplicarPreviewCapa(src) {
+      const frame = document.getElementById('preview-capa-frame');
+      const img = document.getElementById('preview-capa');
+      const empty = document.getElementById('preview-capa-empty');
+      if (!frame || !img || !empty) return;
+
+      const resolved = mediaSrc(src || '');
+      frame.style.display = 'block';
+      if (!resolved) {
+        mostrarPreviewCapaVazio();
+        return;
+      }
+
+      empty.style.display = 'none';
+      img.style.display = 'block';
+      img.src = resolved;
+    }
+
+    function mostrarPreviewCapaVazio() {
+      const frame = document.getElementById('preview-capa-frame');
+      const img = document.getElementById('preview-capa');
+      const empty = document.getElementById('preview-capa-empty');
+      if (!frame || !img || !empty) return;
+
+      frame.style.display = 'block';
+      img.removeAttribute('src');
+      img.style.display = 'none';
+      empty.style.display = 'flex';
+    }
+
+    function atualizarPreviewCapaDaGrade() {
+      const fotoCapa = fotos.find(f => Number(f.is_capa) === 1) || fotos[0];
+      if (fotoCapa) aplicarPreviewCapa(capaPreviewSrcFromFoto(fotoCapa));
     }
 
     function fotoGridSrc(f) {
@@ -1296,12 +1375,8 @@
         if (res.status === 'ok') {
           showToast('Capa de apresentação enviada com sucesso!');
           galeria.capa_apresentacao = res.caminho;
-          const preview = document.getElementById('preview-capa');
-          if (preview) {
-            const capaPath = res.caminho;
-            preview.src = capaPath.startsWith('http') ? capaPath : '/' + capaPath;
-            preview.style.display = 'block';
-          }
+          galeria.capa_preview = res.caminho_preview || res.caminho;
+          aplicarPreviewCapa(galeria.capa_preview);
           // Sincroniza a grade localmente
           await carregarFotos();
         } else {
@@ -1333,14 +1408,11 @@
         if (res.status === 'ok') {
           showToast(res.mensagem);
           galeria.capa_apresentacao = res.caminho;
-          const preview = document.getElementById('preview-capa');
-          if (preview) {
-            const capaPath = res.caminho;
-            preview.src = capaPath.startsWith('http') ? capaPath : '/' + capaPath;
-            preview.style.display = 'block';
-          }
           // Atualiza o estado das fotos localmente para refletir o selo de capa
           fotos.forEach(f => f.is_capa = (f.id == fotoId ? 1 : 0));
+          const fotoLocal = fotos.find(f => f.id == fotoId);
+          galeria.capa_preview = res.caminho_preview || capaPreviewSrcFromFoto(fotoLocal) || res.caminho;
+          aplicarPreviewCapa(galeria.capa_preview);
           renderFotos();
         } else {
           showToast(res.mensagem || 'Erro ao definir a capa.', 'error');

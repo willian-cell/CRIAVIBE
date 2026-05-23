@@ -8,6 +8,9 @@ $token = $_GET['token'] ?? '';
 try { db()->exec("ALTER TABLE galerias ADD COLUMN max_selecao INT DEFAULT 0"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN dl_count INT DEFAULT 0"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN capa_apresentacao VARCHAR(255) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_small VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_medium VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_large VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
 
 if ($id) {
     $stmt = db()->prepare("SELECT * FROM galerias WHERE id = ? LIMIT 1");
@@ -40,5 +43,34 @@ $stmtLogo = db()->prepare("SELECT foto_perfil FROM usuarios WHERE email = ? LIMI
 $stmtLogo->execute([$g['usuario_email']]);
 $dono = $stmtLogo->fetch();
 $g['foto_perfil'] = $dono['foto_perfil'] ?? null;
+
+$g['capa_preview'] = $g['capa_apresentacao'] ?? null;
+
+if (!empty($g['capa_apresentacao'])) {
+    $stmtCapa = db()->prepare("
+        SELECT COALESCE(caminho_thumb_large, caminho_thumb_medium, caminho_thumb_small, caminho_arquivo) AS capa_preview
+        FROM imagens
+        WHERE galeria_id = ? AND caminho_arquivo = ?
+        LIMIT 1
+    ");
+    $stmtCapa->execute([$g['id'], $g['capa_apresentacao']]);
+    $capa = $stmtCapa->fetch();
+    if (!empty($capa['capa_preview'])) {
+        $g['capa_preview'] = $capa['capa_preview'];
+    }
+} else {
+    $stmtCapa = db()->prepare("
+        SELECT COALESCE(caminho_thumb_large, caminho_thumb_medium, caminho_thumb_small, caminho_arquivo) AS capa_preview
+        FROM imagens
+        WHERE galeria_id = ?
+        ORDER BY is_capa DESC, ordem ASC
+        LIMIT 1
+    ");
+    $stmtCapa->execute([$g['id']]);
+    $capa = $stmtCapa->fetch();
+    if (!empty($capa['capa_preview'])) {
+        $g['capa_preview'] = $capa['capa_preview'];
+    }
+}
 
 json_out(['status'=>'ok','galeria'=>$g]);

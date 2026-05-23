@@ -5,6 +5,10 @@ $u = require_fotografo();
 $galeria_id = (int)($_POST['galeria_id'] ?? 0);
 if (!$galeria_id) json_out(['status'=>'erro','mensagem'=>'galeria_id obrigatório.'], 400);
 
+try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_small VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_medium VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_large VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
+
 // Verificar dono
 $chk = db()->prepare("SELECT id FROM galerias WHERE id=? AND usuario_email=? LIMIT 1");
 $chk->execute([$galeria_id, $u['email']]);
@@ -12,16 +16,18 @@ if (!$chk->fetch()) json_out(['status'=>'erro','mensagem'=>'Galeria não encontr
 
 // Suporte a definir capa puxando foto já existente da galeria ou por novo upload
 $caminho = null;
+$caminhoPreview = null;
 $fid = null;
 
 if (isset($_POST['foto_id'])) {
     $fid = (int)$_POST['foto_id'];
-    $stmtF = db()->prepare("SELECT caminho_arquivo FROM imagens WHERE id=? AND galeria_id=?");
+    $stmtF = db()->prepare("SELECT caminho_arquivo, caminho_thumb_small, caminho_thumb_medium, caminho_thumb_large FROM imagens WHERE id=? AND galeria_id=?");
     $stmtF->execute([$fid, $galeria_id]);
     $foto = $stmtF->fetch();
     
     if ($foto) {
         $caminho = $foto['caminho_arquivo'];
+        $caminhoPreview = $foto['caminho_thumb_large'] ?: ($foto['caminho_thumb_medium'] ?: ($foto['caminho_thumb_small'] ?: $foto['caminho_arquivo']));
         $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ? WHERE id = ?");
         $stmt->execute([$caminho, $galeria_id]);
     } else {
@@ -50,6 +56,7 @@ if (isset($_POST['foto_id'])) {
     if (!move_uploaded_file($file['tmp_name'], $dest)) {
         json_out(['status'=>'erro','mensagem'=>'Falha ao salvar a imagem no servidor.'], 500);
     }
+    $caminhoPreview = $caminho;
 
     // Atualizar o banco de dados (Capa da Galeria)
     $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ? WHERE id = ?");
@@ -80,5 +87,10 @@ try {
     json_out(['status'=>'erro','mensagem'=>'Erro ao sincronizar selo de capa: ' . $e->getMessage()], 500);
 }
 
-json_out(['status'=>'ok', 'caminho' => $caminho, 'mensagem'=>'Capa definida e sincronizada com sucesso!']);
+json_out([
+    'status'=>'ok',
+    'caminho' => $caminho,
+    'caminho_preview' => $caminhoPreview ?: $caminho,
+    'mensagem'=>'Capa definida e sincronizada com sucesso!'
+]);
 ?>
