@@ -46,18 +46,47 @@ db()->prepare("UPDATE imagens SET downloads = downloads + 1 WHERE id = ?")->exec
 db()->prepare("UPDATE galerias SET dl_count = dl_count + 1 WHERE id = ?")->execute([$gid]);
 
 // Serve o arquivo
-$path = __DIR__.'/../../'.$foto['caminho_arquivo'];
-if (!file_exists($path)) json_out(['status'=>'erro','mensagem'=>'Arquivo não encontrado no servidor.'], 404);
+$caminho = $foto['caminho_arquivo'];
+$isRemote = (strpos($caminho, 'http://') === 0 || strpos($caminho, 'https://') === 0);
 
-$nome = $foto['nome_arquivo'] ?: basename($path);
-header('Content-Type: application/octet-stream');
-header('Content-Disposition: attachment; filename="'.$nome.'"');
-header('Content-Length: '.filesize($path));
-header('X-Downloads-Used: '.($dl_count + 1));
-header('X-Downloads-Max: '.$max);
-
-if (ob_get_length()) ob_clean();
-flush();
-
-readfile($path);
-exit;
+if ($isRemote) {
+    $nome = $foto['nome_arquivo'] ?: basename($caminho);
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="'.$nome.'"');
+    
+    $arrContextOptions = [
+        "ssl" => [
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ],
+    ];
+    $headers = @get_headers($caminho, 1, stream_context_create($arrContextOptions));
+    if ($headers && isset($headers['Content-Length'])) {
+        $size = is_array($headers['Content-Length']) ? end($headers['Content-Length']) : $headers['Content-Length'];
+        header('Content-Length: '.$size);
+    }
+    header('X-Downloads-Used: '.($dl_count + 1));
+    header('X-Downloads-Max: '.$max);
+    
+    if (ob_get_length()) ob_clean();
+    flush();
+    
+    readfile($caminho, false, stream_context_create($arrContextOptions));
+    exit;
+} else {
+    $path = __DIR__.'/../../'.$caminho;
+    if (!file_exists($path)) json_out(['status'=>'erro','mensagem'=>'Arquivo não encontrado no servidor.'], 404);
+    
+    $nome = $foto['nome_arquivo'] ?: basename($path);
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="'.$nome.'"');
+    header('Content-Length: '.filesize($path));
+    header('X-Downloads-Used: '.($dl_count + 1));
+    header('X-Downloads-Max: '.$max);
+    
+    if (ob_get_length()) ob_clean();
+    flush();
+    
+    readfile($path);
+    exit;
+}

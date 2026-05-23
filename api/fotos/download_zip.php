@@ -65,9 +65,26 @@ if ($zip->open($tmpZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true)
     json_out(['status'=>'erro','mensagem'=>'Erro ao criar arquivo ZIP.'], 500);
 
 foreach ($fotos as $f) {
-    $path = __DIR__.'/../../'.$f['caminho_arquivo'];
-    if (file_exists($path)) {
-        $zip->addFile($path, $f['nome_arquivo'] ?: basename($path));
+    $caminho = $f['caminho_arquivo'];
+    $isRemote = (strpos($caminho, 'http://') === 0 || strpos($caminho, 'https://') === 0);
+    $fileName = $f['nome_arquivo'] ?: basename($caminho);
+    
+    if ($isRemote) {
+        $arrContextOptions = [
+            "ssl" => [
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ],
+        ];
+        $data = @file_get_contents($caminho, false, stream_context_create($arrContextOptions));
+        if ($data !== false) {
+            $zip->addFromString($fileName, $data);
+        }
+    } else {
+        $path = __DIR__.'/../../'.$caminho;
+        if (file_exists($path)) {
+            $zip->addFile($path, $fileName);
+        }
     }
 }
 $zip->close();
