@@ -6,15 +6,20 @@ $token = $body['token'] ?? '';
 $senha = $body['senha'] ?? '';
 
 if (!$token || !$senha)
-    json_out(['status'=>'erro','mensagem'=>'Token e senha obrigatórios.'], 400);
+    json_out(['status'=>'erro','mensagem'=>'Token e senha obrigatorios.'], 400);
 
-// Busca galeria pelo token
+try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_fonte VARCHAR(80) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_tamanho INT DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_negrito TINYINT(1) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN descricao_fonte VARCHAR(80) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN descricao_tamanho INT DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN descricao_negrito TINYINT(1) DEFAULT NULL"); } catch (Exception $e) {}
+
 $stmt = db()->prepare("SELECT * FROM galerias WHERE link_token = ? LIMIT 1");
 $stmt->execute([$token]);
 $g = $stmt->fetch();
-if (!$g) json_out(['status'=>'erro','mensagem'=>'Galeria não encontrada.'], 404);
+if (!$g) json_out(['status'=>'erro','mensagem'=>'Galeria nao encontrada.'], 404);
 
-// Se galeria tem cliente vinculado, verifica senha_acesso
 if ($g['cliente_id']) {
     $cli = db()->prepare("SELECT * FROM clientes WHERE id = ? LIMIT 1");
     $cli->execute([$g['cliente_id']]);
@@ -22,14 +27,10 @@ if ($g['cliente_id']) {
     if (!$cliente || strtoupper($cliente['senha_acesso']) !== strtoupper(trim($senha)))
         json_out(['status'=>'erro','mensagem'=>'Senha incorreta.'], 401);
 } elseif ($g['senha']) {
-    // Galeria privada com senha hash (sem cliente vinculado)
     if (!password_verify($senha, $g['senha']))
         json_out(['status'=>'erro','mensagem'=>'Senha incorreta.'], 401);
-} else {
-    // Sem senha configurada — acesso livre
 }
 
-// Salva acesso na sessão
 $_SESSION['galeria_access'][$g['id']] = true;
 
 unset($g['senha']);

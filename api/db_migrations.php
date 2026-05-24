@@ -101,6 +101,12 @@ try {
             dl_count INT NOT NULL DEFAULT 0,
             capa_apresentacao VARCHAR(512) DEFAULT NULL,
             tema VARCHAR(10) NOT NULL DEFAULT 'escuro',
+            nome_fonte VARCHAR(80) DEFAULT NULL,
+            nome_tamanho INT DEFAULT NULL,
+            nome_negrito TINYINT(1) DEFAULT NULL,
+            descricao_fonte VARCHAR(80) DEFAULT NULL,
+            descricao_tamanho INT DEFAULT NULL,
+            descricao_negrito TINYINT(1) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_galerias_usuario (usuario_email),
             INDEX idx_galerias_cliente (cliente_id),
@@ -156,6 +162,12 @@ try {
     add_column_if_missing($db, 'galerias', 'dl_count', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'galerias', 'capa_apresentacao', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'galerias', 'tema', "VARCHAR(10) NOT NULL DEFAULT 'escuro'");
+    add_column_if_missing($db, 'galerias', 'nome_fonte', 'VARCHAR(80) DEFAULT NULL');
+    add_column_if_missing($db, 'galerias', 'nome_tamanho', 'INT DEFAULT NULL');
+    add_column_if_missing($db, 'galerias', 'nome_negrito', 'TINYINT(1) DEFAULT NULL');
+    add_column_if_missing($db, 'galerias', 'descricao_fonte', 'VARCHAR(80) DEFAULT NULL');
+    add_column_if_missing($db, 'galerias', 'descricao_tamanho', 'INT DEFAULT NULL');
+    add_column_if_missing($db, 'galerias', 'descricao_negrito', 'TINYINT(1) DEFAULT NULL');
     add_column_if_missing($db, 'imagens', 'selecionada', 'TINYINT(1) NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'imagens', 'eh_publica', 'TINYINT(1) NOT NULL DEFAULT 1');
     add_column_if_missing($db, 'imagens', 'is_capa', 'TINYINT(1) NOT NULL DEFAULT 0');

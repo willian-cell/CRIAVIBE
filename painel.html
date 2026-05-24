@@ -175,6 +175,75 @@
       margin-top: 8px;
     }
 
+    #modal-editar .modal {
+      width: 560px;
+    }
+
+    .text-style-stack {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 10px;
+    }
+
+    .text-style-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+    }
+
+    .text-style-controls select {
+      height: 38px;
+      min-width: 128px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 10px;
+      font: inherit;
+      font-size: .85rem;
+      outline: none;
+    }
+
+    .text-style-controls .style-size {
+      min-width: 74px;
+    }
+
+    .style-toggle {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .style-toggle.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    @media(max-width: 640px) {
+      .text-style-stack {
+        grid-template-columns: 1fr;
+      }
+
+      .text-style-controls {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .text-style-controls select {
+        flex: 1 1 120px;
+      }
+    }
+
     @media(max-width: 768px) {
       #modal-nova.modal-backdrop {
         align-items: center;
@@ -399,11 +468,61 @@
           <input type="hidden" id="e-id">
           <div class="form-group">
             <label>Nome da Galeria</label>
-            <input id="e-nome" class="form-control" type="text">
+            <div class="text-style-stack">
+              <input id="e-nome" class="form-control" type="text">
+              <div class="text-style-controls" aria-label="Estilo do nome da galeria">
+                <select id="e-nome-fonte" title="Fonte do nome">
+                  <option value="Inter">Inter</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Arial Narrow">Arial Narrow</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                  <option value="Verdana">Verdana</option>
+                  <option value="Tahoma">Tahoma</option>
+                </select>
+                <select id="e-nome-tamanho" class="style-size" title="Tamanho do nome">
+                  <option value="40">40</option>
+                  <option value="48">48</option>
+                  <option value="56">56</option>
+                  <option value="64">64</option>
+                  <option value="72">72</option>
+                  <option value="84">84</option>
+                  <option value="96">96</option>
+                </select>
+                <button type="button" id="e-nome-negrito" class="style-toggle active" aria-pressed="true"
+                  onclick="toggleTextBold('e-nome-negrito')" title="Negrito">N</button>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label>Descrição</label>
-            <textarea id="e-descricao" class="form-control" rows="3"></textarea>
+            <div class="text-style-stack">
+              <textarea id="e-descricao" class="form-control" rows="3"></textarea>
+              <div class="text-style-controls" aria-label="Estilo da descricao da galeria">
+                <select id="e-descricao-fonte" title="Fonte da descricao">
+                  <option value="Inter">Inter</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Arial Narrow">Arial Narrow</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                  <option value="Verdana">Verdana</option>
+                  <option value="Tahoma">Tahoma</option>
+                </select>
+                <select id="e-descricao-tamanho" class="style-size" title="Tamanho da descricao">
+                  <option value="14">14</option>
+                  <option value="16">16</option>
+                  <option value="18">18</option>
+                  <option value="20">20</option>
+                  <option value="24">24</option>
+                  <option value="28">28</option>
+                  <option value="32">32</option>
+                  <option value="36">36</option>
+                  <option value="42">42</option>
+                </select>
+                <button type="button" id="e-descricao-negrito" class="style-toggle" aria-pressed="false"
+                  onclick="toggleTextBold('e-descricao-negrito')" title="Negrito">N</button>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label>Privacidade</label>
@@ -475,6 +594,31 @@
       if (!path) return '';
       if (/^https?:\/\//i.test(path)) return path;
       return '/' + path.replace(/^\/+/, '');
+    }
+
+    function setSelectValue(id, value, fallback) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const next = value || fallback;
+      el.value = [...el.options].some(o => o.value === String(next)) ? next : fallback;
+    }
+
+    function setBoldToggle(id, enabled) {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      const active = !!Number(enabled);
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    }
+
+    function toggleTextBold(id) {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      setBoldToggle(id, btn.getAttribute('aria-pressed') !== 'true');
+    }
+
+    function isBoldActive(id) {
+      return document.getElementById(id)?.getAttribute('aria-pressed') === 'true';
     }
 
     function aplicarFotoPerfil(path) {
@@ -644,6 +788,12 @@
       document.getElementById('e-id').value = g.id;
       document.getElementById('e-nome').value = g.nome;
       document.getElementById('e-descricao').value = g.descricao || '';
+      setSelectValue('e-nome-fonte', g.nome_fonte, 'Inter');
+      setSelectValue('e-nome-tamanho', g.nome_tamanho, '64');
+      setBoldToggle('e-nome-negrito', g.nome_negrito ?? 1);
+      setSelectValue('e-descricao-fonte', g.descricao_fonte, 'Inter');
+      setSelectValue('e-descricao-tamanho', g.descricao_tamanho, '18');
+      setBoldToggle('e-descricao-negrito', g.descricao_negrito ?? 0);
       document.getElementById('e-privacidade').value = g.privacidade;
       document.getElementById('e-senha').value = '';
       document.getElementById('e-max-dl').value = g.max_downloads || 0;
@@ -677,6 +827,12 @@
           senha: document.getElementById('e-senha').value || null,
           max_downloads: parseInt(document.getElementById('e-max-dl').value) || 0,
           max_selecao: parseInt(document.getElementById('e-max-sel').value) || 0,
+          nome_fonte: document.getElementById('e-nome-fonte').value,
+          nome_tamanho: parseInt(document.getElementById('e-nome-tamanho').value) || 64,
+          nome_negrito: isBoldActive('e-nome-negrito'),
+          descricao_fonte: document.getElementById('e-descricao-fonte').value,
+          descricao_tamanho: parseInt(document.getElementById('e-descricao-tamanho').value) || 18,
+          descricao_negrito: isBoldActive('e-descricao-negrito'),
         });
 
         if (d.status === 'ok') {

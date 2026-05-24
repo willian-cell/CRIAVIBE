@@ -1464,6 +1464,29 @@
       return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
     }
 
+    function aplicarEstiloTextoGaleria(el, galeria, prefixo, opcoes) {
+      if (!el || !galeria) return;
+      const fontes = ['Inter', 'Arial', 'Arial Narrow', 'Georgia', 'Times New Roman', 'Verdana', 'Tahoma'];
+      const fonte = fontes.includes(galeria[`${prefixo}_fonte`]) ? galeria[`${prefixo}_fonte`] : null;
+      const tamanho = parseInt(galeria[`${prefixo}_tamanho`], 10);
+      const negrito = galeria[`${prefixo}_negrito`];
+
+      if (fonte) {
+        const fallback = fonte.includes('Times') || fonte === 'Georgia' ? 'serif' : 'sans-serif';
+        el.style.fontFamily = `'${fonte}', ${fallback}`;
+      }
+
+      if (Number.isFinite(tamanho)) {
+        const min = opcoes.min || 14;
+        const vw = opcoes.vw || 2;
+        el.style.fontSize = `clamp(${min}px, ${vw}vw, ${tamanho}px)`;
+      }
+
+      if (negrito !== null && negrito !== undefined && negrito !== '') {
+        el.style.fontWeight = Number(negrito) ? '800' : '500';
+      }
+    }
+
     function orientacaoPorDimensoes(largura, altura) {
       const w = Number(largura || 0);
       const h = Number(altura || 0);
@@ -1539,11 +1562,15 @@
       }
 
       document.getElementById('unified-layout').style.display = 'flex';
-      document.getElementById('hero-title').textContent = GALERIA.nome;
+      const heroTitle = document.getElementById('hero-title');
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      heroTitle.textContent = GALERIA.nome;
+      aplicarEstiloTextoGaleria(heroTitle, GALERIA, 'nome', { min: 32, vw: 6 });
       document.title = GALERIA.nome + ' — CriaVibe';
 
       if (GALERIA.descricao) {
-        document.getElementById('hero-subtitle').textContent = GALERIA.descricao;
+        heroSubtitle.textContent = GALERIA.descricao;
+        aplicarEstiloTextoGaleria(heroSubtitle, GALERIA, 'descricao', { min: 14, vw: 2.2 });
       }
 
       if (GALERIA.foto_perfil) {
