@@ -1,6 +1,6 @@
 # Manual Tecnico CriaVibe
 
-Gerado em: 24/05/2026 23:05:58
+Gerado em: 24/05/2026 23:12:16
 
 ## Stack
 
@@ -78,12 +78,12 @@ Gerado em: 24/05/2026 23:05:58
 | `assets/css/main.css` | 1566 | 28301 bytes |
 | `assets/js/api.js` | 123 | 3727 bytes |
 | `assets/js/auth.js` | 28 | 610 bytes |
-| `cliente.html` | 2546 | 81115 bytes |
+| `cliente.html` | 2545 | 81101 bytes |
 | `clientes.html` | 979 | 27221 bytes |
 | `configuracoes.html` | 322 | 11487 bytes |
 | `docker-compose.yml` | 34 | 597 bytes |
 | `Dockerfile` | 13 | 317 bytes |
-| `documentacao/manual/Manual_Tecnico_CriaVibe.md` | 100 | 3932 bytes |
+| `documentacao/manual/Manual_Tecnico_CriaVibe.md` | 106 | 4318 bytes |
 | `documentacao/trabalho/trabalho_14_05_2026.md` | 251 | 9986 bytes |
 | `documentacao/trabalho/trabalho_15_05_2026.md` | 300 | 13467 bytes |
 | `documentacao/trabalho/trabalho_22_05_2026.md` | 216 | 14092 bytes |

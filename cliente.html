@@ -1266,11 +1266,10 @@
 
     /* ── ACTION BAR ── */
     #action-bar {
-      position: sticky;
-      top: 0;
+      position: relative;
       z-index: 80;
       background: var(--bg);
-      border-bottom: 1px solid var(--border);
+      border-top: 1px solid var(--border);
       padding: 16px 5vw;
       display: flex;
       align-items: center;
@@ -1381,6 +1380,11 @@
       </div>
     </header>
 
+    <!-- GALLERY -->
+    <div id="gallery" style="display:grid;">
+      <div class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Carregando fotos...</div>
+    </div>
+
     <!-- ACTION BAR -->
     <div id="action-bar">
       <div class="action-stats">
@@ -1398,11 +1402,6 @@
           <i class="fa-solid fa-eraser"></i> Desmarcar
         </button>
       </div>
-    </div>
-
-    <!-- GALLERY -->
-    <div id="gallery" style="display:grid;">
-      <div class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Carregando fotos...</div>
     </div>
   </div>
 
@@ -1978,7 +1977,7 @@
         const audio = document.getElementById('audio-player');
         const title = document.getElementById('music-title');
         bar.style.display = 'flex';
-        document.getElementById('gallery').style.paddingBottom = '80px';
+        document.getElementById('action-bar').style.marginBottom = '80px';
 
         let idx = 0;
 
