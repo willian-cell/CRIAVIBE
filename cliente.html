@@ -1607,6 +1607,7 @@
     const loteFotosCliente = 50;
     let introGaleriaMostrada = false;
     let heroCapaAtual = '';
+    let musicaInicializada = false;
 
     function mediaSrc(caminho) {
       if (!caminho) return '';
@@ -1667,6 +1668,7 @@
     function fecharIntroGaleria() {
       const intro = document.getElementById('gallery-intro');
       if (!intro || !intro.classList.contains('open')) return;
+      tentarRetomarMusica();
       intro.classList.add('closing');
       setTimeout(() => {
         intro.classList.remove('open', 'closing');
@@ -1912,21 +1914,15 @@
         document.getElementById('btn-zip-all').style.display = '';
       }
 
+      await carregarMusica();
       await carregarFotos(true);
       atualizarContador();
       atualizarToolbar();
-      carregarMusica();
 
       if (typeof iniciarPolling === 'function') iniciarPolling();
 
       if (GALERIA && GALERIA.musicas_ativas == 1) {
-        const audio = document.getElementById('audio-player');
-        if (audio && audio.src && audio.paused && document.getElementById('yt-player-container').style.display !== 'block') {
-          audio.play().catch(() => { });
-        }
-        if (typeof ytPlayer !== 'undefined' && ytPlayer && typeof ytPlayer.playVideo === 'function') {
-          try { if (ytPlayer.getPlayerState() !== 1) ytPlayer.playVideo(); } catch (err) { }
-        }
+        tentarRetomarMusica();
       }
     }
 
@@ -2031,9 +2027,30 @@
     let ytReady = false;
     window.onYouTubeIframeAPIReady = function () { ytReady = true; };
 
+    function tentarRetomarMusica() {
+      if (!GALERIA || GALERIA.musicas_ativas != 1) return;
+
+      const audio = document.getElementById('audio-player');
+      const usandoYoutube = document.getElementById('yt-player-container')?.style.display === 'block';
+
+      if (audio && audio.src && audio.paused && !usandoYoutube) {
+        audio.play().catch(() => { });
+      }
+
+      if (typeof ytPlayer !== 'undefined' && ytPlayer && typeof ytPlayer.playVideo === 'function') {
+        try {
+          if (ytPlayer.getPlayerState() !== 1) ytPlayer.playVideo();
+        } catch (err) { }
+      }
+    }
+
     async function carregarMusica() {
       // musicas_ativas é o campo correto do banco (não player_ativo)
       if (GALERIA.musicas_ativas != 1) return;
+      if (musicaInicializada) {
+        tentarRetomarMusica();
+        return;
+      }
       try {
         const r = await fetch(`/api/musicas/list.php?galeria_id=${GALERIA.id}`, { credentials: 'include' });
         const d = await r.json();
@@ -2127,6 +2144,7 @@
         }
 
         tocarMusica(0);
+        musicaInicializada = true;
       } catch (err) {
         console.warn('Erro ao carregar música:', err);
       }
