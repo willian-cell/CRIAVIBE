@@ -1078,15 +1078,35 @@
       background-position: center;
       background-repeat: no-repeat;
       z-index: 1;
-      filter: brightness(0.65);
+      filter: blur(18px) brightness(0.5) saturate(1.08);
+      transform: scale(1.08);
       transition: filter 0.5s ease;
+    }
+
+    .hero-photo {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      filter: brightness(0.78);
+      opacity: 0;
+      transition: opacity .35s ease, filter .35s ease;
+    }
+
+    .hero-photo.loaded {
+      opacity: 1;
     }
 
     .hero-gradient {
       position: absolute;
       inset: 0;
       z-index: 2;
-      background: linear-gradient(to bottom, rgba(10, 10, 20, 0.5) 0%, transparent 40%, var(--bg) 100%);
+      background:
+        linear-gradient(to bottom, rgba(10, 10, 20, 0.62) 0%, rgba(10, 10, 20, 0.12) 38%, var(--bg) 100%),
+        linear-gradient(to right, rgba(0, 0, 0, .35) 0%, transparent 22%, transparent 78%, rgba(0, 0, 0, .35) 100%);
     }
 
     .hero-nav {
@@ -1160,6 +1180,10 @@
 
     /* ── LIGHT MODE VISUAL REFINEMENTS ── */
     body.light-mode .hero-bg {
+      filter: blur(18px) brightness(0.72) saturate(1.05);
+    }
+
+    body.light-mode .hero-photo {
       filter: brightness(0.9);
     }
 
@@ -1311,6 +1335,7 @@
     <!-- HERO HEADER -->
     <header id="hero-cover">
       <div id="hero-bg" class="hero-bg"></div>
+      <img id="hero-photo" class="hero-photo" alt="">
       <div class="hero-gradient"></div>
 
       <nav class="hero-nav">
@@ -1464,6 +1489,19 @@
 
     function fotoHeroSrc(f) {
       return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
+    }
+
+    function aplicarCapaHero(src) {
+      const resolved = mediaSrc(src || '');
+      const bg = document.getElementById('hero-bg');
+      const photo = document.getElementById('hero-photo');
+      if (!bg || !photo || !resolved) return;
+
+      bg.style.backgroundImage = `url('${resolved}')`;
+      photo.classList.remove('loaded');
+      photo.onload = () => photo.classList.add('loaded');
+      photo.onerror = () => photo.classList.remove('loaded');
+      photo.src = resolved;
     }
 
     function unicodeRangeText(text, upperStart, lowerStart, digitStart = null, upperMap = {}, lowerMap = {}) {
@@ -1695,7 +1733,7 @@
       }
 
       if (GALERIA.capa_apresentacao) {
-        document.getElementById('hero-bg').style.backgroundImage = `url('${mediaSrc(GALERIA.capa_apresentacao)}')`;
+        aplicarCapaHero(GALERIA.capa_apresentacao);
       }
 
       if (GALERIA.selecao_ativa == 1) {
@@ -1731,7 +1769,7 @@
         const rawFotos = d.fotos || [];
         if (rawFotos.length > 0 && !GALERIA.capa_apresentacao) {
           const fotoCapa = rawFotos.find(f => f.is_capa == 1) || rawFotos[0];
-          document.getElementById('hero-bg').style.backgroundImage = `url('${fotoHeroSrc(fotoCapa)}')`;
+          aplicarCapaHero(fotoHeroSrc(fotoCapa));
         }
 
         if (!rawFotos.length) {
