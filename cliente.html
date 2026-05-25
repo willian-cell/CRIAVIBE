@@ -1969,7 +1969,7 @@
         return;
       }
       try {
-        const r = await fetch(`/api/musicas/list.php?galeria_id=${GALERIA.id}`, { credentials: 'include' });
+        const r = await fetch(`/api/musicas/list.php?galeria_id=${GALERIA.id}&token=${TOKEN}`, { credentials: 'include' });
         const d = await r.json();
         const musicas = d.musicas || [];
         if (!musicas.length) return;
@@ -2509,6 +2509,16 @@
       document.body.classList.toggle('light-mode');
     });
 
+    // Ativa a música na primeira interação do usuário com a página para contornar restrições de autoplay
+    function ativarAudioInteracao() {
+      if (GALERIA && GALERIA.musicas_ativas == 1) {
+        tentarRetomarMusica();
+      }
+    }
+    document.addEventListener('click', ativarAudioInteracao);
+    document.addEventListener('touchstart', ativarAudioInteracao);
+    document.addEventListener('keydown', ativarAudioInteracao);
+
     // ── INIT: check if gallery is public ──────────────────────────
     (async () => {
       if (!TOKEN) {
@@ -2526,6 +2536,7 @@
           dlCount = parseInt(g.dl_count) || 0;
           dlMax = parseInt(g.max_downloads) || 0;
           configurarEntradaGaleria(g);
+          await carregarMusica();
         }
       } catch { }
     })();

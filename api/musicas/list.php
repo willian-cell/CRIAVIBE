@@ -3,13 +3,22 @@ require_once __DIR__.'/../config.php';
 // Músicas são carregadas pelo cliente — verifica acesso via sessão ou galeria pública
 
 $galeria_id = (int)($_GET['galeria_id'] ?? 0);
-if (!$galeria_id) json_out(['status'=>'erro','mensagem'=>'galeria_id obrigatório.'], 400);
+$token = $_GET['token'] ?? '';
+if (!$galeria_id && !$token) json_out(['status'=>'erro','mensagem'=>'galeria_id ou token obrigatório.'], 400);
 
-// Permite acesso se: fotógrafo logado, OU sessão de cliente válida, OU galeria pública
+// Permite acesso se: fotógrafo logado, OU token válido, OU sessão de cliente válida, OU galeria pública
 $acesso = false;
 $u = me();
 if ($u) {
     $acesso = true; // fotógrafo logado
+} elseif ($token) {
+    $chk = db()->prepare("SELECT id FROM galerias WHERE link_token=? LIMIT 1");
+    $chk->execute([$token]);
+    $g = $chk->fetch();
+    if ($g) {
+        $galeria_id = (int)$g['id'];
+        $acesso = true;
+    }
 } elseif (!empty($_SESSION['galeria_access'][$galeria_id])) {
     $acesso = true; // cliente autenticado
 } else {
