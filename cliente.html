@@ -1210,6 +1210,124 @@
       /* Mantém branco para constraste com a imagem */
     }
 
+    #gallery-intro {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, .62), rgba(5, 5, 12, .96));
+      cursor: pointer;
+    }
+
+    #gallery-intro.open {
+      display: flex;
+      animation: introFade .22s ease;
+    }
+
+    #gallery-intro.closing {
+      opacity: 0;
+      transition: opacity .22s ease;
+    }
+
+    @keyframes introFade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .intro-card {
+      width: min(520px, 100%);
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .intro-cover {
+      width: 100%;
+      max-height: 46vh;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 18px;
+      border-radius: 0;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .42);
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .intro-title {
+      font-size: clamp(2rem, 7vw, 3.8rem);
+      line-height: 1.02;
+      font-weight: 900;
+      text-align: center;
+      margin: 0 0 6px;
+      text-shadow: 0 5px 22px rgba(0, 0, 0, .6);
+      overflow-wrap: anywhere;
+    }
+
+    .intro-count {
+      text-align: center;
+      color: rgba(255, 255, 255, .78);
+      font-size: .86rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 26px;
+    }
+
+    .intro-list {
+      display: grid;
+      gap: 12px;
+      margin: 0 auto;
+      max-width: 340px;
+      font-size: 1.02rem;
+      font-weight: 800;
+    }
+
+    .intro-list span {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .intro-list i {
+      color: rgba(255, 255, 255, .7);
+      text-align: center;
+      font-size: .95rem;
+    }
+
+    .intro-hint {
+      text-align: center;
+      color: rgba(255, 255, 255, .56);
+      font-size: .82rem;
+      font-weight: 700;
+      margin-top: 26px;
+      letter-spacing: .02em;
+    }
+
+    @media (max-width: 640px) {
+      #gallery-intro {
+        padding: 18px;
+        align-items: flex-start;
+        padding-top: 9vh;
+      }
+
+      .intro-cover {
+        max-height: 34vh;
+      }
+
+      .intro-list {
+        max-width: 300px;
+        font-size: .98rem;
+      }
+    }
+
     .hero-content {
       position: relative;
       z-index: 10;
@@ -1377,6 +1495,20 @@
     </div>
   </div>
 
+  <div id="gallery-intro" onclick="fecharIntroGaleria()" aria-label="Abrir galeria">
+    <div class="intro-card">
+      <img id="intro-cover" class="intro-cover" alt="">
+      <h1 id="intro-title" class="intro-title"></h1>
+      <div id="intro-count" class="intro-count"></div>
+      <div class="intro-list">
+        <span><i class="fa-regular fa-images"></i> Ver fotos e baixar</span>
+        <span><i class="fa-solid fa-download"></i> Baixar todas</span>
+        <span><i class="fa-regular fa-square-check"></i> Selecionar para album</span>
+      </div>
+      <div class="intro-hint">Clique ou toque para abrir a galeria</div>
+    </div>
+  </div>
+
   <!-- LIGHTBOX -->
   <div id="lightbox">
     <div id="lb-topbar">
@@ -1473,6 +1605,8 @@
     let isModoSelecao = false;
     let fotosRenderizadas = 0;
     const loteFotosCliente = 50;
+    let introGaleriaMostrada = false;
+    let heroCapaAtual = '';
 
     function mediaSrc(caminho) {
       if (!caminho) return '';
@@ -1497,11 +1631,46 @@
       const photo = document.getElementById('hero-photo');
       if (!bg || !photo || !resolved) return;
 
+      heroCapaAtual = resolved;
       bg.style.backgroundImage = `url('${resolved}')`;
       photo.classList.remove('loaded');
       photo.onload = () => photo.classList.add('loaded');
       photo.onerror = () => photo.classList.remove('loaded');
       photo.src = resolved;
+    }
+
+    function mostrarIntroGaleria(totalFotos) {
+      if (introGaleriaMostrada || !GALERIA) return;
+      introGaleriaMostrada = true;
+
+      const intro = document.getElementById('gallery-intro');
+      const cover = document.getElementById('intro-cover');
+      const title = document.getElementById('intro-title');
+      const count = document.getElementById('intro-count');
+      if (!intro || !cover || !title || !count) return;
+
+      if (heroCapaAtual) {
+        cover.src = heroCapaAtual;
+        cover.style.display = '';
+      } else {
+        cover.removeAttribute('src');
+        cover.style.display = 'none';
+      }
+
+      title.textContent = formatGalleryText(GALERIA.nome, GALERIA.nome_formato);
+      aplicarEstiloTextoGaleria(title, GALERIA, 'nome', { min: 32, vw: 7 });
+      count.textContent = `${totalFotos} ${totalFotos === 1 ? 'foto' : 'fotos'}`;
+      intro.classList.remove('closing');
+      intro.classList.add('open');
+    }
+
+    function fecharIntroGaleria() {
+      const intro = document.getElementById('gallery-intro');
+      if (!intro || !intro.classList.contains('open')) return;
+      intro.classList.add('closing');
+      setTimeout(() => {
+        intro.classList.remove('open', 'closing');
+      }, 220);
     }
 
     function unicodeRangeText(text, upperStart, lowerStart, digitStart = null, upperMap = {}, lowerMap = {}) {
@@ -1771,6 +1940,7 @@
           const fotoCapa = rawFotos.find(f => f.is_capa == 1) || rawFotos[0];
           aplicarCapaHero(fotoHeroSrc(fotoCapa));
         }
+        mostrarIntroGaleria(rawFotos.length);
 
         if (!rawFotos.length) {
           grid.innerHTML = '<div class="loading" style="color:rgba(255,255,255,.4)"><i class="fa-solid fa-images"></i><br>Nenhuma foto ainda.</div>';
