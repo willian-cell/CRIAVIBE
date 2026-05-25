@@ -59,74 +59,80 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #070711 0%, #0f0f2a 100%);
+      background:
+        linear-gradient(to bottom, rgba(7, 7, 17, .35), rgba(7, 7, 17, .78)),
+        var(--lock-cover, linear-gradient(135deg, #070711 0%, #0f0f2a 100%));
+      background-position: center;
+      background-size: cover;
       z-index: 200;
+      padding: 28px;
     }
 
     .lock-card {
-      background: rgba(255, 255, 255, .05);
-      border: 1px solid rgba(255, 255, 255, .12);
-      border-radius: 20px;
-      padding: 48px;
       width: 100%;
-      max-width: 420px;
+      max-width: 760px;
+      min-height: min(760px, calc(100vh - 56px));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
       text-align: center;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 32px 80px rgba(0, 0, 0, .6)
+      padding: 52px 34px;
+      color: #fff;
     }
 
     @media (max-width: 480px) {
       .lock-card {
-        padding: 32px 24px;
+        min-height: calc(100vh - 36px);
+        padding: 38px 18px;
         width: 92%;
       }
     }
 
     .lock-logo {
-      font-size: 1.5rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--text), var(--primary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px
+      display: none;
     }
 
     .lock-sub {
-      font-size: .9rem;
-      color: var(--muted);
-      margin-bottom: 32px
+      display: none;
     }
 
     .lock-card h2 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 6px
+      font-size: clamp(3rem, 9vw, 5.8rem);
+      font-weight: 500;
+      line-height: .95;
+      margin: 0 0 8px;
+      color: #fff;
+      text-shadow: 0 8px 34px rgba(0, 0, 0, .65);
+      overflow-wrap: anywhere;
     }
 
     .lock-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(99, 102, 241, .15);
-      border: 1px solid rgba(99, 102, 241, .3);
-      border-radius: 20px;
-      padding: 4px 14px;
-      font-size: .8rem;
-      color: var(--primary);
-      margin-bottom: 28px
+      display: none;
+    }
+
+    .lock-description {
+      color: rgba(255, 255, 255, .9);
+      font-size: clamp(1.15rem, 3vw, 2.2rem);
+      line-height: 1.12;
+      margin: 0 auto 34px;
+      max-width: 780px;
+      text-shadow: 0 5px 24px rgba(0, 0, 0, .65);
+      overflow-wrap: anywhere;
     }
 
     .form-group {
       margin-bottom: 16px;
-      text-align: left
+      text-align: left;
+      width: min(390px, 100%);
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .form-group label {
       display: block;
       font-size: .8rem;
       font-weight: 600;
-      color: var(--muted);
+      color: rgba(255, 255, 255, .78);
       margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: .05em
@@ -148,6 +154,29 @@
     .form-control:focus {
       border-color: var(--primary);
       background: rgba(99, 102, 241, .08)
+    }
+
+    .lock-enter {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 18px auto 0;
+      padding: 10px 18px;
+      font-size: clamp(1.25rem, 3.4vw, 2.2rem);
+      font-weight: 400;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-shadow: 0 5px 24px rgba(0, 0, 0, .65);
+    }
+
+    .lock-enter:hover {
+      opacity: .86;
     }
 
     .form-error {
@@ -1210,124 +1239,6 @@
       /* Mantém branco para constraste com a imagem */
     }
 
-    #gallery-intro {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
-      background: radial-gradient(circle at center, rgba(15, 23, 42, .62), rgba(5, 5, 12, .96));
-      cursor: pointer;
-    }
-
-    #gallery-intro.open {
-      display: flex;
-      animation: introFade .22s ease;
-    }
-
-    #gallery-intro.closing {
-      opacity: 0;
-      transition: opacity .22s ease;
-    }
-
-    @keyframes introFade {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    .intro-card {
-      width: min(520px, 100%);
-      color: #fff;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .intro-cover {
-      width: 100%;
-      max-height: 46vh;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 18px;
-      border-radius: 0;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, .42);
-      background: rgba(255, 255, 255, .04);
-    }
-
-    .intro-title {
-      font-size: clamp(2rem, 7vw, 3.8rem);
-      line-height: 1.02;
-      font-weight: 900;
-      text-align: center;
-      margin: 0 0 6px;
-      text-shadow: 0 5px 22px rgba(0, 0, 0, .6);
-      overflow-wrap: anywhere;
-    }
-
-    .intro-count {
-      text-align: center;
-      color: rgba(255, 255, 255, .78);
-      font-size: .86rem;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 26px;
-    }
-
-    .intro-list {
-      display: grid;
-      gap: 12px;
-      margin: 0 auto;
-      max-width: 340px;
-      font-size: 1.02rem;
-      font-weight: 800;
-    }
-
-    .intro-list span {
-      display: grid;
-      grid-template-columns: 28px 1fr;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .intro-list i {
-      color: rgba(255, 255, 255, .7);
-      text-align: center;
-      font-size: .95rem;
-    }
-
-    .intro-hint {
-      text-align: center;
-      color: rgba(255, 255, 255, .56);
-      font-size: .82rem;
-      font-weight: 700;
-      margin-top: 26px;
-      letter-spacing: .02em;
-    }
-
-    @media (max-width: 640px) {
-      #gallery-intro {
-        padding: 18px;
-        align-items: flex-start;
-        padding-top: 9vh;
-      }
-
-      .intro-cover {
-        max-height: 34vh;
-      }
-
-      .intro-list {
-        max-width: 300px;
-        font-size: .98rem;
-      }
-    }
-
     .hero-content {
       position: relative;
       z-index: 10;
@@ -1436,14 +1347,14 @@
       <p class="lock-sub">Plataforma de galerias para fotógrafos</p>
       <div class="lock-badge"><i class="fa-solid fa-lock"></i> Galeria Exclusiva</div>
       <h2 id="galeria-title-lock">Acessar Galeria</h2>
-      <p style="font-size:.85rem;color:var(--muted);margin:6px 0 24px">Digite sua senha de acesso</p>
-      <div class="form-group">
+      <p id="galeria-desc-lock" class="lock-description"></p>
+      <div class="form-group" id="senha-form-group">
         <label>Senha de Acesso</label>
         <input id="senha-input" class="form-control" type="text" placeholder="Ex: A17086" autocomplete="off">
         <div class="form-error" id="senha-erro">Senha incorreta. Tente novamente.</div>
       </div>
-      <button class="btn btn-primary" id="btn-entrar" onclick="autenticar()">
-        <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar na Galeria
+      <button class="lock-enter" id="btn-entrar" onclick="entrarPelaCapa()">
+        Entrar
       </button>
     </div>
   </div>
@@ -1492,20 +1403,6 @@
     <!-- GALLERY -->
     <div id="gallery" style="display:grid;">
       <div class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Carregando fotos...</div>
-    </div>
-  </div>
-
-  <div id="gallery-intro" onclick="fecharIntroGaleria()" aria-label="Abrir galeria">
-    <div class="intro-card">
-      <img id="intro-cover" class="intro-cover" alt="">
-      <h1 id="intro-title" class="intro-title"></h1>
-      <div id="intro-count" class="intro-count"></div>
-      <div class="intro-list">
-        <span><i class="fa-regular fa-images"></i> Ver fotos e baixar</span>
-        <span><i class="fa-solid fa-download"></i> Baixar todas</span>
-        <span><i class="fa-regular fa-square-check"></i> Selecionar para album</span>
-      </div>
-      <div class="intro-hint">Clique ou toque para abrir a galeria</div>
     </div>
   </div>
 
@@ -1605,9 +1502,9 @@
     let isModoSelecao = false;
     let fotosRenderizadas = 0;
     const loteFotosCliente = 50;
-    let introGaleriaMostrada = false;
     let heroCapaAtual = '';
     let musicaInicializada = false;
+    let galeriaRequerSenha = true;
 
     function mediaSrc(caminho) {
       if (!caminho) return '';
@@ -1638,41 +1535,6 @@
       photo.onload = () => photo.classList.add('loaded');
       photo.onerror = () => photo.classList.remove('loaded');
       photo.src = resolved;
-    }
-
-    function mostrarIntroGaleria(totalFotos) {
-      if (introGaleriaMostrada || !GALERIA) return;
-      introGaleriaMostrada = true;
-
-      const intro = document.getElementById('gallery-intro');
-      const cover = document.getElementById('intro-cover');
-      const title = document.getElementById('intro-title');
-      const count = document.getElementById('intro-count');
-      if (!intro || !cover || !title || !count) return;
-
-      if (heroCapaAtual) {
-        cover.src = heroCapaAtual;
-        cover.style.display = '';
-      } else {
-        cover.removeAttribute('src');
-        cover.style.display = 'none';
-      }
-
-      title.textContent = formatGalleryText(GALERIA.nome, GALERIA.nome_formato);
-      aplicarEstiloTextoGaleria(title, GALERIA, 'nome', { min: 32, vw: 7 });
-      count.textContent = `${totalFotos} ${totalFotos === 1 ? 'foto' : 'fotos'}`;
-      intro.classList.remove('closing');
-      intro.classList.add('open');
-    }
-
-    function fecharIntroGaleria() {
-      const intro = document.getElementById('gallery-intro');
-      if (!intro || !intro.classList.contains('open')) return;
-      tentarRetomarMusica();
-      intro.classList.add('closing');
-      setTimeout(() => {
-        intro.classList.remove('open', 'closing');
-      }, 220);
     }
 
     function unicodeRangeText(text, upperStart, lowerStart, digitStart = null, upperMap = {}, lowerMap = {}) {
@@ -1813,6 +1675,62 @@
       }
     }
 
+    function fonteGaleria(galeria, prefixo) {
+      const fonte = galeria?.[`${prefixo}_fonte`];
+      if (!fonte) return '';
+      const fallback = fonte.includes('Times') || fonte === 'Georgia' ? 'serif' : 'sans-serif';
+      return `'${fonte}', ${fallback}`;
+    }
+
+    function aplicarCapaEntrada(galeria) {
+      const lock = document.getElementById('lock-screen');
+      const src = mediaSrc(galeria?.capa_preview || galeria?.capa_apresentacao || '');
+      if (lock && src) lock.style.setProperty('--lock-cover', `url('${src}')`);
+    }
+
+    function configurarEntradaGaleria(galeria) {
+      if (!galeria) return;
+
+      const titulo = document.getElementById('galeria-title-lock');
+      const descricao = document.getElementById('galeria-desc-lock');
+      const senhaGroup = document.getElementById('senha-form-group');
+      const entrar = document.getElementById('btn-entrar');
+
+      galeriaRequerSenha = galeria.requer_senha !== undefined
+        ? Number(galeria.requer_senha) === 1
+        : (galeria.privacidade === 'privada' || !!galeria.cliente_id);
+      aplicarCapaEntrada(galeria);
+
+      if (titulo) {
+        titulo.textContent = formatGalleryText(galeria.nome || 'Acessar Galeria', galeria.nome_formato);
+        aplicarEstiloTextoGaleria(titulo, galeria, 'nome', { min: 42, vw: 8 });
+      }
+
+      if (descricao) {
+        descricao.textContent = formatGalleryText(galeria.descricao || '', galeria.descricao_formato);
+        descricao.style.display = galeria.descricao ? '' : 'none';
+        aplicarEstiloTextoGaleria(descricao, galeria, 'descricao', { min: 18, vw: 3 });
+      }
+
+      if (senhaGroup) senhaGroup.style.display = galeriaRequerSenha ? '' : 'none';
+
+      if (entrar) {
+        entrar.textContent = 'Entrar';
+        const fonteDescricao = fonteGaleria(galeria, 'descricao');
+        if (fonteDescricao) entrar.style.fontFamily = fonteDescricao;
+      }
+    }
+
+    function abrirGaleriaSemSenha() {
+      document.getElementById('lock-screen').style.display = 'none';
+      prepararCapa();
+    }
+
+    function entrarPelaCapa() {
+      if (galeriaRequerSenha) autenticar();
+      else abrirGaleriaSemSenha();
+    }
+
     function orientacaoPorDimensoes(largura, altura) {
       const w = Number(largura || 0);
       const h = Number(altura || 0);
@@ -1837,7 +1755,7 @@
       const erro = document.getElementById('senha-erro');
       const btn = document.getElementById('btn-entrar');
       if (!senha) { erro.style.display = 'block'; erro.textContent = 'Digite sua senha.'; return; }
-      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+      btn.disabled = true; btn.textContent = 'Entrando...';
       try {
         const r = await fetch('/api/galerias/verify_access.php', {
           method: 'POST', credentials: 'include',
@@ -1855,13 +1773,13 @@
           erro.textContent = d.mensagem || 'Senha incorreta.';
           erro.style.display = 'block';
           btn.disabled = false;
-          btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar na Galeria';
+          btn.textContent = 'Entrar';
         }
       } catch {
         erro.textContent = 'Erro de conexão. Tente novamente.';
         erro.style.display = 'block';
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar na Galeria';
+        btn.textContent = 'Entrar';
       }
     }
 
@@ -1936,7 +1854,6 @@
           const fotoCapa = rawFotos.find(f => f.is_capa == 1) || rawFotos[0];
           aplicarCapaHero(fotoHeroSrc(fotoCapa));
         }
-        mostrarIntroGaleria(rawFotos.length);
 
         if (!rawFotos.length) {
           grid.innerHTML = '<div class="loading" style="color:rgba(255,255,255,.4)"><i class="fa-solid fa-images"></i><br>Nenhuma foto ainda.</div>';
@@ -2605,14 +2522,10 @@
         const d = await r.json();
         if (d.status === 'ok') {
           const g = d.galeria;
-          document.getElementById('galeria-title-lock').textContent = g.nome;
-          if (g.privacidade === 'publica' && !g.cliente_id) {
-            GALERIA = g;
-            dlCount = parseInt(g.dl_count) || 0;
-            dlMax = parseInt(g.max_downloads) || 0;
-            document.getElementById('lock-screen').style.display = 'none';
-            prepararCapa();
-          }
+          GALERIA = g;
+          dlCount = parseInt(g.dl_count) || 0;
+          dlMax = parseInt(g.max_downloads) || 0;
+          configurarEntradaGaleria(g);
         }
       } catch { }
     })();
