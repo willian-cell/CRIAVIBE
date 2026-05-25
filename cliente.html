@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Arizonia&family=Cookie&family=Dancing+Script:wght@400;700&family=Dr+Sugiyama&family=Great+Vibes&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     *,
@@ -1464,12 +1466,122 @@
       return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
     }
 
+    function unicodeRangeText(text, upperStart, lowerStart, digitStart = null, upperMap = {}, lowerMap = {}) {
+      return [...String(text || '')].map(ch => {
+        const code = ch.codePointAt(0);
+        if (upperMap[ch]) return upperMap[ch];
+        if (lowerMap[ch]) return lowerMap[ch];
+        if (code >= 65 && code <= 90) return String.fromCodePoint(upperStart + code - 65);
+        if (code >= 97 && code <= 122) return String.fromCodePoint(lowerStart + code - 97);
+        if (digitStart !== null && code >= 48 && code <= 57) return String.fromCodePoint(digitStart + code - 48);
+        return ch;
+      }).join('');
+    }
+
+    const textFormatMaps = {
+      fraktur: {
+        upperStart: 0x1D504,
+        lowerStart: 0x1D51E,
+        upperMap: { C: 'ℭ', H: 'ℌ', I: 'ℑ', R: 'ℜ', Z: 'ℨ' }
+      },
+      fraktur_bold: { upperStart: 0x1D56C, lowerStart: 0x1D586 },
+      monospace: { upperStart: 0x1D670, lowerStart: 0x1D68A, digitStart: 0x1D7F6 },
+      double_struck: {
+        upperStart: 0x1D538,
+        lowerStart: 0x1D552,
+        digitStart: 0x1D7D8,
+        upperMap: { C: 'ℂ', H: 'ℍ', N: 'ℕ', P: 'ℙ', Q: 'ℚ', R: 'ℝ', Z: 'ℤ' }
+      },
+      script: {
+        upperStart: 0x1D49C,
+        lowerStart: 0x1D4B6,
+        upperMap: { B: 'ℬ', E: 'ℰ', F: 'ℱ', H: 'ℋ', I: 'ℐ', L: 'ℒ', M: 'ℳ', R: 'ℛ' },
+        lowerMap: { e: 'ℯ', g: 'ℊ', o: 'ℴ' }
+      },
+      script_bold: { upperStart: 0x1D4D0, lowerStart: 0x1D4EA },
+      serif_bold: { upperStart: 0x1D400, lowerStart: 0x1D41A, digitStart: 0x1D7CE },
+      serif_bold_italic: { upperStart: 0x1D468, lowerStart: 0x1D482 },
+      sans: { upperStart: 0x1D5A0, lowerStart: 0x1D5BA, digitStart: 0x1D7E2 },
+      sans_bold: { upperStart: 0x1D5D4, lowerStart: 0x1D5EE, digitStart: 0x1D7EC },
+      sans_italic: { upperStart: 0x1D608, lowerStart: 0x1D622 },
+      sans_bold_italic: { upperStart: 0x1D63C, lowerStart: 0x1D656 }
+    };
+
+    function mapText(text, map) {
+      return [...String(text || '')].map(ch => map[ch] || map[ch.toLowerCase()] || ch).join('');
+    }
+
+    function formatGalleryText(text, format) {
+      const value = String(text || '');
+      const key = format || 'normal';
+      if (key === 'normal') return value;
+
+      if (textFormatMaps[key]) {
+        const cfg = textFormatMaps[key];
+        return unicodeRangeText(value, cfg.upperStart, cfg.lowerStart, cfg.digitStart ?? null, cfg.upperMap || {}, cfg.lowerMap || {});
+      }
+
+      if (key === 'full_width') {
+        return [...value].map(ch => {
+          if (ch === ' ') return '　';
+          const code = ch.codePointAt(0);
+          return code >= 33 && code <= 126 ? String.fromCodePoint(code + 0xFEE0) : ch;
+        }).join('');
+      }
+
+      if (key === 'small_caps') {
+        return mapText(value, {
+          a: 'ᴀ', b: 'ʙ', c: 'ᴄ', d: 'ᴅ', e: 'ᴇ', f: 'ғ', g: 'ɢ', h: 'ʜ', i: 'ɪ', j: 'ᴊ', k: 'ᴋ', l: 'ʟ', m: 'ᴍ',
+          n: 'ɴ', o: 'ᴏ', p: 'ᴘ', q: 'ǫ', r: 'ʀ', s: 's', t: 'ᴛ', u: 'ᴜ', v: 'ᴠ', w: 'ᴡ', x: 'x', y: 'ʏ', z: 'ᴢ'
+        });
+      }
+
+      if (key === 'superscript') {
+        return mapText(value, {
+          a: 'ᵃ', b: 'ᵇ', c: 'ᶜ', d: 'ᵈ', e: 'ᵉ', f: 'ᶠ', g: 'ᵍ', h: 'ʰ', i: 'ⁱ', j: 'ʲ', k: 'ᵏ', l: 'ˡ', m: 'ᵐ',
+          n: 'ⁿ', o: 'ᵒ', p: 'ᵖ', r: 'ʳ', s: 'ˢ', t: 'ᵗ', u: 'ᵘ', v: 'ᵛ', w: 'ʷ', x: 'ˣ', y: 'ʸ', z: 'ᶻ',
+          0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'
+        });
+      }
+
+      if (key === 'inverted') {
+        const map = {
+          a: 'ɐ', b: 'q', c: 'ɔ', d: 'p', e: 'ǝ', f: 'ɟ', g: 'ƃ', h: 'ɥ', i: 'ᴉ', j: 'ɾ', k: 'ʞ', l: 'ʃ', m: 'ɯ',
+          n: 'u', o: 'o', p: 'd', q: 'b', r: 'ɹ', s: 's', t: 'ʇ', u: 'n', v: 'ʌ', w: 'ʍ', x: 'x', y: 'ʎ', z: 'z',
+          A: '∀', B: 'ᗺ', C: 'Ɔ', D: 'ᗡ', E: 'Ǝ', F: 'Ⅎ', G: '⅁', H: 'H', I: 'I', J: 'ſ', K: 'Ʞ', L: '˥',
+          M: 'W', N: 'N', O: 'O', P: 'Ԁ', Q: 'Ό', R: 'ᴚ', S: 'S', T: '⊥', U: '∩', V: 'Λ', W: 'M', X: 'X', Y: '⅄', Z: 'Z',
+          '.': '˙', ',': "'", "'": ',', '"': '„', '!': '¡', '?': '¿', '(': ')', ')': '(', '[': ']', ']': '[', '{': '}', '}': '{'
+        };
+        return [...value].reverse().map(ch => map[ch] || ch).join('');
+      }
+
+      if (key === 'roman') {
+        return mapText(value.toUpperCase(), { A: 'Λ', B: 'Ɓ', C: 'C', D: 'D', E: 'Σ', F: 'Ғ', G: 'G', H: 'H', I: 'I', J: 'J', K: 'K', L: 'ᒪ', M: 'M', N: 'П', O: 'Ө', P: 'P', Q: 'Q', R: 'Я', S: 'Ƨ', T: 'T', U: 'Ц', V: 'V', W: 'Ш', X: 'Ж', Y: 'Y', Z: 'Z' });
+      }
+
+      if (key === 'canadian') {
+        return mapText(value.toUpperCase(), { A: 'ᗩ', B: 'ᗷ', C: 'ᑕ', D: 'ᗞ', E: 'ᕮ', F: 'ᖴ', G: 'ᘜ', H: 'ᕼ', I: 'I', J: 'ᒍ', K: 'K', L: 'ᒪ', M: 'ᗰ', N: 'ᘉ', O: 'O', P: 'ᑭ', Q: 'ᑫ', R: 'ᖇ', S: 'ᔕ', T: 'T', U: 'ᑌ', V: 'ᐯ', W: 'ᗯ', X: '᙭', Y: 'Y', Z: 'ᘔ' });
+      }
+
+      if (key === 'tai_le') {
+        return mapText(value, { a: 'ᥲ', e: 'ᥱ', i: 'ι', l: 'ᥣ', n: 'ᥒ', o: '᥆', p: 'ρ', r: 'r', s: '᥉', t: 'T', u: 'ᥙ', y: 'ყ' });
+      }
+
+      return value;
+    }
+
     function aplicarEstiloTextoGaleria(el, galeria, prefixo, opcoes) {
       if (!el || !galeria) return;
-      const fontes = ['Inter', 'Arial', 'Arial Narrow', 'Georgia', 'Times New Roman', 'Verdana', 'Tahoma'];
+      const fontes = [
+        'Inter', 'Arial', 'Arial Narrow', 'Georgia', 'Times New Roman', 'Verdana', 'Tahoma',
+        'Alex Brush', 'Allura', 'Arizonia', 'Balqis', 'Black Jack', 'Blenda', 'Bolina', 'Sophia',
+        'Bukhari Script', 'CAC Champagne', 'Champignon', 'Cookie', 'Cursif', 'Dancing Script',
+        'Deftone Stylus', 'Dr Sugiyama', 'Freebooter Script', 'Germanica', 'Good Vibes', 'Great Vibes'
+      ];
       const fonte = fontes.includes(galeria[`${prefixo}_fonte`]) ? galeria[`${prefixo}_fonte`] : null;
       const tamanho = parseInt(galeria[`${prefixo}_tamanho`], 10);
       const negrito = galeria[`${prefixo}_negrito`];
+      const formato = galeria[`${prefixo}_formato`] || 'normal';
 
       if (fonte) {
         const fallback = fonte.includes('Times') || fonte === 'Georgia' ? 'serif' : 'sans-serif';
@@ -1484,6 +1596,11 @@
 
       if (negrito !== null && negrito !== undefined && negrito !== '') {
         el.style.fontWeight = Number(negrito) ? '800' : '500';
+      }
+
+      if (formato && formato !== 'normal') {
+        el.style.letterSpacing = '1px';
+        el.style.textTransform = 'none';
       }
     }
 
@@ -1564,12 +1681,12 @@
       document.getElementById('unified-layout').style.display = 'flex';
       const heroTitle = document.getElementById('hero-title');
       const heroSubtitle = document.getElementById('hero-subtitle');
-      heroTitle.textContent = GALERIA.nome;
+      heroTitle.textContent = formatGalleryText(GALERIA.nome, GALERIA.nome_formato);
       aplicarEstiloTextoGaleria(heroTitle, GALERIA, 'nome', { min: 32, vw: 6 });
       document.title = GALERIA.nome + ' — CriaVibe';
 
       if (GALERIA.descricao) {
-        heroSubtitle.textContent = GALERIA.descricao;
+        heroSubtitle.textContent = formatGalleryText(GALERIA.descricao, GALERIA.descricao_formato);
         aplicarEstiloTextoGaleria(heroSubtitle, GALERIA, 'descricao', { min: 14, vw: 2.2 });
       }
 

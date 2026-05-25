@@ -4,9 +4,11 @@ $u = require_fotografo();
 $body = body();
 
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_fonte VARCHAR(80) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_formato VARCHAR(40) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_tamanho INT DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_negrito TINYINT(1) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN descricao_fonte VARCHAR(80) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN descricao_formato VARCHAR(40) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN descricao_tamanho INT DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN descricao_negrito TINYINT(1) DEFAULT NULL"); } catch (Exception $e) {}
 
@@ -19,9 +21,24 @@ $galeria = $chk->fetch();
 if (!$galeria) json_out(['status'=>'erro','mensagem'=>'Galeria nao encontrada.'], 404);
 
 function clean_gallery_font($value) {
-    $allowed = ['Inter', 'Arial', 'Arial Narrow', 'Georgia', 'Times New Roman', 'Verdana', 'Tahoma'];
+    $allowed = [
+        'Inter', 'Arial', 'Arial Narrow', 'Georgia', 'Times New Roman', 'Verdana', 'Tahoma',
+        'Alex Brush', 'Allura', 'Arizonia', 'Balqis', 'Black Jack', 'Blenda', 'Bolina', 'Sophia',
+        'Bukhari Script', 'CAC Champagne', 'Champignon', 'Cookie', 'Cursif', 'Dancing Script',
+        'Deftone Stylus', 'Dr Sugiyama', 'Freebooter Script', 'Germanica', 'Good Vibes', 'Great Vibes'
+    ];
     $value = trim((string)$value);
     return in_array($value, $allowed, true) ? $value : null;
+}
+
+function clean_gallery_format($value) {
+    $allowed = [
+        'normal', 'fraktur', 'fraktur_bold', 'monospace', 'double_struck', 'script', 'script_bold',
+        'roman', 'canadian', 'tai_le', 'small_caps', 'superscript', 'inverted', 'serif_bold',
+        'serif_bold_italic', 'sans', 'sans_bold', 'sans_italic', 'sans_bold_italic', 'full_width'
+    ];
+    $value = trim((string)$value);
+    return in_array($value, $allowed, true) ? $value : 'normal';
 }
 
 function clean_gallery_size($value, $min, $max) {
@@ -49,15 +66,17 @@ $nome_negrito = array_key_exists('nome_negrito', $body) ? clean_gallery_bool($bo
 $descricao_fonte = array_key_exists('descricao_fonte', $body) ? clean_gallery_font($body['descricao_fonte']) : ($galeria['descricao_fonte'] ?? null);
 $descricao_tamanho = array_key_exists('descricao_tamanho', $body) ? clean_gallery_size($body['descricao_tamanho'], 12, 42) : ($galeria['descricao_tamanho'] ?? null);
 $descricao_negrito = array_key_exists('descricao_negrito', $body) ? clean_gallery_bool($body['descricao_negrito']) : ($galeria['descricao_negrito'] ?? null);
+$nome_formato = array_key_exists('nome_formato', $body) ? clean_gallery_format($body['nome_formato']) : ($galeria['nome_formato'] ?? null);
+$descricao_formato = array_key_exists('descricao_formato', $body) ? clean_gallery_format($body['descricao_formato']) : ($galeria['descricao_formato'] ?? null);
 
 if (!$nome) json_out(['status'=>'erro','mensagem'=>'Nome obrigatorio.'], 400);
 
 if ($senha_raw) {
-    $stmt = db()->prepare("UPDATE galerias SET nome=?,descricao=?,privacidade=?,senha=?,max_downloads=?,max_selecao=?,nome_fonte=?,nome_tamanho=?,nome_negrito=?,descricao_fonte=?,descricao_tamanho=?,descricao_negrito=? WHERE id=?");
-    $stmt->execute([$nome, $descricao, $privacidade, password_hash($senha_raw, PASSWORD_DEFAULT), $max_downloads, $max_selecao, $nome_fonte, $nome_tamanho, $nome_negrito, $descricao_fonte, $descricao_tamanho, $descricao_negrito, $id]);
+    $stmt = db()->prepare("UPDATE galerias SET nome=?,descricao=?,privacidade=?,senha=?,max_downloads=?,max_selecao=?,nome_fonte=?,nome_formato=?,nome_tamanho=?,nome_negrito=?,descricao_fonte=?,descricao_formato=?,descricao_tamanho=?,descricao_negrito=? WHERE id=?");
+    $stmt->execute([$nome, $descricao, $privacidade, password_hash($senha_raw, PASSWORD_DEFAULT), $max_downloads, $max_selecao, $nome_fonte, $nome_formato, $nome_tamanho, $nome_negrito, $descricao_fonte, $descricao_formato, $descricao_tamanho, $descricao_negrito, $id]);
 } else {
-    $stmt = db()->prepare("UPDATE galerias SET nome=?,descricao=?,privacidade=?,max_downloads=?,max_selecao=?,nome_fonte=?,nome_tamanho=?,nome_negrito=?,descricao_fonte=?,descricao_tamanho=?,descricao_negrito=? WHERE id=?");
-    $stmt->execute([$nome, $descricao, $privacidade, $max_downloads, $max_selecao, $nome_fonte, $nome_tamanho, $nome_negrito, $descricao_fonte, $descricao_tamanho, $descricao_negrito, $id]);
+    $stmt = db()->prepare("UPDATE galerias SET nome=?,descricao=?,privacidade=?,max_downloads=?,max_selecao=?,nome_fonte=?,nome_formato=?,nome_tamanho=?,nome_negrito=?,descricao_fonte=?,descricao_formato=?,descricao_tamanho=?,descricao_negrito=? WHERE id=?");
+    $stmt->execute([$nome, $descricao, $privacidade, $max_downloads, $max_selecao, $nome_fonte, $nome_formato, $nome_tamanho, $nome_negrito, $descricao_fonte, $descricao_formato, $descricao_tamanho, $descricao_negrito, $id]);
 }
 
 json_out(['status'=>'ok','mensagem'=>'Galeria atualizada.']);
