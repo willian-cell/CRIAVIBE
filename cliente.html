@@ -1695,9 +1695,9 @@
       const senhaGroup = document.getElementById('senha-form-group');
       const entrar = document.getElementById('btn-entrar');
 
-      galeriaRequerSenha = galeria.requer_senha !== undefined
+      galeriaRequerSenha = galeria.privacidade !== 'publica' && (galeria.requer_senha !== undefined
         ? Number(galeria.requer_senha) === 1
-        : (galeria.privacidade === 'privada' || !!galeria.cliente_id);
+        : (galeria.privacidade === 'privada' || !!galeria.cliente_id));
       aplicarCapaEntrada(galeria);
 
       if (titulo) {

@@ -43,7 +43,7 @@ if (!$token && $id) {
     }
 }
 
-$g['requer_senha'] = (!empty($g['cliente_id']) || !empty($g['senha'])) ? 1 : 0;
+$g['requer_senha'] = ($g['privacidade'] !== 'publica' && (!empty($g['cliente_id']) || !empty($g['senha']))) ? 1 : 0;
 
 // Retorna galeria sem expor a senha hash
 unset($g['senha']);
