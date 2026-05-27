@@ -1522,6 +1522,30 @@
       return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
     }
 
+    function moduloAtivo(valor) {
+      return valor === 1 || valor === true || valor === '1';
+    }
+
+    function podeBaixarFotos() {
+      return !!GALERIA && moduloAtivo(GALERIA.entrega_em_alta);
+    }
+
+    function podeSelecionarFotos() {
+      return !!GALERIA && moduloAtivo(GALERIA.selecao_ativa);
+    }
+
+    function podeDefinirCapaCliente() {
+      return podeSelecionarFotos();
+    }
+
+    function aplicarVisibilidadeBotaoModulo(id, ativo) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.display = ativo ? '' : 'none';
+      el.disabled = !ativo;
+      el.setAttribute('aria-hidden', ativo ? 'false' : 'true');
+    }
+
     function aplicarCapaHero(src) {
       const resolved = mediaSrc(src || '');
       const bg = document.getElementById('hero-bg');
@@ -1824,10 +1848,8 @@
         aplicarCapaHero(GALERIA.capa_apresentacao);
       }
 
-      if (GALERIA.selecao_ativa == 1) {
-        isModoSelecao = true;
-      }
-      if (GALERIA.entrega_em_alta == 1) {
+      isModoSelecao = podeSelecionarFotos();
+      if (podeBaixarFotos()) {
         document.getElementById('btn-zip-all').style.display = '';
       }
 
@@ -1900,7 +1922,7 @@
           <div class="foto-baixada-badge">
             <i class="fa-solid fa-circle-check"></i> Baixada
           </div>` : ''}
-          ${(GALERIA.entrega_em_alta == 1) ? `
+          ${podeBaixarFotos() ? `
           <button class="dl-btn" onclick="event.stopPropagation();baixarFoto(${f.id})" title="Baixar">
             <i class="fa-solid fa-download"></i>
           </button>` : ''}
@@ -2071,15 +2093,21 @@
     let clickCount = 0;
 
     function toggleModoSelecao() {
+      if (!podeSelecionarFotos()) {
+        isModoSelecao = false;
+        toast('Selecao de fotos desativada nesta galeria.');
+        atualizarToolbar();
+        return;
+      }
       isModoSelecao = !isModoSelecao;
       const btn = document.getElementById('btn-toggle-sel');
       const lbl = document.getElementById('lbl-toggle-sel');
       if (isModoSelecao) {
-        btn.style.background = 'rgba(57,255,20,0.15)';
-        lbl.textContent = 'Desativar';
+        if (btn) btn.style.background = 'rgba(57,255,20,0.15)';
+        if (lbl) lbl.textContent = 'Desativar';
       } else {
-        btn.style.background = 'transparent';
-        lbl.textContent = 'Ativar';
+        if (btn) btn.style.background = 'transparent';
+        if (lbl) lbl.textContent = 'Ativar';
       }
       atualizarToolbar();
     }
@@ -2112,6 +2140,11 @@
     }
 
     function toggleSelecao(idx) {
+      if (!podeSelecionarFotos()) {
+        toast('Selecao de fotos desativada nesta galeria.');
+        atualizarControlesLightbox();
+        return;
+      }
       const id = FOTOS[idx].id;
       const el = document.querySelector(`.foto-item[data-idx="${idx}"]`);
       const maxSel = parseInt(GALERIA.max_selecao) || 0;
@@ -2138,6 +2171,10 @@
     }
 
     function selecionarTodas() {
+      if (!podeSelecionarFotos()) {
+        toast('Selecao de fotos desativada nesta galeria.');
+        return;
+      }
       const maxSel = parseInt(GALERIA.max_selecao) || 0;
       selecionadas.clear();
       document.querySelectorAll('.foto-item.selected').forEach(el => el.classList.remove('selected'));
@@ -2157,6 +2194,10 @@
     }
 
     function limparSelecao() {
+      if (!podeSelecionarFotos()) {
+        toast('Selecao de fotos desativada nesta galeria.');
+        return;
+      }
       selecionadas.clear();
       FOTOS.forEach(f => f.selecionada = 0);
       document.querySelectorAll('.foto-item.selected').forEach(el => el.classList.remove('selected'));
@@ -2189,13 +2230,13 @@
       const btnZipSel = document.getElementById('btn-zip-sel');
       const btnClearSel = document.getElementById('btn-clear-sel');
 
-      if (GALERIA && GALERIA.entrega_em_alta == 1 && n > 0) {
+      if (podeBaixarFotos() && n > 0) {
         if (btnZipSel) btnZipSel.style.display = '';
       } else {
         if (btnZipSel) btnZipSel.style.display = 'none';
       }
 
-      if (n > 0) {
+      if (podeSelecionarFotos() && n > 0) {
         if (btnClearSel) btnClearSel.style.display = '';
       } else {
         if (btnClearSel) btnClearSel.style.display = 'none';
@@ -2295,6 +2336,10 @@
     }
 
     async function baixarFoto(fotoId) {
+      if (!podeBaixarFotos()) {
+        toast('Downloads desativados nesta galeria.');
+        return;
+      }
       if (!checarLimite(1)) return;
       const url = `/api/fotos/download.php?foto_id=${fotoId}&token=${TOKEN}`;
       const a = document.createElement('a');
@@ -2314,9 +2359,16 @@
       toast('Download iniciado!');
     }
 
-    function baixarFotoAtual() { baixarFoto(FOTOS[lbIndex].id); }
+    function baixarFotoAtual() {
+      if (!podeBaixarFotos()) {
+        toast('Downloads desativados nesta galeria.');
+        return;
+      }
+      baixarFoto(FOTOS[lbIndex].id);
+    }
 
     async function baixarZipSelecionadas() {
+      if (!podeBaixarFotos()) { toast('Downloads desativados nesta galeria.'); return; }
       if (!selecionadas.size) { toast('Selecione pelo menos uma foto.'); return; }
       if (!checarLimite(selecionadas.size)) return;
       toast('Preparando ZIP...');
@@ -2347,6 +2399,7 @@
     }
 
     async function baixarZipTodas() {
+      if (!podeBaixarFotos()) { toast('Downloads desativados nesta galeria.'); return; }
       if (!checarLimite(FOTOS.length)) return;  // verifica total de fotos
       toast('Preparando ZIP de todas as fotos...');
       const r = await fetch('/api/fotos/download_zip.php', {
@@ -2424,6 +2477,10 @@
     }
 
     async function definirCapa() {
+      if (!podeDefinirCapaCliente()) {
+        toast('Definicao de capa desativada nesta galeria.');
+        return;
+      }
       const foto = FOTOS[lbIndex];
       const btn = document.getElementById('lb-capa');
 
@@ -2449,6 +2506,11 @@
     }
 
     function toggleSelecaoDeDentroDoLightbox() {
+      if (!podeSelecionarFotos()) {
+        toast('Selecao de fotos desativada nesta galeria.');
+        atualizarControlesLightbox();
+        return;
+      }
       toggleSelecao(lbIndex);
       atualizarControlesLightbox();
     }
@@ -2458,20 +2520,24 @@
       const btnCapa = document.getElementById('lb-capa');
       const btnSel = document.getElementById('lb-select-btn');
 
+      aplicarVisibilidadeBotaoModulo('lb-capa', podeDefinirCapaCliente());
+      aplicarVisibilidadeBotaoModulo('lb-select-btn', podeSelecionarFotos());
+      aplicarVisibilidadeBotaoModulo('lb-dl-btn', podeBaixarFotos());
+
       // Botão Capa
-      if (foto.is_capa == 1) {
+      if (btnCapa && foto.is_capa == 1) {
         btnCapa.innerHTML = '<i class="fa-solid fa-star"></i> ESTA É A CAPA';
         btnCapa.style.color = '#ccac5d';
-      } else {
+      } else if (btnCapa) {
         btnCapa.innerHTML = '<i class="fa-regular fa-star"></i> DEFINIR CAPA';
         btnCapa.style.color = '#ccac5d';
       }
 
       // Botão Seleção
-      if (selecionadas.has(foto.id)) {
+      if (btnSel && selecionadas.has(foto.id)) {
         btnSel.classList.add('selected');
         btnSel.innerHTML = '<i class="fa-solid fa-check"></i> SELECIONADA';
-      } else {
+      } else if (btnSel) {
         btnSel.classList.remove('selected');
         btnSel.innerHTML = '<i class="fa-regular fa-square"></i> SELECIONAR';
       }

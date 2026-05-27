@@ -26,6 +26,17 @@ if (!$acesso_ok || !$galeria_id) {
     json_out(['status'=>'erro','mensagem'=>'Sessão expirada ou sem acesso.'], 403);
 }
 
+$gstmt = db()->prepare("SELECT selecao_ativa, max_selecao FROM galerias WHERE id=? LIMIT 1");
+$gstmt->execute([$galeria_id]);
+$galeria = $gstmt->fetch();
+if (!$galeria) {
+    json_out(['status'=>'erro','mensagem'=>'Galeria não encontrada.'], 404);
+}
+if (!(int)($galeria['selecao_ativa'] ?? 0)) {
+    json_out(['status'=>'erro','mensagem'=>'Seleção de fotos desativada nesta galeria.'], 403);
+}
+$limit = (int)($galeria['max_selecao'] ?? 0);
+
 if ($acao === 'toggle') {
     $id = (int)($body['id'] ?? 0);
     
@@ -36,10 +47,6 @@ if ($acao === 'toggle') {
 
     if (!$is_sel) {
         // Tentativa de selecionar: verificar limite
-        $gstmt = db()->prepare("SELECT max_selecao FROM galerias WHERE id=? LIMIT 1");
-        $gstmt->execute([$galeria_id]);
-        $limit = (int)$gstmt->fetchColumn();
-
         if ($limit > 0) {
             $count_q = db()->prepare("SELECT COUNT(*) FROM imagens WHERE galeria_id=? AND selecionada=1");
             $count_q->execute([$galeria_id]);
@@ -54,10 +61,6 @@ if ($acao === 'toggle') {
     $stmt->execute([$id, $galeria_id]);
 
 } elseif ($acao === 'all') {
-    $gstmt = db()->prepare("SELECT max_selecao FROM galerias WHERE id=? LIMIT 1");
-    $gstmt->execute([$galeria_id]);
-    $limit = (int)$gstmt->fetchColumn();
-
     if ($limit > 0) {
         // Se há limite, primeiro desmarcamos tudo por segurança e marcamos apenas os primeiros N
         db()->prepare("UPDATE imagens SET selecionada = 0 WHERE galeria_id=?")->execute([$galeria_id]);

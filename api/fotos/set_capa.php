@@ -9,13 +9,16 @@ $remover = (bool)($body['remover'] ?? false);
 
 // Verifica acesso: via sessão OU via token
 $acesso_ok = false;
+$acesso_cliente = false;
 if (!empty($_SESSION['galeria_access'][$galeria_id])) {
     $acesso_ok = true;
+    $acesso_cliente = true;
 } elseif ($token && $galeria_id) {
     $st = db()->prepare("SELECT id FROM galerias WHERE id = ? AND link_token = ? LIMIT 1");
     $st->execute([$galeria_id, $token]);
     if ($st->fetch()) {
         $acesso_ok = true;
+        $acesso_cliente = true;
         $_SESSION['galeria_access'][$galeria_id] = true;
     }
 } else {
@@ -32,7 +35,17 @@ if (!$acesso_ok || !$galeria_id || !$foto_id) {
     json_out(['status'=>'erro','mensagem'=>'Sem permissão ou dados inválidos.'], 403);
 }
 
-// Tenta adicionar a coluna is_capa caso ainda não exista (Lazy migration)
+// Cliente publico so pode alterar capa quando selecao estiver ativa.
+if ($acesso_cliente) {
+    $gstmt = db()->prepare("SELECT selecao_ativa FROM galerias WHERE id=? LIMIT 1");
+    $gstmt->execute([$galeria_id]);
+    $selecao_ativa = (int)$gstmt->fetchColumn();
+    if (!$selecao_ativa) {
+        json_out(['status'=>'erro','mensagem'=>'Definição de capa desativada nesta galeria.'], 403);
+    }
+}
+
+// Tenta adicionar a coluna is_capa caso ainda nao exista (Lazy migration)
 try {
     db()->exec("ALTER TABLE imagens ADD COLUMN is_capa TINYINT(1) DEFAULT 0");
 } catch (Exception $e) {
