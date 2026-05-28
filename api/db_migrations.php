@@ -100,6 +100,8 @@ try {
             max_selecao INT NOT NULL DEFAULT 0,
             dl_count INT NOT NULL DEFAULT 0,
             capa_apresentacao VARCHAR(512) DEFAULT NULL,
+            capa_crop_horizontal TEXT NULL,
+            capa_crop_vertical TEXT NULL,
             tema VARCHAR(10) NOT NULL DEFAULT 'escuro',
             nome_fonte VARCHAR(80) DEFAULT NULL,
             nome_formato VARCHAR(40) DEFAULT NULL,
@@ -163,6 +165,8 @@ try {
     add_column_if_missing($db, 'galerias', 'max_selecao', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'galerias', 'dl_count', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'galerias', 'capa_apresentacao', 'VARCHAR(512) DEFAULT NULL');
+    add_column_if_missing($db, 'galerias', 'capa_crop_horizontal', 'TEXT NULL');
+    add_column_if_missing($db, 'galerias', 'capa_crop_vertical', 'TEXT NULL');
     add_column_if_missing($db, 'galerias', 'tema', "VARCHAR(10) NOT NULL DEFAULT 'escuro'");
     add_column_if_missing($db, 'galerias', 'nome_fonte', 'VARCHAR(80) DEFAULT NULL');
     add_column_if_missing($db, 'galerias', 'nome_formato', 'VARCHAR(40) DEFAULT NULL');

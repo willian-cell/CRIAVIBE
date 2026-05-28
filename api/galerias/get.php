@@ -8,6 +8,8 @@ $token = $_GET['token'] ?? '';
 try { db()->exec("ALTER TABLE galerias ADD COLUMN max_selecao INT DEFAULT 0"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN dl_count INT DEFAULT 0"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN capa_apresentacao VARCHAR(255) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN capa_crop_horizontal TEXT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN capa_crop_vertical TEXT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_fonte VARCHAR(80) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_formato VARCHAR(40) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_tamanho INT DEFAULT NULL"); } catch (Exception $e) {}

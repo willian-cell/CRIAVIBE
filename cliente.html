@@ -62,8 +62,8 @@
       background:
         linear-gradient(to bottom, rgba(7, 7, 17, .35), rgba(7, 7, 17, .78)),
         var(--lock-cover, linear-gradient(135deg, #070711 0%, #0f0f2a 100%));
-      background-position: center;
       background-size: cover;
+      background-position: var(--cover-position, center);
       z-index: 200;
       padding: 28px;
     }
@@ -1118,11 +1118,12 @@
       z-index: 1;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      object-position: center;
+      object-fit: cover;
+      object-position: var(--cover-position, center);
+      transform: scale(var(--cover-zoom, 1));
       filter: brightness(0.78);
       opacity: 0;
-      transition: opacity .35s ease, filter .35s ease;
+      transition: opacity .35s ease, filter .35s ease, transform .35s ease;
     }
 
     .hero-photo.loaded {
@@ -1297,8 +1298,9 @@
 
     @media (max-width: 800px) {
       #hero-cover {
-        height: 50vh;
-        min-height: 380px;
+        height: 72svh;
+        min-height: 460px;
+        max-height: 680px;
       }
 
       .hero-nav {
@@ -1546,6 +1548,31 @@
       el.setAttribute('aria-hidden', ativo ? 'false' : 'true');
     }
 
+    function parseCropCapa(valor) {
+      if (!valor) return { x: 50, y: 50, zoom: 1 };
+      try {
+        const data = typeof valor === 'string' ? JSON.parse(valor) : valor;
+        return {
+          x: Math.max(0, Math.min(100, Number(data.x) || 50)),
+          y: Math.max(0, Math.min(100, Number(data.y) || 50)),
+          zoom: Math.max(1, Math.min(3, Number(data.zoom) || 1)),
+        };
+      } catch {
+        return { x: 50, y: 50, zoom: 1 };
+      }
+    }
+
+    function cropCapaAtual() {
+      const vertical = window.innerHeight > window.innerWidth || window.innerWidth <= 800;
+      return parseCropCapa(vertical ? GALERIA?.capa_crop_vertical : GALERIA?.capa_crop_horizontal);
+    }
+
+    function aplicarVariaveisCropCapa(target = document.documentElement) {
+      const crop = cropCapaAtual();
+      target.style.setProperty('--cover-position', `${crop.x}% ${crop.y}%`);
+      target.style.setProperty('--cover-zoom', crop.zoom);
+    }
+
     function aplicarCapaHero(src) {
       const resolved = mediaSrc(src || '');
       const bg = document.getElementById('hero-bg');
@@ -1553,7 +1580,9 @@
       if (!bg || !photo || !resolved) return;
 
       heroCapaAtual = resolved;
+      aplicarVariaveisCropCapa(document.documentElement);
       bg.style.backgroundImage = `url('${resolved}')`;
+      bg.style.backgroundPosition = 'var(--cover-position, center)';
       photo.classList.remove('loaded');
       photo.onload = () => photo.classList.add('loaded');
       photo.onerror = () => photo.classList.remove('loaded');
@@ -1708,7 +1737,10 @@
     function aplicarCapaEntrada(galeria) {
       const lock = document.getElementById('lock-screen');
       const src = mediaSrc(galeria?.capa_preview || galeria?.capa_apresentacao || '');
-      if (lock && src) lock.style.setProperty('--lock-cover', `url('${src}')`);
+      if (lock && src) {
+        aplicarVariaveisCropCapa(document.documentElement);
+        lock.style.setProperty('--lock-cover', `url('${src}')`);
+      }
     }
 
     function configurarEntradaGaleria(galeria) {
@@ -2585,6 +2617,11 @@
     document.addEventListener('keydown', ativarAudioInteracao);
 
     // ── INIT: check if gallery is public ──────────────────────────
+    window.addEventListener('resize', () => {
+      if (!GALERIA) return;
+      aplicarVariaveisCropCapa(document.documentElement);
+    });
+
     (async () => {
       if (!TOKEN) {
         document.getElementById('lock-screen').innerHTML =

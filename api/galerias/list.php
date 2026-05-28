@@ -6,6 +6,8 @@ try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_small VARCHAR(102
 try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_medium VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_large VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_fonte VARCHAR(80) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN capa_crop_horizontal TEXT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN capa_crop_vertical TEXT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_formato VARCHAR(40) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_tamanho INT DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE galerias ADD COLUMN nome_negrito TINYINT(1) DEFAULT NULL"); } catch (Exception $e) {}

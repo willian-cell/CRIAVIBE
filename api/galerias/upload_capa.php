@@ -8,6 +8,8 @@ if (!$galeria_id) json_out(['status'=>'erro','mensagem'=>'galeria_id obrigatóri
 try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_small VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_medium VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
 try { db()->exec("ALTER TABLE imagens ADD COLUMN caminho_thumb_large VARCHAR(1024) DEFAULT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN capa_crop_horizontal TEXT NULL"); } catch (Exception $e) {}
+try { db()->exec("ALTER TABLE galerias ADD COLUMN capa_crop_vertical TEXT NULL"); } catch (Exception $e) {}
 
 // Verificar dono
 $chk = db()->prepare("SELECT id FROM galerias WHERE id=? AND usuario_email=? LIMIT 1");
@@ -28,7 +30,7 @@ if (isset($_POST['foto_id'])) {
     if ($foto) {
         $caminho = $foto['caminho_arquivo'];
         $caminhoPreview = $foto['caminho_thumb_large'] ?: ($foto['caminho_thumb_medium'] ?: ($foto['caminho_thumb_small'] ?: $foto['caminho_arquivo']));
-        $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ? WHERE id = ?");
+        $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ?, capa_crop_horizontal = NULL, capa_crop_vertical = NULL WHERE id = ?");
         $stmt->execute([$caminho, $galeria_id]);
     } else {
         json_out(['status'=>'erro','mensagem'=>'Foto não encontrada ou não pertence a esta galeria.'], 404);
@@ -59,7 +61,7 @@ if (isset($_POST['foto_id'])) {
     $caminhoPreview = $caminho;
 
     // Atualizar o banco de dados (Capa da Galeria)
-    $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ? WHERE id = ?");
+    $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ?, capa_crop_horizontal = NULL, capa_crop_vertical = NULL WHERE id = ?");
     $stmt->execute([$caminho, $galeria_id]);
 }
 

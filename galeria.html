@@ -234,6 +234,143 @@
       border-bottom: 1px solid var(--border);
     }
 
+    .cover-crop-card {
+      margin-top: 18px;
+      text-align: left;
+    }
+
+    .cover-crop-card h3 {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .cover-crop-sub {
+      color: var(--muted);
+      font-size: .9rem;
+      text-align: center;
+      margin: 0 auto 20px;
+      max-width: 680px;
+      line-height: 1.45;
+    }
+
+    .cover-crop-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(240px, .8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .cover-crop-editor {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      background: rgba(255, 255, 255, .48);
+    }
+
+    .cover-crop-editor h4 {
+      margin: 0 0 4px;
+      color: var(--text);
+      font-size: .98rem;
+    }
+
+    .cover-crop-editor p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.35;
+    }
+
+    .crop-stage {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid rgba(15, 23, 42, .12);
+      background: #111827;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .crop-stage.dragging {
+      cursor: grabbing;
+    }
+
+    .crop-stage.horizontal {
+      aspect-ratio: 16 / 9;
+    }
+
+    .crop-stage.vertical {
+      aspect-ratio: 9 / 16;
+      max-height: 520px;
+      margin: 0 auto;
+    }
+
+    .crop-stage img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform-origin: center;
+      pointer-events: none;
+    }
+
+    .crop-stage::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255, 255, 255, .72);
+      box-shadow: inset 0 0 0 999px rgba(0, 0, 0, .03);
+      pointer-events: none;
+    }
+
+    .crop-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, .72);
+      font-weight: 700;
+      text-align: center;
+      padding: 16px;
+      background: linear-gradient(135deg, #111827, #1f2937);
+    }
+
+    .crop-controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .crop-controls label {
+      color: var(--text);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .crop-controls input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+    }
+
+    .crop-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 860px) {
+      .cover-crop-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .photo-overlay {
       position: absolute;
       bottom: 0;
@@ -810,6 +947,45 @@
                 </div>
               </div>
             </div>
+            <div class="config-card cover-crop-card">
+              <h3>Corte da Capa</h3>
+              <p class="cover-crop-sub">Ajuste a mesma capa para preencher bem telas horizontais e verticais na galeria do cliente.</p>
+              <div class="cover-crop-grid">
+                <div class="cover-crop-editor">
+                  <h4><i class="fa-solid fa-display"></i> Horizontal</h4>
+                  <p>Usado em desktop, notebooks e telas largas.</p>
+                  <div class="crop-stage horizontal" id="crop-stage-horizontal" data-crop="horizontal" onpointerdown="iniciarCropDrag(event)">
+                    <img id="crop-img-horizontal" alt="">
+                    <div class="crop-empty" id="crop-empty-horizontal">Selecione uma capa para ajustar.</div>
+                  </div>
+                  <div class="crop-controls">
+                    <label for="crop-zoom-horizontal">Zoom</label>
+                    <input id="crop-zoom-horizontal" type="range" min="1" max="3" step="0.01" value="1" oninput="setCropZoom('horizontal', this.value)">
+                  </div>
+                </div>
+
+                <div class="cover-crop-editor">
+                  <h4><i class="fa-solid fa-mobile-screen-button"></i> Vertical</h4>
+                  <p>Usado em celulares e telas mais altas.</p>
+                  <div class="crop-stage vertical" id="crop-stage-vertical" data-crop="vertical" onpointerdown="iniciarCropDrag(event)">
+                    <img id="crop-img-vertical" alt="">
+                    <div class="crop-empty" id="crop-empty-vertical">Selecione uma capa para ajustar.</div>
+                  </div>
+                  <div class="crop-controls">
+                    <label for="crop-zoom-vertical">Zoom</label>
+                    <input id="crop-zoom-vertical" type="range" min="1" max="3" step="0.01" value="1" oninput="setCropZoom('vertical', this.value)">
+                  </div>
+                </div>
+              </div>
+              <div class="crop-actions">
+                <button class="btn" type="button" onclick="resetarCortesCapa()">
+                  <i class="fa-solid fa-rotate-left"></i> Resetar
+                </button>
+                <button class="btn btn-primary" type="button" onclick="salvarCortesCapa()">
+                  <i class="fa-solid fa-crop-simple"></i> Salvar Cortes
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -844,6 +1020,12 @@
     let lbIdx = 0;
     let paginaAtual = 1;
     const fotosPorPagina = 50;
+    let cropCapaSrc = '';
+    const cropCapa = {
+      horizontal: { x: 50, y: 50, zoom: 1 },
+      vertical: { x: 50, y: 50, zoom: 1 },
+    };
+    const cropDrag = { tipo: null, startX: 0, startY: 0, startCropX: 50, startCropY: 50 };
 
     function toggleFiltro(e, btn) {
       e.preventDefault();
@@ -881,6 +1063,7 @@
           document.getElementById('btn-ver').href = `/cliente.html?token=${galeria.link_token}`;
         }
         aplicarPreviewCapa(galeria.capa_preview || galeria.capa_apresentacao);
+        hidratarCortesCapa();
         preencherConfig();
         await carregarFotos();
         await carregarMusicas();
@@ -911,9 +1094,10 @@
 
     // ── Tabs ──────────────────────────────────────────────────
     function switchTab(name) {
-      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', ['fotos', 'config', 'musicas'][i] === name));
+      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', ['fotos', 'config', 'musicas', 'preview'][i] === name));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
+      if (name === 'preview') setTimeout(atualizarCroppersCapa, 50);
     }
     function switchMusTab(t) {
       document.getElementById('mus-mp3').style.display = t === 'mp3' ? '' : 'none';
@@ -964,6 +1148,8 @@
       empty.style.display = 'none';
       img.style.display = 'block';
       img.src = resolved;
+      cropCapaSrc = resolved;
+      atualizarCroppersCapa();
     }
 
     function mostrarPreviewCapaVazio() {
@@ -976,12 +1162,125 @@
       img.removeAttribute('src');
       img.style.display = 'none';
       empty.style.display = 'flex';
+      cropCapaSrc = '';
+      atualizarCroppersCapa();
     }
 
     function atualizarPreviewCapaDaGrade() {
       const fotoCapa = fotos.find(f => Number(f.is_capa) === 1) || fotos[0];
       if (fotoCapa) aplicarPreviewCapa(capaPreviewSrcFromFoto(fotoCapa));
     }
+
+    function parseCropCapa(valor) {
+      if (!valor) return { x: 50, y: 50, zoom: 1 };
+      try {
+        const data = typeof valor === 'string' ? JSON.parse(valor) : valor;
+        return {
+          x: Math.max(0, Math.min(100, Number(data.x) || 50)),
+          y: Math.max(0, Math.min(100, Number(data.y) || 50)),
+          zoom: Math.max(1, Math.min(3, Number(data.zoom) || 1)),
+        };
+      } catch {
+        return { x: 50, y: 50, zoom: 1 };
+      }
+    }
+
+    function hidratarCortesCapa() {
+      cropCapa.horizontal = parseCropCapa(galeria?.capa_crop_horizontal);
+      cropCapa.vertical = parseCropCapa(galeria?.capa_crop_vertical);
+      atualizarCroppersCapa();
+    }
+
+    function atualizarCroppersCapa() {
+      ['horizontal', 'vertical'].forEach(tipo => {
+        const img = document.getElementById(`crop-img-${tipo}`);
+        const empty = document.getElementById(`crop-empty-${tipo}`);
+        const zoom = document.getElementById(`crop-zoom-${tipo}`);
+        if (!img || !empty || !zoom) return;
+        const crop = cropCapa[tipo];
+        if (!cropCapaSrc) {
+          img.removeAttribute('src');
+          img.style.display = 'none';
+          empty.style.display = 'flex';
+        } else {
+          img.src = cropCapaSrc;
+          img.style.display = 'block';
+          empty.style.display = 'none';
+          img.style.objectPosition = `${crop.x}% ${crop.y}%`;
+          img.style.transform = `scale(${crop.zoom})`;
+        }
+        zoom.value = crop.zoom;
+      });
+    }
+
+    function setCropZoom(tipo, valor) {
+      if (!cropCapa[tipo]) return;
+      cropCapa[tipo].zoom = Math.max(1, Math.min(3, Number(valor) || 1));
+      atualizarCroppersCapa();
+    }
+
+    function resetarCortesCapa() {
+      cropCapa.horizontal = { x: 50, y: 50, zoom: 1 };
+      cropCapa.vertical = { x: 50, y: 50, zoom: 1 };
+      atualizarCroppersCapa();
+    }
+
+    async function salvarCortesCapa() {
+      if (!cropCapaSrc) {
+        showToast('Selecione uma capa antes de salvar os cortes.', 'error');
+        return;
+      }
+      try {
+        const d = await API.post('/galerias/update_capa_crop.php', {
+          id: parseInt(galeriaId),
+          horizontal: cropCapa.horizontal,
+          vertical: cropCapa.vertical,
+        });
+        galeria.capa_crop_horizontal = JSON.stringify(d.horizontal || cropCapa.horizontal);
+        galeria.capa_crop_vertical = JSON.stringify(d.vertical || cropCapa.vertical);
+        showToast('Cortes da capa salvos com sucesso!');
+      } catch (e) {
+        showToast(e.message || 'Erro ao salvar cortes da capa.', 'error');
+      }
+    }
+
+    function iniciarCropDrag(e) {
+      const stage = e.currentTarget;
+      const tipo = stage?.dataset?.crop;
+      if (!tipo || !cropCapa[tipo] || !cropCapaSrc) return;
+      e.preventDefault();
+      stage.classList.add('dragging');
+      stage.setPointerCapture?.(e.pointerId);
+      cropDrag.tipo = tipo;
+      cropDrag.startX = e.clientX;
+      cropDrag.startY = e.clientY;
+      cropDrag.startCropX = cropCapa[tipo].x;
+      cropDrag.startCropY = cropCapa[tipo].y;
+    }
+
+    function moverCropDrag(e) {
+      const tipo = cropDrag.tipo;
+      if (!tipo || !cropCapa[tipo]) return;
+      const stage = document.getElementById(`crop-stage-${tipo}`);
+      const rect = stage?.getBoundingClientRect();
+      if (!rect) return;
+      const zoom = cropCapa[tipo].zoom || 1;
+      const sensX = 100 / Math.max(80, rect.width) / zoom;
+      const sensY = 100 / Math.max(80, rect.height) / zoom;
+      cropCapa[tipo].x = Math.max(0, Math.min(100, cropDrag.startCropX - (e.clientX - cropDrag.startX) * sensX));
+      cropCapa[tipo].y = Math.max(0, Math.min(100, cropDrag.startCropY - (e.clientY - cropDrag.startY) * sensY));
+      atualizarCroppersCapa();
+    }
+
+    function finalizarCropDrag(e) {
+      if (!cropDrag.tipo) return;
+      document.getElementById(`crop-stage-${cropDrag.tipo}`)?.classList.remove('dragging');
+      cropDrag.tipo = null;
+    }
+
+    document.addEventListener('pointermove', moverCropDrag);
+    document.addEventListener('pointerup', finalizarCropDrag);
+    document.addEventListener('pointercancel', finalizarCropDrag);
 
     function fotoGridSrc(f) {
       return mediaSrc(f.caminho_thumb_small || f.caminho_thumb_medium || f.caminho_thumb_large || f.caminho_arquivo);
@@ -1376,6 +1675,7 @@
           showToast('Capa de apresentação enviada com sucesso!');
           galeria.capa_apresentacao = res.caminho;
           galeria.capa_preview = res.caminho_preview || res.caminho;
+          resetarCortesCapa();
           aplicarPreviewCapa(galeria.capa_preview);
           // Sincroniza a grade localmente
           await carregarFotos();
@@ -1412,6 +1712,7 @@
           fotos.forEach(f => f.is_capa = (f.id == fotoId ? 1 : 0));
           const fotoLocal = fotos.find(f => f.id == fotoId);
           galeria.capa_preview = res.caminho_preview || capaPreviewSrcFromFoto(fotoLocal) || res.caminho;
+          resetarCortesCapa();
           aplicarPreviewCapa(galeria.capa_preview);
           renderFotos();
         } else {
