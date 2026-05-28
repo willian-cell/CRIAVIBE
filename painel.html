@@ -189,10 +189,19 @@
     }
 
     .text-style-controls {
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: minmax(128px, 1fr) minmax(150px, 1fr) 74px 38px;
+      align-items: end;
       gap: 8px;
-      min-height: 38px;
+      min-height: 58px;
+    }
+
+    .style-inline-label {
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
     }
 
     .text-style-controls select {
@@ -242,7 +251,7 @@
 
       .text-style-controls {
         width: 100%;
-        flex-wrap: wrap;
+        overflow-x: auto;
       }
 
       .text-style-controls select {
@@ -477,6 +486,10 @@
             <div class="text-style-stack">
               <input id="e-nome" class="form-control" type="text">
               <div class="text-style-controls" aria-label="Estilo do nome da galeria">
+                <span class="style-inline-label">Fonte do nome</span>
+                <span class="style-inline-label">Formato do nome</span>
+                <span class="style-inline-label">Tamanho</span>
+                <span class="style-inline-label">Negrito</span>
                 <select id="e-nome-fonte" title="Fonte do nome">
                   <option value="Inter">Inter</option>
                   <option value="Arial">Arial</option>
@@ -547,6 +560,10 @@
             <div class="text-style-stack">
               <textarea id="e-descricao" class="form-control" rows="3"></textarea>
               <div class="text-style-controls" aria-label="Estilo da descricao da galeria">
+                <span class="style-inline-label">Fonte da descriÃ§Ã£o</span>
+                <span class="style-inline-label">Formato da descriÃ§Ã£o</span>
+                <span class="style-inline-label">Tamanho</span>
+                <span class="style-inline-label">Negrito</span>
                 <select id="e-descricao-fonte" title="Fonte da descricao">
                   <option value="Inter">Inter</option>
                   <option value="Arial">Arial</option>
