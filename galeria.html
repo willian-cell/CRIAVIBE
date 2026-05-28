@@ -1833,9 +1833,13 @@
       const file = document.getElementById('mus-file').files[0];
       if (!file) return;
       const fd = new FormData(); fd.append('galeria_id', galeriaId); fd.append('musica', file);
-      const d = await API.upload('/musicas/add.php', fd);
+      try {
+        const d = await API.upload('/musicas/add.php', fd);
       if (d.status === 'ok') { showToast('Música adicionada!'); await carregarMusicas(); }
-      else showToast(d.mensagem, 'error');
+        else showToast(d.mensagem, 'error');
+      } catch (err) {
+        showToast(err.message || 'Erro ao enviar musica.', 'error');
+      }
     }
     async function addYoutube() {
       const url = document.getElementById('yt-url').value.trim();

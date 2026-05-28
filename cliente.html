@@ -2085,7 +2085,8 @@
           if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
           document.getElementById('yt-player-container').style.display = 'none';
           audio.style.display = 'flex';
-          audio.src = '/' + m.caminho_arquivo;
+          audio.preload = 'auto';
+          audio.src = mediaSrc(m.caminho_arquivo || '');
           title.textContent = m.nome_exibicao || m.nome_arquivo || 'Música';
           audio.play().catch(() => { });
         }

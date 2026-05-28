@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} router.php"]
+CMD ["sh", "-c", "php -d upload_max_filesize=50M -d post_max_size=60M -S 0.0.0.0:${PORT:-8080} router.php"]
