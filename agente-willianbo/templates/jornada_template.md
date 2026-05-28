@@ -1,7 +1,8 @@
 # Jornada Tecnica - {{DATA}}
 
 > **Status do dia:** Em progresso / Concluido / Bloqueado
-> **Responsavel:** {{RESPONSAVEL}}
+> **Responsavel tecnico:** Willian Batista Oliveira
+> **Registrador:** agente-willianbo
 > **Projeto:** {{PROJETO}}
 
 ---
