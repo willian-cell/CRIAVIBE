@@ -16,7 +16,7 @@ $job = [
     'r2_path' => $r2path,
     'public_url' => rtrim(R2_PUBLIC_URL, '/') . '/' . ltrim($r2path, '/'),
     'original_name' => basename($r2path),
-    'sizes' => ['small'=>200,'medium'=>800,'large'=>1600]
+    'sizes' => ['small'=>200,'medium'=>800,'large'=>1080]
 ];
 
 if ($q->push(WORKER_QUEUE_NAME, $job)) {

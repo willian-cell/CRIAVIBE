@@ -113,7 +113,7 @@ try {
                 'r2_path' => $it['r2_path'] ?? null,
                 'public_url' => $public,
                 'original_name' => $it['name'] ?? '',
-                'sizes' => ['small'=>360,'medium'=>900,'large'=>1600],
+                'sizes' => ['small'=>360,'medium'=>900,'large'=>1080],
                 'qualities' => ['small'=>68,'medium'=>72,'large'=>76]
             ];
             $q->push(WORKER_QUEUE_NAME, $job);
