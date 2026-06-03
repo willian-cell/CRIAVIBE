@@ -631,8 +631,15 @@
       color: #25D366;
     }
 
-    .social-card.criavibe .icon-wrapper i {
-      color: #3b82f6;
+    .social-card.criavibe .icon-wrapper {
+      overflow: hidden;
+    }
+
+    .social-card.criavibe .brand-icon {
+      width: 70px;
+      height: 70px;
+      display: block;
+      object-fit: contain;
     }
 
     .social-card h3 {
@@ -799,7 +806,7 @@
       <!-- Agendar Aula -->
       <a href="agendamento_aulas.html" target="_blank" class="social-card criavibe">
         <div class="icon-wrapper">
-          <i class="fa-solid fa-calendar-check"></i>
+          <img src="assets/images/logo/criavibe-camera-card.svg" alt="CriaVibe Fotografia" class="brand-icon">
         </div>
         <h3>Aulas Práticas</h3>
         <p>Agende suas aulas com o instrutor e fotógrafo Douglas no nosso painel de agendamento para aulas particulares CriaVibe.</p>
