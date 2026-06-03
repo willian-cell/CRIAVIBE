@@ -153,6 +153,36 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS pre_agendamento_alunos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            token_publico VARCHAR(96) NOT NULL UNIQUE,
+            nome VARCHAR(160) NOT NULL,
+            email VARCHAR(190) NOT NULL,
+            telefone VARCHAR(40) NOT NULL,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_pre_agendamento_alunos_nome (nome)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS pre_agendamento_aulas (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            aluno_id INT NOT NULL,
+            dia_semana VARCHAR(20) NOT NULL,
+            data_aula DATE NOT NULL,
+            horario VARCHAR(5) NOT NULL,
+            valor_centavos INT NOT NULL DEFAULT 12000,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uniq_pre_agendamento_dia (dia_semana),
+            UNIQUE KEY uniq_pre_agendamento_slot (dia_semana, data_aula, horario),
+            INDEX idx_pre_agendamento_aluno (aluno_id),
+            INDEX idx_pre_agendamento_data (data_aula)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
     add_column_if_missing($db, 'usuarios', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'usuarios', 'foto_perfil', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'clientes', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
@@ -184,6 +214,18 @@ try {
     add_column_if_missing($db, 'imagens', 'largura', 'INT DEFAULT NULL');
     add_column_if_missing($db, 'imagens', 'altura', 'INT DEFAULT NULL');
     add_column_if_missing($db, 'imagens', 'orientacao', 'VARCHAR(20) DEFAULT NULL');
+    add_column_if_missing($db, 'pre_agendamento_alunos', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+    add_column_if_missing($db, 'pre_agendamento_alunos', 'atualizado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+    add_column_if_missing($db, 'pre_agendamento_aulas', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+    add_column_if_missing($db, 'pre_agendamento_aulas', 'atualizado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+
+    try {
+        if (!index_exists($db, 'pre_agendamento_aulas', 'uniq_pre_agendamento_dia')) {
+            $db->exec("ALTER TABLE pre_agendamento_aulas ADD UNIQUE INDEX uniq_pre_agendamento_dia (dia_semana)");
+        }
+    } catch (Throwable $e) {
+        error_log('Não foi possível adicionar UNIQUE INDEX uniq_pre_agendamento_dia: ' . $e->getMessage());
+    }
 
     // Adicionar colunas para caminhos de thumbnails
     add_column_if_missing($db, 'imagens', 'caminho_thumb_small', 'VARCHAR(1024) DEFAULT NULL');
