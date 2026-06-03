@@ -5,6 +5,7 @@ require_once __DIR__ . '/_helpers.php';
 $token = trim($_GET['token'] ?? '');
 $isAdmin = agendamento_is_admin();
 $db = db();
+agendamento_ensure_schema($db);
 
 $student = $token ? agendamento_fetch_student_by_token($db, $token) : null;
 $rows = agendamento_fetch_board($db);

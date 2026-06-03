@@ -9,6 +9,7 @@ $token = trim($body['token_publico'] ?? '');
 $isAdmin = agendamento_is_admin();
 
 $db = db();
+agendamento_ensure_schema($db);
 $student = $token ? agendamento_fetch_student_by_token($db, $token) : null;
 
 if ($token !== '' && !$student && !$isAdmin) {

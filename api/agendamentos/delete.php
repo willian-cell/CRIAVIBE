@@ -7,6 +7,7 @@ agendamento_require_admin();
 $body = body();
 $tipo = trim($body['tipo'] ?? '');
 $db = db();
+agendamento_ensure_schema($db);
 
 if ($tipo === 'aula') {
     $aulaId = (int)($body['aula_id'] ?? 0);

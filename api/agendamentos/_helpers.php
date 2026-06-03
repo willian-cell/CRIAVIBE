@@ -9,6 +9,38 @@ const AGENDAMENTO_DIAS = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'];
 const AGENDAMENTO_HORARIOS = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
 const AGENDAMENTO_VALOR_CENTAVOS = 12000;
 
+function agendamento_ensure_schema(PDO $db): void {
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS pre_agendamento_alunos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            token_publico VARCHAR(96) NOT NULL UNIQUE,
+            nome VARCHAR(160) NOT NULL,
+            email VARCHAR(190) NOT NULL,
+            telefone VARCHAR(40) NOT NULL,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_pre_agendamento_alunos_nome (nome)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS pre_agendamento_aulas (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            aluno_id INT NOT NULL,
+            dia_semana VARCHAR(20) NOT NULL,
+            data_aula DATE NOT NULL,
+            horario VARCHAR(5) NOT NULL,
+            valor_centavos INT NOT NULL DEFAULT 12000,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uniq_pre_agendamento_dia (dia_semana),
+            UNIQUE KEY uniq_pre_agendamento_slot (dia_semana, data_aula, horario),
+            INDEX idx_pre_agendamento_aluno (aluno_id),
+            INDEX idx_pre_agendamento_data (data_aula)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+}
+
 function agendamento_is_admin(): bool {
     $email = strtolower(trim($_SESSION['agendamento_admin_email'] ?? ''));
     return $email !== '' && in_array($email, AGENDAMENTO_ADMIN_EMAILS, true);
