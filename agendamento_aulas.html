@@ -97,15 +97,12 @@
 
     .student-strip {
       display: flex;
+      flex-direction: column;
       gap: 24px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      padding: 0 0 14px;
+      padding: 0;
     }
 
     .student-card {
-      flex: 0 0 100%;
-      scroll-snap-align: start;
       min-height: 255px;
       border: 2px solid var(--line);
       padding: 42px 42px 34px;
@@ -860,9 +857,6 @@
         state.draftLessons = [];
         state.dirty = false;
         render();
-        requestAnimationFrame(() => {
-          els.studentStrip.querySelector('[data-card="blank"]')?.scrollIntoView({ behavior: 'smooth', inline: 'start' });
-        });
       });
     }
 
