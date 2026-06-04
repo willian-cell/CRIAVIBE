@@ -17,12 +17,13 @@ function agendamento_ensure_schema(PDO $db): void {
         CREATE TABLE IF NOT EXISTS agendamento_alunos (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(160) NOT NULL,
-            email VARCHAR(190) NOT NULL UNIQUE,
+            email VARCHAR(190) NOT NULL,
             telefone VARCHAR(40) NOT NULL,
             token_publico VARCHAR(96) NOT NULL UNIQUE,
             codigo_acesso VARCHAR(12) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_agendamento_alunos_email (email)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
@@ -125,6 +126,8 @@ function agendamento_ensure_schema(PDO $db): void {
         }
     }
 
+    agendamento_drop_unique_email_if_needed($db);
+
     agendamento_seed_course_defaults($db);
     agendamento_migrate_pre_agendamento($db);
 }
@@ -157,6 +160,34 @@ function agendamento_column_exists(PDO $db, string $table, string $column): bool
     ");
     $stmt->execute([$table, $column]);
     return (int)$stmt->fetchColumn() > 0;
+}
+
+function agendamento_index_exists(PDO $db, string $table, string $index): bool {
+    $stmt = $db->prepare("
+        SELECT COUNT(*)
+        FROM information_schema.statistics
+        WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?
+    ");
+    $stmt->execute([$table, $index]);
+    return (int)$stmt->fetchColumn() > 0;
+}
+
+function agendamento_drop_unique_email_if_needed(PDO $db): void {
+    if (agendamento_index_exists($db, 'agendamento_alunos', 'email')) {
+        try {
+            $db->exec("ALTER TABLE agendamento_alunos DROP INDEX email");
+        } catch (Throwable $e) {
+            error_log('Nao foi possivel remover indice unico email de agendamento_alunos: ' . $e->getMessage());
+        }
+    }
+
+    if (!agendamento_index_exists($db, 'agendamento_alunos', 'idx_agendamento_alunos_email')) {
+        try {
+            $db->exec("ALTER TABLE agendamento_alunos ADD INDEX idx_agendamento_alunos_email (email)");
+        } catch (Throwable $e) {
+            error_log('Nao foi possivel criar indice de email em agendamento_alunos: ' . $e->getMessage());
+        }
+    }
 }
 
 function agendamento_seed_course_defaults(PDO $db): void {
@@ -503,7 +534,11 @@ function agendamento_ranges_overlap(string $startA, int $durationA, string $star
 }
 
 function agendamento_assert_no_schedule_overlap(PDO $db, array $lessons, ?int $studentId = null): void {
-    $dates = array_values(array_unique(array_map(fn($lesson) => $lesson['data_aula'], $lessons)));
+    $dates = [];
+    foreach ($lessons as $lesson) {
+        $dates[] = $lesson['data_aula'];
+    }
+    $dates = array_values(array_unique($dates));
     if (!$dates) return;
 
     $placeholders = implode(',', array_fill(0, count($dates), '?'));

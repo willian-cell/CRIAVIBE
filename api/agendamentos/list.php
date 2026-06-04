@@ -4,8 +4,14 @@ require_once __DIR__ . '/_helpers.php';
 
 $token = trim($_GET['token'] ?? '');
 $isAdmin = agendamento_is_admin();
-$db = db();
-agendamento_ensure_schema($db);
+
+try {
+    $db = db();
+    agendamento_ensure_schema($db);
+} catch (Throwable $e) {
+    error_log('Erro ao preparar schema de agendamento: ' . $e->getMessage());
+    json_out(['status' => 'erro', 'mensagem' => 'Nao foi possivel preparar o banco de agendamento. Verifique as migracoes.'], 500);
+}
 
 $student = $token ? agendamento_fetch_student_by_token($db, $token) : null;
 $rows = agendamento_fetch_board($db);

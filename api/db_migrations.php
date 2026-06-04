@@ -189,12 +189,13 @@ try {
         CREATE TABLE IF NOT EXISTS agendamento_alunos (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(160) NOT NULL,
-            email VARCHAR(190) NOT NULL UNIQUE,
+            email VARCHAR(190) NOT NULL,
             telefone VARCHAR(40) NOT NULL,
             token_publico VARCHAR(96) NOT NULL UNIQUE,
             codigo_acesso VARCHAR(12) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_agendamento_alunos_email (email)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
@@ -323,6 +324,15 @@ try {
     add_column_if_missing($db, 'agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
     add_column_if_missing($db, 'agendamento_aulas', 'status', "VARCHAR(30) NOT NULL DEFAULT 'pre_agendado'");
     add_column_if_missing($db, 'agendamento_aulas', 'observacoes', 'TEXT NULL');
+
+    try {
+        if (index_exists($db, 'agendamento_alunos', 'email')) {
+            $db->exec("ALTER TABLE agendamento_alunos DROP INDEX email");
+        }
+        add_index_if_missing($db, 'agendamento_alunos', 'idx_agendamento_alunos_email', 'email');
+    } catch (Throwable $e) {
+        error_log('Nao foi possivel ajustar indice de email em agendamento_alunos: ' . $e->getMessage());
+    }
 
     try {
         if (index_exists($db, 'pre_agendamento_aulas', 'uniq_pre_agendamento_dia')) {
