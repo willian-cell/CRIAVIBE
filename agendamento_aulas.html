@@ -896,7 +896,7 @@
             </td>
             <td class="slot-cell" data-day="${day}">${primary ? uniqueText(dayLessons.map(item => formatDate(item.data_aula))).join('<br>') : slotButton(canPick, day)}</td>
             <td class="slot-cell" data-day="${day}">${primary ? dayLessons.map(item => formatTimeRange(item.horario, item.quantidade_horas)).join('<br>') : slotButton(canPick, day)}</td>
-            <td class="slot-cell" data-day="${day}">${primary ? money(dayLessons.reduce((sum, item) => sum + Number(item.valor_centavos || 0), 0)) : slotButton(canPick, day)}</td>
+            <td class="slot-cell" data-day="${day}">${primary ? valueCell(dayLessons) : slotButton(canPick, day)}</td>
           </tr>
         `;
       }).join('');
@@ -925,12 +925,14 @@
     }
 
     function studentCell(item, locked) {
+      if (locked) {
+        return '';
+      }
+
       const details = [];
       if (item.is_owner || state.admin) {
         if (item.email) details.push(item.email);
         if (item.telefone) details.push(item.telefone);
-      } else if (locked) {
-        details.push('dados reservados');
       }
 
       const adminActions = state.admin && item.aula_id ? `
@@ -952,6 +954,14 @@
 
     function uniqueText(values) {
       return [...new Set(values.filter(Boolean))];
+    }
+
+    function valueCell(items) {
+      const visibleItems = state.admin
+        ? items
+        : items.filter(item => item.is_owner);
+      const total = visibleItems.reduce((sum, item) => sum + Number(item.valor_centavos || 0), 0);
+      return total ? money(total) : '';
     }
 
     function slotButton(canPick, day) {
@@ -1130,7 +1140,12 @@
           state.tokens.push(state.activeToken);
           persistTokens();
         }
-        await loadBoard(state.activeToken);
+        state.activeToken = '';
+        state.activeStudent = { nome: '', email: '', telefone: '' };
+        state.activePlan = { nome: 'Curso Fotografia Prática', total_aulas: 0, aulas_usadas: 0, status: 'ativo' };
+        state.draftLessons = [];
+        state.dirty = false;
+        await loadBoard('');
       } catch (error) {
         alert(error.message);
       }
@@ -1159,11 +1174,11 @@
         });
         state.tokens = state.tokens.filter(token => token !== state.activeToken);
         persistTokens();
-        state.activeToken = state.tokens[0] || '';
+        state.activeToken = '';
         state.activeStudent = { nome: '', email: '', telefone: '' };
         state.draftLessons = [];
         state.dirty = false;
-        await loadBoard(state.activeToken);
+        await loadBoard('');
       } catch (error) {
         alert(error.message);
       }
@@ -1294,17 +1309,12 @@
       try {
         await request('/admin_logout.php', { method: 'POST', body: '{}' });
         state.admin = null;
-        state.activeToken = state.tokens.includes(state.activeToken) ? state.activeToken : (state.tokens[0] || '');
-
-        if (!state.activeToken) {
-          state.activeStudent = { nome: '', email: '', telefone: '' };
-          state.draftLessons = [];
-          state.board = [];
-          state.dirty = false;
-          await loadBoard('');
-        } else {
-          await loadBoard(state.activeToken);
-        }
+        state.activeToken = '';
+        state.activeStudent = { nome: '', email: '', telefone: '' };
+        state.draftLessons = [];
+        state.board = [];
+        state.dirty = false;
+        await loadBoard('');
       } catch (error) {
         alert(error.message);
         renderAdmin();
@@ -1315,7 +1325,7 @@
     });
 
     async function init() {
-      state.activeToken = state.tokens[0] || '';
+      state.activeToken = '';
       try {
         const status = await request('/admin_status.php');
         state.admin = status.admin;

@@ -509,6 +509,22 @@ function agendamento_format_board(array $rows, ?string $currentToken, bool $isAd
             $item['token_publico'] = $row['token_publico'];
             $item['email'] = $row['email'];
             $item['telefone'] = $row['telefone'];
+        } else {
+            $item['plano_id'] = null;
+            $item['modulo_id'] = null;
+            $item['assunto_id'] = null;
+            $item['cidade'] = null;
+            $item['valor_hora_centavos'] = null;
+            $item['valor_centavos'] = null;
+            $item['status'] = null;
+            $item['observacoes'] = null;
+            $item['plano_nome'] = null;
+            $item['total_aulas'] = null;
+            $item['aulas_usadas'] = null;
+            $item['plano_status'] = null;
+            $item['modulo_nome'] = null;
+            $item['assunto_titulo'] = null;
+            $item['aluno'] = null;
         }
 
         $items[] = $item;
