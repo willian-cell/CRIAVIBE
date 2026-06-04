@@ -199,6 +199,42 @@
       color: var(--ink);
     }
 
+    .crm-panel {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, 0.8fr);
+      gap: 18px;
+      border: 2px solid var(--line);
+      margin-top: 18px;
+      padding: 22px 24px;
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .crm-field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .crm-field input,
+    .crm-field select {
+      width: 100%;
+      border: 0;
+      border-bottom: 2px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      padding: 7px 4px;
+      outline: 0;
+    }
+
+    .progress-note {
+      align-self: end;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
     .schedule-card {
       overflow-x: auto;
       padding-bottom: 10px;
@@ -361,12 +397,18 @@
     }
 
     .modal input,
-    .modal select {
+    .modal select,
+    .modal textarea {
       width: 100%;
       border: 1.5px solid var(--line);
       color: var(--ink);
       background: white;
       padding: 11px 12px;
+    }
+
+    .modal textarea {
+      min-height: 76px;
+      resize: vertical;
     }
 
     .modal-actions {
@@ -442,6 +484,10 @@
         flex-direction: column;
       }
 
+      .crm-panel {
+        grid-template-columns: 1fr;
+      }
+
       .total-row {
         margin-top: 80px;
         justify-content: center;
@@ -465,6 +511,27 @@
 
   <main class="page-shell">
     <section class="student-strip" id="studentStrip" aria-label="Cards de alunos"></section>
+
+    <section class="crm-panel" aria-label="Planejamento do curso">
+      <div class="crm-field">
+        <label for="planName">Plano</label>
+        <input id="planName" value="Curso Fotografia Prática">
+      </div>
+      <div class="crm-field">
+        <label for="planTotal">Total de aulas</label>
+        <input id="planTotal" type="number" min="0" step="1" value="0">
+      </div>
+      <div class="crm-field">
+        <label for="planStatus">Status</label>
+        <select id="planStatus">
+          <option value="ativo">Ativo</option>
+          <option value="pausado">Pausado</option>
+          <option value="concluido">Concluído</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+      <div class="progress-note" id="planProgress">0 aulas usadas</div>
+    </section>
 
     <h2 class="section-title">PRÉ - AGENDAMENTO</h2>
 
@@ -501,10 +568,18 @@
       </datalist>
       <label for="slotHours">Quantidade de horas</label>
       <select id="slotHours"></select>
+      <label for="slotModule">Módulo</label>
+      <select id="slotModule"></select>
+      <label for="slotSubject">Assunto</label>
+      <select id="slotSubject"></select>
+      <label for="slotLessonStatus">Status</label>
+      <select id="slotLessonStatus"></select>
       <label for="slotTime">Horário</label>
       <select id="slotTime"></select>
       <label>Valor calculado</label>
       <input type="text" id="slotValue" disabled>
+      <label for="slotNotes">Observações</label>
+      <textarea id="slotNotes" placeholder="Planejamento, combinados ou observações internas"></textarea>
       <div class="modal-actions">
         <button class="ghost-button" type="button" data-close-modal>Cancelar</button>
         <button class="save-button is-visible" type="button" id="confirmSlot">Aplicar</button>
@@ -540,8 +615,10 @@
       tokens: JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
       activeToken: '',
       activeStudent: { nome: '', email: '', telefone: '' },
+      activePlan: { nome: 'Curso Fotografia Prática', total_aulas: 0, aulas_usadas: 0, status: 'ativo' },
       draftLessons: [],
       board: [],
+      course: { modulos: [], assuntos: [] },
       admin: null,
       dirty: false,
       slotDay: null,
@@ -550,6 +627,7 @@
       valorOutraCidadeCentavos: 12000,
       horarios: ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
       horasOpcoes: [1, 2, 3, 4, 5, 6, 7, 8],
+      statusOpcoes: ['pre_agendado', 'confirmado', 'concluido', 'cancelado', 'remarcado'],
     };
 
     const els = {
@@ -561,8 +639,12 @@
       slotDate: document.getElementById('slotDate'),
       slotCity: document.getElementById('slotCity'),
       slotHours: document.getElementById('slotHours'),
+      slotModule: document.getElementById('slotModule'),
+      slotSubject: document.getElementById('slotSubject'),
+      slotLessonStatus: document.getElementById('slotLessonStatus'),
       slotTime: document.getElementById('slotTime'),
       slotValue: document.getElementById('slotValue'),
+      slotNotes: document.getElementById('slotNotes'),
       slotStatus: document.getElementById('slotStatus'),
       confirmSlot: document.getElementById('confirmSlot'),
       adminTrigger: document.getElementById('adminTrigger'),
@@ -573,6 +655,10 @@
       adminBadge: document.getElementById('adminBadge'),
       adminBadgeText: document.getElementById('adminBadgeText'),
       adminLogout: document.getElementById('adminLogout'),
+      planName: document.getElementById('planName'),
+      planTotal: document.getElementById('planTotal'),
+      planStatus: document.getElementById('planStatus'),
+      planProgress: document.getElementById('planProgress'),
     };
 
     function money(cents) {
@@ -669,6 +755,10 @@
         horario: item.horario,
         quantidade_horas: item.quantidade_horas || 1,
         cidade: item.cidade || 'Santo Antônio do Descoberto',
+        modulo_id: item.modulo_id || null,
+        assunto_id: item.assunto_id || null,
+        status: item.status || 'pre_agendado',
+        observacoes: item.observacoes || '',
         valor_hora_centavos: item.valor_hora_centavos || state.valorSantoAntonioCentavos,
         valor_centavos: item.valor_centavos,
       }));
@@ -682,6 +772,8 @@
       state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 12000;
       state.horarios = data.horarios || state.horarios;
       state.horasOpcoes = data.horas_opcoes || state.horasOpcoes;
+      state.statusOpcoes = data.status_opcoes || state.statusOpcoes;
+      state.course = data.curso || state.course;
       state.board = data.aulas || [];
       state.admin = data.admin;
       if (data.aluno_atual) {
@@ -691,9 +783,30 @@
           email: data.aluno_atual.email || '',
           telefone: data.aluno_atual.telefone || '',
         };
+        if (data.aluno_atual.plano) {
+          state.activePlan = {
+            nome: data.aluno_atual.plano.nome || state.activePlan.nome,
+            total_aulas: Number(data.aluno_atual.plano.total_aulas || 0),
+            aulas_usadas: Number(data.aluno_atual.plano.aulas_usadas || 0),
+            status: data.aluno_atual.plano.status || 'ativo',
+          };
+        }
       }
+      syncPlanFromBoard();
       syncDraftFromBoard();
       render();
+    }
+
+    function syncPlanFromBoard() {
+      const own = state.board.find(item => item.is_owner);
+      if (own) {
+        state.activePlan = {
+          nome: own.plano_nome || state.activePlan.nome,
+          total_aulas: own.total_aulas || state.activePlan.total_aulas || 0,
+          aulas_usadas: own.aulas_usadas || ownLessonsFromBoard().length,
+          status: own.plano_status || state.activePlan.status || 'ativo',
+        };
+      }
     }
 
     function renderStudentCards() {
@@ -736,6 +849,7 @@
       els.studentStrip.querySelector('[data-new-student]')?.addEventListener('click', () => {
         state.activeToken = '';
         state.activeStudent = { nome: '', email: '', telefone: '' };
+        state.activePlan = { nome: 'Curso Fotografia Prática', total_aulas: 0, aulas_usadas: 0, status: 'ativo' };
         state.draftLessons = [];
         state.dirty = false;
         render();
@@ -828,6 +942,8 @@
       return `
         <span class="student-name">${escapeHtml(item.aluno || state.activeStudent.nome || '')}</span>
         <span class="private-note">${escapeHtml(`${item.quantidade_horas || 1}h - ${item.cidade || 'Santo Antônio do Descoberto'}`)}</span>
+        ${item.modulo_nome || item.assunto_titulo ? `<span class="private-note">${escapeHtml([item.modulo_nome, item.assunto_titulo].filter(Boolean).join(' • '))}</span>` : ''}
+        <span class="private-note">${escapeHtml((item.status || 'pre_agendado').replace('_', ' '))}</span>
         ${details.length ? `<span class="private-note">${escapeHtml(details.join(' • '))}</span>` : ''}
         ${adminActions}
       `;
@@ -857,11 +973,24 @@
       }
     }
 
+    function renderPlan() {
+      els.planName.value = state.activePlan.nome || 'Curso Fotografia Prática';
+      els.planTotal.value = state.activePlan.total_aulas || 0;
+      els.planStatus.value = state.activePlan.status || 'ativo';
+      const used = currentLessons().length || state.activePlan.aulas_usadas || 0;
+      const total = Number(els.planTotal.value || 0);
+      const remaining = Math.max(0, total - used);
+      els.planProgress.textContent = total
+        ? `${used} usadas • ${remaining} restantes`
+        : `${used} aulas planejadas`;
+    }
+
     function render() {
       renderStudentCards();
       renderSchedule();
       renderTotal();
       renderAdmin();
+      renderPlan();
       updateSaveButton();
     }
 
@@ -883,6 +1012,9 @@
       els.slotCity.value = existing?.cidade || 'Santo Antônio do Descoberto';
       els.slotHours.innerHTML = state.horasOpcoes.map(hours => `<option value="${hours}">${hours} hora${hours > 1 ? 's' : ''}</option>`).join('');
       els.slotHours.value = existing?.quantidade_horas || 1;
+      renderModuleOptions(existing?.modulo_id || '', existing?.assunto_id || '');
+      renderStatusOptions(existing?.status || 'pre_agendado');
+      els.slotNotes.value = existing?.observacoes || '';
       renderHourOptions(existing?.aula_id || null);
       els.slotTime.value = existing?.horario || firstAvailableHour();
       updateSlotValue();
@@ -903,11 +1035,39 @@
       return option ? option.value : '';
     }
 
+    function renderModuleOptions(selectedModuleId = null, selectedSubjectId = null) {
+      els.slotModule.innerHTML = '<option value="">Sem módulo</option>' + state.course.modulos
+        .map(module => `<option value="${module.id}">${escapeHtml(module.nome)}</option>`)
+        .join('');
+      els.slotModule.value = selectedModuleId || '';
+      renderSubjectOptions(selectedSubjectId);
+    }
+
+    function renderSubjectOptions(selectedSubjectId = null) {
+      const moduleId = Number(els.slotModule.value || 0);
+      const subjects = state.course.assuntos.filter(subject => Number(subject.modulo_id) === moduleId);
+      els.slotSubject.innerHTML = '<option value="">Sem assunto</option>' + subjects
+        .map(subject => `<option value="${subject.id}">${escapeHtml(subject.titulo)}</option>`)
+        .join('');
+      els.slotSubject.value = selectedSubjectId || '';
+    }
+
+    function renderStatusOptions(selectedStatus = 'pre_agendado') {
+      els.slotLessonStatus.innerHTML = state.statusOpcoes
+        .map(status => `<option value="${status}">${status.replace('_', ' ')}</option>`)
+        .join('');
+      els.slotLessonStatus.value = selectedStatus || 'pre_agendado';
+    }
+
     function applySlot() {
       const data = els.slotDate.value;
       const horario = els.slotTime.value;
       const quantidadeHoras = Number(els.slotHours.value || 1);
       const cidade = els.slotCity.value.trim();
+      const moduloId = Number(els.slotModule.value || 0) || null;
+      const assuntoId = Number(els.slotSubject.value || 0) || null;
+      const status = els.slotLessonStatus.value || 'pre_agendado';
+      const observacoes = els.slotNotes.value.trim();
       if (!data || !horario) {
         els.slotStatus.textContent = 'Escolha data e horario.';
         return;
@@ -933,6 +1093,10 @@
         horario,
         quantidade_horas: quantidadeHoras,
         cidade,
+        modulo_id: moduloId,
+        assunto_id: assuntoId,
+        status,
+        observacoes,
         valor_hora_centavos: valorHora,
         valor_centavos: valorHora * quantidadeHoras,
       };
@@ -947,6 +1111,11 @@
       const payload = {
         token_publico: state.activeToken,
         aluno: state.activeStudent,
+        plano: {
+          nome: els.planName.value.trim() || 'Curso Fotografia Prática',
+          total_aulas: Number(els.planTotal.value || 0),
+          status: els.planStatus.value || 'ativo',
+        },
         aulas: state.draftLessons,
       };
       try {
@@ -1034,6 +1203,7 @@
     els.confirmSlot.addEventListener('click', applySlot);
     els.slotCity.addEventListener('input', updateSlotValue);
     els.slotHours.addEventListener('change', updateSlotValue);
+    els.slotModule.addEventListener('change', () => renderSubjectOptions());
     els.slotDate.addEventListener('change', () => {
       if (!dateMatchesDay(els.slotDate.value, state.slotDay)) {
         els.slotStatus.textContent = `Escolha uma data de ${state.slotDay.toLowerCase()}.`;
@@ -1044,6 +1214,25 @@
       if (!els.slotTime.value || els.slotTime.selectedOptions[0]?.disabled) {
         els.slotTime.value = firstAvailableHour();
       }
+    });
+
+    [els.planName, els.planTotal, els.planStatus].forEach(input => {
+      input.addEventListener('input', () => {
+        state.activePlan = {
+          nome: els.planName.value,
+          total_aulas: Number(els.planTotal.value || 0),
+          aulas_usadas: currentLessons().length,
+          status: els.planStatus.value,
+        };
+        state.dirty = true;
+        renderPlan();
+        updateSaveButton();
+      });
+      input.addEventListener('change', () => {
+        state.dirty = true;
+        renderPlan();
+        updateSaveButton();
+      });
     });
 
     els.adminTrigger.addEventListener('dblclick', () => {

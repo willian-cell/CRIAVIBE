@@ -10,6 +10,19 @@ agendamento_ensure_schema($db);
 $student = $token ? agendamento_fetch_student_by_token($db, $token) : null;
 $rows = agendamento_fetch_board($db);
 $items = agendamento_format_board($rows, $student['token_publico'] ?? null, $isAdmin);
+$course = agendamento_fetch_course($db);
+$plan = null;
+if ($student) {
+    $stmt = $db->prepare("
+        SELECT id, nome, total_aulas, aulas_usadas, status
+        FROM agendamento_planos
+        WHERE aluno_id = ?
+        ORDER BY id ASC
+        LIMIT 1
+    ");
+    $stmt->execute([(int)$student['id']]);
+    $plan = $stmt->fetch() ?: null;
+}
 
 $total = 0;
 foreach ($items as $item) {
@@ -25,6 +38,8 @@ $payload = [
     'horas_opcoes' => AGENDAMENTO_HORAS_OPCOES,
     'valor_santo_antonio_centavos' => AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS,
     'valor_outra_cidade_centavos' => AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS,
+    'status_opcoes' => AGENDAMENTO_STATUS,
+    'curso' => $course,
     'admin' => $isAdmin ? ['email' => $_SESSION['agendamento_admin_email']] : null,
     'aluno_atual' => $student ? [
         'token_publico' => $student['token_publico'],
@@ -32,6 +47,7 @@ $payload = [
         'email' => $student['email'],
         'telefone' => $student['telefone'],
         'total_centavos' => $total,
+        'plano' => $plan,
     ] : null,
     'aulas' => $items,
 ];

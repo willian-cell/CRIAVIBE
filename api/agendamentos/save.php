@@ -7,6 +7,7 @@ $studentData = agendamento_validate_student($body['aluno'] ?? []);
 $lessons = agendamento_validate_lessons($body['aulas'] ?? []);
 $token = trim($body['token_publico'] ?? '');
 $isAdmin = agendamento_is_admin();
+$planData = $body['plano'] ?? [];
 
 $db = db();
 agendamento_ensure_schema($db);
@@ -22,39 +23,75 @@ try {
     if (!$student) {
         $token = agendamento_public_token();
         $stmt = $db->prepare("
-            INSERT INTO pre_agendamento_alunos (token_publico, nome, email, telefone)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO agendamento_alunos (nome, email, telefone, token_publico, codigo_acesso)
+            VALUES (?, ?, ?, ?, ?)
         ");
-        $stmt->execute([$token, $studentData['nome'], $studentData['email'], $studentData['telefone']]);
+        $stmt->execute([$studentData['nome'], $studentData['email'], $studentData['telefone'], $token, agendamento_codigo_acesso()]);
         $studentId = (int)$db->lastInsertId();
+        agendamento_log($db, null, $studentId, 'aluno_criado', ['nome' => $studentData['nome']], 'aluno', $studentData['email']);
     } else {
         $studentId = (int)$student['id'];
         $stmt = $db->prepare("
-            UPDATE pre_agendamento_alunos
+            UPDATE agendamento_alunos
             SET nome = ?, email = ?, telefone = ?
             WHERE id = ?
         ");
         $stmt->execute([$studentData['nome'], $studentData['email'], $studentData['telefone'], $studentId]);
-        $db->prepare("DELETE FROM pre_agendamento_aulas WHERE aluno_id = ?")->execute([$studentId]);
+        $db->prepare("DELETE FROM agendamento_aulas WHERE aluno_id = ?")->execute([$studentId]);
+        agendamento_log($db, null, $studentId, 'aluno_atualizado', ['nome' => $studentData['nome']], $isAdmin ? 'fotografo' : 'aluno', $isAdmin ? ($_SESSION['agendamento_admin_email'] ?? null) : $studentData['email']);
+    }
+
+    $planName = trim($planData['nome'] ?? 'Curso Fotografia Prática');
+    $totalAulas = max(0, (int)($planData['total_aulas'] ?? count($lessons)));
+    $planStatus = trim($planData['status'] ?? 'ativo');
+    if (!in_array($planStatus, ['ativo', 'pausado', 'concluido', 'cancelado'], true)) {
+        $planStatus = 'ativo';
+    }
+
+    $planStmt = $db->prepare("SELECT id FROM agendamento_planos WHERE aluno_id = ? ORDER BY id ASC LIMIT 1");
+    $planStmt->execute([$studentId]);
+    $planId = (int)($planStmt->fetchColumn() ?: 0);
+    if ($planId > 0) {
+        $updPlan = $db->prepare("
+            UPDATE agendamento_planos
+            SET nome = ?, total_aulas = ?, aulas_usadas = ?, status = ?
+            WHERE id = ?
+        ");
+        $updPlan->execute([$planName, $totalAulas, count($lessons), $planStatus, $planId]);
+    } else {
+        $insPlan = $db->prepare("
+            INSERT INTO agendamento_planos (aluno_id, nome, total_aulas, aulas_usadas, status)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $insPlan->execute([$studentId, $planName, $totalAulas, count($lessons), $planStatus]);
+        $planId = (int)$db->lastInsertId();
     }
 
     $insert = $db->prepare("
-        INSERT INTO pre_agendamento_aulas (
+        INSERT INTO agendamento_aulas (
             aluno_id,
+            plano_id,
+            modulo_id,
+            assunto_id,
             dia_semana,
             data_aula,
             horario,
             quantidade_horas,
             cidade,
             valor_hora_centavos,
-            valor_centavos
+            valor_centavos,
+            status,
+            observacoes
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     foreach ($lessons as $lesson) {
         $insert->execute([
             $studentId,
+            $planId,
+            $lesson['modulo_id'],
+            $lesson['assunto_id'],
             $lesson['dia_semana'],
             $lesson['data_aula'],
             $lesson['horario'],
@@ -62,7 +99,10 @@ try {
             $lesson['cidade'],
             $lesson['valor_hora_centavos'],
             $lesson['valor_centavos'],
+            $lesson['status'],
+            $lesson['observacoes'],
         ]);
+        agendamento_log($db, (int)$db->lastInsertId(), $studentId, 'aula_salva', $lesson, $isAdmin ? 'fotografo' : 'aluno', $isAdmin ? ($_SESSION['agendamento_admin_email'] ?? null) : $studentData['email']);
     }
 
     $db->commit();

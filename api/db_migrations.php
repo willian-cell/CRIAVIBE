@@ -185,6 +185,97 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS agendamento_alunos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(160) NOT NULL,
+            email VARCHAR(190) NOT NULL UNIQUE,
+            telefone VARCHAR(40) NOT NULL,
+            token_publico VARCHAR(96) NOT NULL UNIQUE,
+            codigo_acesso VARCHAR(12) DEFAULT NULL,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS agendamento_modulos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(160) NOT NULL,
+            descricao TEXT NULL,
+            ordem INT NOT NULL DEFAULT 0,
+            ativo TINYINT(1) NOT NULL DEFAULT 1,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS agendamento_assuntos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            modulo_id INT NOT NULL,
+            titulo VARCHAR(180) NOT NULL,
+            descricao TEXT NULL,
+            ordem INT NOT NULL DEFAULT 0,
+            ativo TINYINT(1) NOT NULL DEFAULT 1,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_assuntos_modulo (modulo_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS agendamento_planos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            aluno_id INT NOT NULL,
+            nome VARCHAR(180) NOT NULL,
+            total_aulas INT NOT NULL DEFAULT 0,
+            aulas_usadas INT NOT NULL DEFAULT 0,
+            status VARCHAR(30) NOT NULL DEFAULT 'ativo',
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_planos_aluno (aluno_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS agendamento_aulas (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            aluno_id INT NOT NULL,
+            plano_id INT NULL,
+            modulo_id INT NULL,
+            assunto_id INT NULL,
+            dia_semana VARCHAR(20) NOT NULL,
+            data_aula DATE NOT NULL,
+            horario VARCHAR(5) NOT NULL,
+            quantidade_horas INT NOT NULL DEFAULT 1,
+            cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
+            valor_hora_centavos INT NOT NULL DEFAULT 7500,
+            valor_centavos INT NOT NULL DEFAULT 7500,
+            status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
+            observacoes TEXT NULL,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uniq_agendamento_slot (data_aula, horario),
+            INDEX idx_aulas_aluno (aluno_id),
+            INDEX idx_aulas_plano (plano_id),
+            INDEX idx_aulas_data (data_aula)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS agendamento_historico (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            aula_id INT NULL,
+            aluno_id INT NULL,
+            acao VARCHAR(80) NOT NULL,
+            detalhes TEXT NULL,
+            autor_tipo VARCHAR(30) NOT NULL DEFAULT 'sistema',
+            autor_email VARCHAR(190) NULL,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_historico_aula (aula_id),
+            INDEX idx_historico_aluno (aluno_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
     add_column_if_missing($db, 'usuarios', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'usuarios', 'foto_perfil', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'clientes', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
@@ -223,6 +314,15 @@ try {
     add_column_if_missing($db, 'pre_agendamento_aulas', 'quantidade_horas', 'INT NOT NULL DEFAULT 1');
     add_column_if_missing($db, 'pre_agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
     add_column_if_missing($db, 'pre_agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
+    add_column_if_missing($db, 'agendamento_alunos', 'codigo_acesso', 'VARCHAR(12) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'plano_id', 'INT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'modulo_id', 'INT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'assunto_id', 'INT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'quantidade_horas', 'INT NOT NULL DEFAULT 1');
+    add_column_if_missing($db, 'agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
+    add_column_if_missing($db, 'agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
+    add_column_if_missing($db, 'agendamento_aulas', 'status', "VARCHAR(30) NOT NULL DEFAULT 'pre_agendado'");
+    add_column_if_missing($db, 'agendamento_aulas', 'observacoes', 'TEXT NULL');
 
     try {
         if (index_exists($db, 'pre_agendamento_aulas', 'uniq_pre_agendamento_dia')) {
