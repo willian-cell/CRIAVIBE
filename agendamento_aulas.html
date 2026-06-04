@@ -950,9 +950,31 @@
     });
 
     els.adminLogout.addEventListener('click', async () => {
-      await request('/admin_logout.php', { method: 'POST', body: '{}' });
-      state.admin = null;
-      await loadBoard(state.activeToken);
+      const previousText = els.adminLogout.textContent;
+      els.adminLogout.disabled = true;
+      els.adminLogout.textContent = 'Saindo...';
+
+      try {
+        await request('/admin_logout.php', { method: 'POST', body: '{}' });
+        state.admin = null;
+        state.activeToken = state.tokens.includes(state.activeToken) ? state.activeToken : (state.tokens[0] || '');
+
+        if (!state.activeToken) {
+          state.activeStudent = { nome: '', email: '', telefone: '' };
+          state.draftLessons = [];
+          state.board = [];
+          state.dirty = false;
+          await loadBoard('');
+        } else {
+          await loadBoard(state.activeToken);
+        }
+      } catch (error) {
+        alert(error.message);
+        renderAdmin();
+      } finally {
+        els.adminLogout.disabled = false;
+        els.adminLogout.textContent = previousText;
+      }
     });
 
     async function init() {
