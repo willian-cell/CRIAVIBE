@@ -122,14 +122,31 @@ function agendamento_ensure_schema(PDO $db): void {
         ");
         $stmt->execute([$column]);
         if ((int)$stmt->fetchColumn() === 0) {
-            $db->exec("ALTER TABLE agendamento_aulas ADD COLUMN `$column` $definition");
+            try {
+                $db->exec("ALTER TABLE agendamento_aulas ADD COLUMN `$column` $definition");
+            } catch (Throwable $e) {
+                error_log("Nao foi possivel adicionar coluna {$column} em agendamento_aulas: " . $e->getMessage());
+            }
         }
     }
 
-    agendamento_drop_unique_email_if_needed($db);
+    try {
+        agendamento_drop_unique_email_if_needed($db);
+    } catch (Throwable $e) {
+        error_log('Nao foi possivel ajustar indice de email em agendamento_alunos: ' . $e->getMessage());
+    }
 
-    agendamento_seed_course_defaults($db);
-    agendamento_migrate_pre_agendamento($db);
+    try {
+        agendamento_seed_course_defaults($db);
+    } catch (Throwable $e) {
+        error_log('Nao foi possivel semear modulos padrao de agendamento: ' . $e->getMessage());
+    }
+
+    try {
+        agendamento_migrate_pre_agendamento($db);
+    } catch (Throwable $e) {
+        error_log('Nao foi possivel migrar pre_agendamento legado: ' . $e->getMessage());
+    }
 }
 
 function agendamento_is_admin(): bool {

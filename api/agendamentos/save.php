@@ -14,7 +14,11 @@ try {
     agendamento_ensure_schema($db);
 } catch (Throwable $e) {
     error_log('Erro ao preparar schema de agendamento: ' . $e->getMessage());
-    json_out(['status' => 'erro', 'mensagem' => 'Nao foi possivel preparar o banco de agendamento. Verifique as migracoes.'], 500);
+    json_out([
+        'status' => 'erro',
+        'codigo' => 'schema_prepare',
+        'mensagem' => 'Nao foi possivel preparar o banco de agendamento. Verifique os logs do deploy.',
+    ], 500);
 }
 
 $student = $token ? agendamento_fetch_student_by_token($db, $token) : null;
