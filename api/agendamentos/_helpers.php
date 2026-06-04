@@ -105,6 +105,20 @@ function agendamento_ensure_schema(PDO $db): void {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
+    agendamento_ensure_columns($db, 'agendamento_alunos', [
+        'codigo_acesso' => 'VARCHAR(12) DEFAULT NULL',
+        'criado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+        'atualizado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+    ]);
+
+    agendamento_ensure_columns($db, 'agendamento_planos', [
+        'total_aulas' => 'INT NOT NULL DEFAULT 0',
+        'aulas_usadas' => 'INT NOT NULL DEFAULT 0',
+        'status' => "VARCHAR(30) NOT NULL DEFAULT 'ativo'",
+        'criado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+        'atualizado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+    ]);
+
     foreach ([
         'plano_id' => 'INT NULL',
         'modulo_id' => 'INT NULL',
@@ -177,6 +191,18 @@ function agendamento_column_exists(PDO $db, string $table, string $column): bool
     ");
     $stmt->execute([$table, $column]);
     return (int)$stmt->fetchColumn() > 0;
+}
+
+function agendamento_ensure_columns(PDO $db, string $table, array $columns): void {
+    foreach ($columns as $column => $definition) {
+        if (agendamento_column_exists($db, $table, $column)) continue;
+
+        try {
+            $db->exec("ALTER TABLE `$table` ADD COLUMN `$column` $definition");
+        } catch (Throwable $e) {
+            error_log("Nao foi possivel adicionar coluna {$column} em {$table}: " . $e->getMessage());
+        }
+    }
 }
 
 function agendamento_index_exists(PDO $db, string $table, string $index): bool {

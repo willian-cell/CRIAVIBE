@@ -130,9 +130,17 @@ try {
         json_out(['status' => 'erro', 'mensagem' => 'Esse horario ja foi preenchido para a data escolhida.'], 409);
     }
     error_log('Erro ao salvar pre-agendamento: ' . $e->getMessage());
-    json_out(['status' => 'erro', 'mensagem' => 'Nao foi possivel salvar o pre-agendamento.'], 500);
+    json_out([
+        'status' => 'erro',
+        'codigo' => 'save_database',
+        'mensagem' => 'Nao foi possivel salvar o pre-agendamento. Codigo SQL: ' . $e->getCode(),
+    ], 500);
 } catch (Throwable $e) {
     $db->rollBack();
     error_log('Erro ao salvar pre-agendamento: ' . $e->getMessage());
-    json_out(['status' => 'erro', 'mensagem' => 'Nao foi possivel salvar o pre-agendamento.'], 500);
+    json_out([
+        'status' => 'erro',
+        'codigo' => 'save_unexpected',
+        'mensagem' => 'Nao foi possivel salvar o pre-agendamento. Erro inesperado no servidor.',
+    ], 500);
 }

@@ -316,6 +316,11 @@ try {
     add_column_if_missing($db, 'pre_agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
     add_column_if_missing($db, 'pre_agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
     add_column_if_missing($db, 'agendamento_alunos', 'codigo_acesso', 'VARCHAR(12) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_planos', 'total_aulas', 'INT NOT NULL DEFAULT 0');
+    add_column_if_missing($db, 'agendamento_planos', 'aulas_usadas', 'INT NOT NULL DEFAULT 0');
+    add_column_if_missing($db, 'agendamento_planos', 'status', "VARCHAR(30) NOT NULL DEFAULT 'ativo'");
+    add_column_if_missing($db, 'agendamento_planos', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+    add_column_if_missing($db, 'agendamento_planos', 'atualizado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'agendamento_aulas', 'plano_id', 'INT NULL');
     add_column_if_missing($db, 'agendamento_aulas', 'modulo_id', 'INT NULL');
     add_column_if_missing($db, 'agendamento_aulas', 'assunto_id', 'INT NULL');
