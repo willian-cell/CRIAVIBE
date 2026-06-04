@@ -173,11 +173,13 @@ try {
             dia_semana VARCHAR(20) NOT NULL,
             data_aula DATE NOT NULL,
             horario VARCHAR(5) NOT NULL,
-            valor_centavos INT NOT NULL DEFAULT 12000,
+            quantidade_horas INT NOT NULL DEFAULT 1,
+            cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
+            valor_hora_centavos INT NOT NULL DEFAULT 7500,
+            valor_centavos INT NOT NULL DEFAULT 7500,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY uniq_pre_agendamento_dia (dia_semana),
-            UNIQUE KEY uniq_pre_agendamento_slot (dia_semana, data_aula, horario),
+            UNIQUE KEY uniq_pre_agendamento_slot (data_aula, horario),
             INDEX idx_pre_agendamento_aluno (aluno_id),
             INDEX idx_pre_agendamento_data (data_aula)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
@@ -218,13 +220,16 @@ try {
     add_column_if_missing($db, 'pre_agendamento_alunos', 'atualizado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'pre_agendamento_aulas', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'pre_agendamento_aulas', 'atualizado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+    add_column_if_missing($db, 'pre_agendamento_aulas', 'quantidade_horas', 'INT NOT NULL DEFAULT 1');
+    add_column_if_missing($db, 'pre_agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
+    add_column_if_missing($db, 'pre_agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
 
     try {
-        if (!index_exists($db, 'pre_agendamento_aulas', 'uniq_pre_agendamento_dia')) {
-            $db->exec("ALTER TABLE pre_agendamento_aulas ADD UNIQUE INDEX uniq_pre_agendamento_dia (dia_semana)");
+        if (index_exists($db, 'pre_agendamento_aulas', 'uniq_pre_agendamento_dia')) {
+            $db->exec("ALTER TABLE pre_agendamento_aulas DROP INDEX uniq_pre_agendamento_dia");
         }
     } catch (Throwable $e) {
-        error_log('Não foi possível adicionar UNIQUE INDEX uniq_pre_agendamento_dia: ' . $e->getMessage());
+        error_log('Não foi possível remover UNIQUE INDEX uniq_pre_agendamento_dia: ' . $e->getMessage());
     }
 
     // Adicionar colunas para caminhos de thumbnails

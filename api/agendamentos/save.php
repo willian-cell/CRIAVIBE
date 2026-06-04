@@ -39,8 +39,17 @@ try {
     }
 
     $insert = $db->prepare("
-        INSERT INTO pre_agendamento_aulas (aluno_id, dia_semana, data_aula, horario, valor_centavos)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO pre_agendamento_aulas (
+            aluno_id,
+            dia_semana,
+            data_aula,
+            horario,
+            quantidade_horas,
+            cidade,
+            valor_hora_centavos,
+            valor_centavos
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     foreach ($lessons as $lesson) {
@@ -49,6 +58,9 @@ try {
             $lesson['dia_semana'],
             $lesson['data_aula'],
             $lesson['horario'],
+            $lesson['quantidade_horas'],
+            $lesson['cidade'],
+            $lesson['valor_hora_centavos'],
             $lesson['valor_centavos'],
         ]);
     }
@@ -63,7 +75,7 @@ try {
 } catch (PDOException $e) {
     $db->rollBack();
     if ($e->getCode() === '23000') {
-        json_out(['status' => 'erro', 'mensagem' => 'Esse dia da semana ja foi preenchido por outro aluno.'], 409);
+        json_out(['status' => 'erro', 'mensagem' => 'Esse horario ja foi preenchido para a data escolhida.'], 409);
     }
     error_log('Erro ao salvar pre-agendamento: ' . $e->getMessage());
     json_out(['status' => 'erro', 'mensagem' => 'Nao foi possivel salvar o pre-agendamento.'], 500);

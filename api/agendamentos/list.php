@@ -22,7 +22,9 @@ $payload = [
     'status' => 'ok',
     'dias' => AGENDAMENTO_DIAS,
     'horarios' => AGENDAMENTO_HORARIOS,
-    'valor_centavos' => AGENDAMENTO_VALOR_CENTAVOS,
+    'horas_opcoes' => AGENDAMENTO_HORAS_OPCOES,
+    'valor_santo_antonio_centavos' => AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS,
+    'valor_outra_cidade_centavos' => AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS,
     'admin' => $isAdmin ? ['email' => $_SESSION['agendamento_admin_email']] : null,
     'aluno_atual' => $student ? [
         'token_publico' => $student['token_publico'],

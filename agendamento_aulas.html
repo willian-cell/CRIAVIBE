@@ -495,9 +495,16 @@
       <h2 id="slotTitle">Escolher aula</h2>
       <label for="slotDate">Data</label>
       <input type="date" id="slotDate">
+      <label for="slotCity">Cidade</label>
+      <input type="text" id="slotCity" list="cityOptions" value="Santo Antônio do Descoberto">
+      <datalist id="cityOptions">
+        <option value="Santo Antônio do Descoberto"></option>
+      </datalist>
+      <label for="slotHours">Quantidade de horas</label>
+      <select id="slotHours"></select>
       <label for="slotTime">Horário</label>
       <select id="slotTime"></select>
-      <label>Valor fixo</label>
+      <label>Valor calculado</label>
       <input type="text" id="slotValue" disabled>
       <div class="modal-actions">
         <button class="ghost-button" type="button" data-close-modal>Cancelar</button>
@@ -539,8 +546,11 @@
       admin: null,
       dirty: false,
       slotDay: null,
-      valorCentavos: 12000,
+      slotAulaId: null,
+      valorSantoAntonioCentavos: 7500,
+      valorOutraCidadeCentavos: 12000,
       horarios: ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
+      horasOpcoes: [1, 2, 3, 4, 5, 6, 7, 8],
     };
 
     const els = {
@@ -550,6 +560,8 @@
       slotModal: document.getElementById('slotModal'),
       slotTitle: document.getElementById('slotTitle'),
       slotDate: document.getElementById('slotDate'),
+      slotCity: document.getElementById('slotCity'),
+      slotHours: document.getElementById('slotHours'),
       slotTime: document.getElementById('slotTime'),
       slotValue: document.getElementById('slotValue'),
       slotStatus: document.getElementById('slotStatus'),
@@ -566,6 +578,56 @@
 
     function money(cents) {
       return (Number(cents || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function normalizeCity(value) {
+      return String(value || '')
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    }
+
+    function isSantoAntonio(value) {
+      return normalizeCity(value).includes('santo antonio do descoberto');
+    }
+
+    function valorHoraForCity(value) {
+      return isSantoAntonio(value) ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
+    }
+
+    function totalForModal() {
+      return valorHoraForCity(els.slotCity.value) * Number(els.slotHours.value || 1);
+    }
+
+    function updateSlotValue() {
+      els.slotValue.value = money(totalForModal());
+    }
+
+    function dayIndex(day) {
+      return DAYS.indexOf(day) + 1;
+    }
+
+    function dateMatchesDay(dateValue, day) {
+      if (!dateValue) return false;
+      const [year, month, date] = dateValue.split('-').map(Number);
+      const local = new Date(year, month - 1, date);
+      return local.getDay() === dayIndex(day);
+    }
+
+    function nextDateForDay(day) {
+      const target = dayIndex(day);
+      const base = new Date();
+      base.setHours(0, 0, 0, 0);
+      const diff = (target - base.getDay() + 7) % 7;
+      base.setDate(base.getDate() + diff);
+      return base.toISOString().slice(0, 10);
+    }
+
+    function occupiedHoursFor(dateValue, ignoreAulaId = null) {
+      return state.board
+        .filter(item => item.data_aula === dateValue && item.aula_id !== ignoreAulaId)
+        .map(item => item.horario);
     }
 
     async function request(path, options = {}) {
@@ -606,6 +668,9 @@
         dia_semana: item.dia_semana,
         data_aula: item.data_aula,
         horario: item.horario,
+        quantidade_horas: item.quantidade_horas || 1,
+        cidade: item.cidade || 'Santo Antônio do Descoberto',
+        valor_hora_centavos: item.valor_hora_centavos || state.valorSantoAntonioCentavos,
         valor_centavos: item.valor_centavos,
       }));
       state.dirty = false;
@@ -614,8 +679,10 @@
     async function loadBoard(token = state.activeToken) {
       const query = token ? `?token=${encodeURIComponent(token)}` : '';
       const data = await request('/list.php' + query);
-      state.valorCentavos = data.valor_centavos || 12000;
+      state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 7500;
+      state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 12000;
       state.horarios = data.horarios || state.horarios;
+      state.horasOpcoes = data.horas_opcoes || state.horasOpcoes;
       state.board = data.aulas || [];
       state.admin = data.admin;
       if (data.aluno_atual) {
@@ -700,21 +767,22 @@
     function renderSchedule() {
       const lessons = currentLessons();
       els.scheduleBody.innerHTML = DAYS.map(day => {
-        const own = lessons.find(item => item.dia_semana === day);
-        const occupied = state.board.find(item => item.dia_semana === day && !item.is_owner);
-        const item = own || occupied;
+        const dayLessons = [
+          ...lessons.filter(item => item.dia_semana === day),
+          ...state.board.filter(item => item.dia_semana === day && !item.is_owner),
+        ];
+        const primary = dayLessons[0];
         const canPick = hasCompleteStudent() && (!state.activeToken || state.dirty || state.admin);
-        const isLocked = Boolean(occupied && !state.admin && !own);
 
         return `
           <tr>
             <td>${day}</td>
             <td class="slot-cell" data-day="${day}">
-              ${item ? studentCell(item, isLocked) : slotButton(canPick, day)}
+              ${dayLessons.length ? dayLessons.map(item => studentCell(item, Boolean(!item.is_owner && !state.admin))).join('') : slotButton(canPick, day)}
             </td>
-            <td class="slot-cell" data-day="${day}">${item ? formatDate(item.data_aula) : slotButton(canPick, day)}</td>
-            <td class="slot-cell" data-day="${day}">${item ? item.horario : slotButton(canPick, day)}</td>
-            <td class="slot-cell" data-day="${day}">${item ? money(item.valor_centavos) : slotButton(canPick, day)}</td>
+            <td class="slot-cell" data-day="${day}">${primary ? uniqueText(dayLessons.map(item => formatDate(item.data_aula))).join('<br>') : slotButton(canPick, day)}</td>
+            <td class="slot-cell" data-day="${day}">${primary ? dayLessons.map(item => item.horario).join('<br>') : slotButton(canPick, day)}</td>
+            <td class="slot-cell" data-day="${day}">${primary ? money(dayLessons.reduce((sum, item) => sum + Number(item.valor_centavos || 0), 0)) : slotButton(canPick, day)}</td>
           </tr>
         `;
       }).join('');
@@ -722,11 +790,7 @@
       els.scheduleBody.querySelectorAll('.slot-cell').forEach(cell => {
         cell.addEventListener('click', () => {
           const day = cell.dataset.day;
-          const occupied = state.board.find(item => item.dia_semana === day && !item.is_owner);
-          const own = currentLessons().find(item => item.dia_semana === day);
-          if (occupied && !state.admin && !own) return;
           if (!hasCompleteStudent()) return;
-          if (state.activeToken && !state.dirty && !state.admin && !own) return;
           openSlot(day);
         });
       });
@@ -764,9 +828,14 @@
 
       return `
         <span class="student-name">${escapeHtml(item.aluno || state.activeStudent.nome || '')}</span>
+        <span class="private-note">${escapeHtml(`${item.quantidade_horas || 1}h - ${item.cidade || 'Santo Antônio do Descoberto'}`)}</span>
         ${details.length ? `<span class="private-note">${escapeHtml(details.join(' • '))}</span>` : ''}
         ${adminActions}
       `;
+    }
+
+    function uniqueText(values) {
+      return [...new Set(values.filter(Boolean))];
     }
 
     function slotButton(canPick, day) {
@@ -808,29 +877,67 @@
     function openSlot(day) {
       state.slotDay = day;
       const existing = currentLessons().find(item => item.dia_semana === day);
+      state.slotAulaId = existing?.aula_id || null;
       els.slotTitle.textContent = `Aula - ${day}`;
-      els.slotDate.value = existing?.data_aula || '';
-      els.slotValue.value = money(state.valorCentavos);
-      els.slotTime.innerHTML = state.horarios.map(hour => `<option value="${hour}">${hour}</option>`).join('');
-      els.slotTime.value = existing?.horario || state.horarios[0];
+      els.slotDate.min = nextDateForDay(day);
+      els.slotDate.value = existing?.data_aula || nextDateForDay(day);
+      els.slotCity.value = existing?.cidade || 'Santo Antônio do Descoberto';
+      els.slotHours.innerHTML = state.horasOpcoes.map(hours => `<option value="${hours}">${hours} hora${hours > 1 ? 's' : ''}</option>`).join('');
+      els.slotHours.value = existing?.quantidade_horas || 1;
+      renderHourOptions(existing?.aula_id || null);
+      els.slotTime.value = existing?.horario || firstAvailableHour();
+      updateSlotValue();
       els.slotStatus.textContent = '';
       openModal(els.slotModal);
+    }
+
+    function renderHourOptions(ignoreAulaId = null) {
+      const occupied = occupiedHoursFor(els.slotDate.value, ignoreAulaId);
+      els.slotTime.innerHTML = state.horarios.map(hour => {
+        const unavailable = occupied.includes(hour);
+        return `<option value="${hour}" ${unavailable ? 'disabled' : ''}>${hour}${unavailable ? ' - indisponível' : ''}</option>`;
+      }).join('');
+    }
+
+    function firstAvailableHour() {
+      const option = [...els.slotTime.options].find(item => !item.disabled);
+      return option ? option.value : '';
     }
 
     function applySlot() {
       const data = els.slotDate.value;
       const horario = els.slotTime.value;
+      const quantidadeHoras = Number(els.slotHours.value || 1);
+      const cidade = els.slotCity.value.trim();
       if (!data || !horario) {
         els.slotStatus.textContent = 'Escolha data e horario.';
         return;
       }
+      if (!dateMatchesDay(data, state.slotDay)) {
+        els.slotStatus.textContent = `A data precisa cair em ${state.slotDay.toLowerCase()}.`;
+        return;
+      }
+      if (!cidade) {
+        els.slotStatus.textContent = 'Informe a cidade da aula.';
+        return;
+      }
+      if (occupiedHoursFor(data, state.slotAulaId).includes(horario)) {
+        els.slotStatus.textContent = 'Horario indisponivel para esta data.';
+        renderHourOptions(state.slotAulaId);
+        els.slotTime.value = firstAvailableHour();
+        return;
+      }
+      const valorHora = valorHoraForCity(cidade);
       const lesson = {
         dia_semana: state.slotDay,
         data_aula: data,
         horario,
-        valor_centavos: state.valorCentavos,
+        quantidade_horas: quantidadeHoras,
+        cidade,
+        valor_hora_centavos: valorHora,
+        valor_centavos: valorHora * quantidadeHoras,
       };
-      state.draftLessons = state.draftLessons.filter(item => item.dia_semana !== state.slotDay);
+      state.draftLessons = state.draftLessons.filter(item => !(item.data_aula === data && item.horario === horario));
       state.draftLessons.push(lesson);
       state.dirty = true;
       closeModal(els.slotModal);
@@ -926,6 +1033,19 @@
     });
 
     els.confirmSlot.addEventListener('click', applySlot);
+    els.slotCity.addEventListener('input', updateSlotValue);
+    els.slotHours.addEventListener('change', updateSlotValue);
+    els.slotDate.addEventListener('change', () => {
+      if (!dateMatchesDay(els.slotDate.value, state.slotDay)) {
+        els.slotStatus.textContent = `Escolha uma data de ${state.slotDay.toLowerCase()}.`;
+      } else {
+        els.slotStatus.textContent = '';
+      }
+      renderHourOptions(state.slotAulaId);
+      if (!els.slotTime.value || els.slotTime.selectedOptions[0]?.disabled) {
+        els.slotTime.value = firstAvailableHour();
+      }
+    });
 
     els.adminTrigger.addEventListener('dblclick', () => {
       els.adminStatus.textContent = '';
