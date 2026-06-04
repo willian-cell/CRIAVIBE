@@ -484,6 +484,59 @@ function agendamento_log(PDO $db, ?int $aulaId, ?int $alunoId, string $acao, arr
     ]);
 }
 
+function agendamento_time_to_minutes(string $time): ?int {
+    if (!preg_match('/^(\d{2}):(\d{2})$/', $time, $matches)) {
+        return null;
+    }
+    return ((int)$matches[1] * 60) + (int)$matches[2];
+}
+
+function agendamento_ranges_overlap(string $startA, int $durationA, string $startB, int $durationB): bool {
+    $aStart = agendamento_time_to_minutes($startA);
+    $bStart = agendamento_time_to_minutes($startB);
+    if ($aStart === null || $bStart === null) return false;
+
+    $aEnd = $aStart + max(1, $durationA) * 60;
+    $bEnd = $bStart + max(1, $durationB) * 60;
+
+    return $aStart < $bEnd && $bStart < $aEnd;
+}
+
+function agendamento_assert_no_schedule_overlap(PDO $db, array $lessons, ?int $studentId = null): void {
+    $dates = array_values(array_unique(array_map(fn($lesson) => $lesson['data_aula'], $lessons)));
+    if (!$dates) return;
+
+    $placeholders = implode(',', array_fill(0, count($dates), '?'));
+    $params = $dates;
+    $sql = "
+        SELECT aluno_id, data_aula, horario, quantidade_horas
+        FROM agendamento_aulas
+        WHERE data_aula IN ($placeholders)
+    ";
+    if ($studentId) {
+        $sql .= " AND aluno_id <> ?";
+        $params[] = $studentId;
+    }
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+    $saved = $stmt->fetchAll();
+
+    foreach ($lessons as $lesson) {
+        foreach ($saved as $item) {
+            if ($item['data_aula'] !== $lesson['data_aula']) continue;
+            if (agendamento_ranges_overlap(
+                $lesson['horario'],
+                (int)$lesson['quantidade_horas'],
+                $item['horario'],
+                (int)($item['quantidade_horas'] ?? 1)
+            )) {
+                json_out(['status' => 'erro', 'mensagem' => 'Esse intervalo de horario ja foi preenchido para a data escolhida.'], 409);
+            }
+        }
+    }
+}
+
 function agendamento_valor_hora_centavos(string $cidade): int {
     $normalized = strtolower(trim($cidade));
     $normalized = str_replace(['â', 'ã', 'á', 'à', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú', 'ç'], ['a', 'a', 'a', 'a', 'e', 'e', 'i', 'o', 'o', 'o', 'u', 'c'], $normalized);

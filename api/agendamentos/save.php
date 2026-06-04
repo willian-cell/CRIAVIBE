@@ -67,6 +67,8 @@ try {
         $planId = (int)$db->lastInsertId();
     }
 
+    agendamento_assert_no_schedule_overlap($db, $lessons, $studentId);
+
     $insert = $db->prepare("
         INSERT INTO agendamento_aulas (
             aluno_id,

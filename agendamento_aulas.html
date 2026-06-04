@@ -709,10 +709,17 @@
       return base.toISOString().slice(0, 10);
     }
 
-    function occupiedHoursFor(dateValue, ignoreAulaId = null) {
+    function occupiedHoursFor(dateValue, ignoreAulaId = null, duration = Number(els.slotHours?.value || 1)) {
       return state.board
         .filter(item => item.data_aula === dateValue && item.aula_id !== ignoreAulaId)
-        .map(item => item.horario);
+        .reduce((blocked, item) => {
+          state.horarios.forEach(hour => {
+            if (timeRangesOverlap(hour, duration, item.horario, item.quantidade_horas || 1)) {
+              blocked.add(hour);
+            }
+          });
+          return blocked;
+        }, new Set());
     }
 
     async function request(path, options = {}) {
@@ -894,7 +901,7 @@
               ${dayLessons.length ? dayLessons.map(item => studentCell(item, Boolean(!item.is_owner && !state.admin))).join('') : slotButton(canPick, day)}
             </td>
             <td class="slot-cell" data-day="${day}">${primary ? uniqueText(dayLessons.map(item => formatDate(item.data_aula))).join('<br>') : slotButton(canPick, day)}</td>
-            <td class="slot-cell" data-day="${day}">${primary ? dayLessons.map(item => item.horario).join('<br>') : slotButton(canPick, day)}</td>
+            <td class="slot-cell" data-day="${day}">${primary ? dayLessons.map(item => formatTimeRange(item.horario, item.quantidade_horas)).join('<br>') : slotButton(canPick, day)}</td>
             <td class="slot-cell" data-day="${day}">${primary ? money(dayLessons.reduce((sum, item) => sum + Number(item.valor_centavos || 0), 0)) : slotButton(canPick, day)}</td>
           </tr>
         `;
@@ -1024,9 +1031,10 @@
 
     function renderHourOptions(ignoreAulaId = null) {
       const occupied = occupiedHoursFor(els.slotDate.value, ignoreAulaId);
+      const duration = Number(els.slotHours.value || 1);
       els.slotTime.innerHTML = state.horarios.map(hour => {
-        const unavailable = occupied.includes(hour);
-        return `<option value="${hour}" ${unavailable ? 'disabled' : ''}>${hour}${unavailable ? ' - indisponível' : ''}</option>`;
+        const unavailable = occupied.has(hour);
+        return `<option value="${hour}" ${unavailable ? 'disabled' : ''}>${formatTimeRange(hour, duration)}${unavailable ? ' - indisponível' : ''}</option>`;
       }).join('');
     }
 
@@ -1080,7 +1088,7 @@
         els.slotStatus.textContent = 'Informe a cidade da aula.';
         return;
       }
-      if (occupiedHoursFor(data, state.slotAulaId).includes(horario)) {
+      if (occupiedHoursFor(data, state.slotAulaId, quantidadeHoras).has(horario)) {
         els.slotStatus.textContent = 'Horario indisponivel para esta data.';
         renderHourOptions(state.slotAulaId);
         els.slotTime.value = firstAvailableHour();
@@ -1183,6 +1191,30 @@
       return `${day}/${month}/${year}`;
     }
 
+    function timeToMinutes(value) {
+      const [hour, minute] = String(value || '').split(':').map(Number);
+      if (!Number.isFinite(hour) || !Number.isFinite(minute)) return null;
+      return hour * 60 + minute;
+    }
+
+    function timeRangesOverlap(startA, durationA, startB, durationB) {
+      const aStart = timeToMinutes(startA);
+      const bStart = timeToMinutes(startB);
+      if (aStart === null || bStart === null) return false;
+      const aEnd = aStart + Number(durationA || 1) * 60;
+      const bEnd = bStart + Number(durationB || 1) * 60;
+      return aStart < bEnd && bStart < aEnd;
+    }
+
+    function formatTimeRange(start, duration = 1) {
+      if (!start) return '';
+      const [hour, minute] = start.split(':').map(Number);
+      if (!Number.isFinite(hour) || !Number.isFinite(minute)) return start;
+      const endHour = hour + Number(duration || 1);
+      const end = `${String(endHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+      return `${start} às ${end}`;
+    }
+
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, char => ({
         '&': '&amp;',
@@ -1202,7 +1234,10 @@
 
     els.confirmSlot.addEventListener('click', applySlot);
     els.slotCity.addEventListener('input', updateSlotValue);
-    els.slotHours.addEventListener('change', updateSlotValue);
+    els.slotHours.addEventListener('change', () => {
+      updateSlotValue();
+      renderHourOptions(state.slotAulaId);
+    });
     els.slotModule.addEventListener('change', () => renderSubjectOptions());
     els.slotDate.addEventListener('change', () => {
       if (!dateMatchesDay(els.slotDate.value, state.slotDay)) {
