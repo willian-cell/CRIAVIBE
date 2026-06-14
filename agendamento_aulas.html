@@ -1202,6 +1202,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
+        overflow: visible;
       }
 
       .hero-header-content {
@@ -1233,22 +1234,22 @@
 
       .hero-camera-wrapper {
         position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
+        right: -10px;
+        top: -15px;
+        height: 155px;
         width: 45%;
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        overflow: hidden;
+        overflow: visible;
+        pointer-events: none;
+        z-index: 1;
       }
 
       .hero-camera-img {
-        max-width: 140%;
-        height: auto;
+        height: 100%;
+        width: auto;
         object-fit: contain;
-        transform: scale(1.15) translateX(10px);
-        transform-origin: center right;
       }
 
       .flow-panel {
@@ -1261,6 +1262,8 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
+        position: relative;
+        z-index: 2;
       }
 
       .form-title {
