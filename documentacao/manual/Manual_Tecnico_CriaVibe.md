@@ -5,7 +5,7 @@
 > **Projeto:** CriaVibe
 > **Responsavel tecnico:** Willian Batista Oliveira
 > **Registrador:** agente-willianbo
-> **Gerado em:** 14/06/2026 16:37:13
+> **Gerado em:** 14/06/2026 16:45:35
 > **Origem:** `C:\Users\willi\Documents\criavibe_site`
 
 ---
@@ -38,9 +38,9 @@ Arquivos sensiveis e artefatos pesados sao omitidos de proposito: `.env`, `.git/
 
 ## 3. Sumario Executivo
 
-- Total de arquivos textuais documentados: **94**
-- Total de linhas de codigo/documentacao: **20007**
-- Tamanho textual documentado: **693.0 KB**
+- Total de arquivos textuais documentados: **93**
+- Total de linhas de codigo/documentacao: **20022**
+- Tamanho textual documentado: **693.1 KB**
 - Imagens inventariadas: **18**
 - Registros de trabalho consolidados: **10**
 
@@ -199,7 +199,6 @@ criavibe_site/
 |   |-- criavibe-fotografia.png
 |   `-- logo-criavibe-fotografia.png
 |-- scratch/
-|   `-- check_db.php
 |-- scripts/
 |   |-- k6/
 |   |   `-- upload_test.js
@@ -270,7 +269,7 @@ criavibe_site/
 | `api/fotos/direct_confirm.php` | 133 | 5.6 KB |
 | `api/fotos/direct_prepare.php` | 118 | 4.0 KB |
 | `api/fotos/download.php` | 92 | 3.5 KB |
-| `api/fotos/download_zip.php` | 105 | 4.2 KB |
+| `api/fotos/download_zip.php` | 131 | 4.7 KB |
 | `api/fotos/list.php` | 45 | 1.7 KB |
 | `api/fotos/set_capa.php` | 66 | 2.3 KB |
 | `api/fotos/toggle_selecao.php` | 13 | 451 B |
@@ -330,7 +329,6 @@ criavibe_site/
 | `README_RAILWAY.md` | 184 | 4.4 KB |
 | `router.php` | 16 | 341 B |
 | `saiba_mais.html` | 962 | 26.7 KB |
-| `scratch/check_db.php` | 11 | 443 B |
 | `scripts/k6/upload_test.js` | 26 | 1.1 KB |
 | `scripts/maintenance/optimize_tables.sql` | 7 | 292 B |
 
@@ -7615,13 +7613,17 @@ if ($isRemote) {
 
 ### `api/fotos/download_zip.php`
 
-- Linhas: 105
-- Tamanho: 4.2 KB
+- Linhas: 131
+- Tamanho: 4.7 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\fotos\download_zip.php`
 
 ```php
 <?php
 require_once __DIR__.'/../config.php';
+
+// Aumenta os limites para lidar com arquivos grandes e conexões lentas
+@ini_set('memory_limit', '512M');
+@set_time_limit(240);
 
 $body       = body();
 $galeria_id = (int)($body['galeria_id'] ?? 0);
@@ -7664,8 +7666,6 @@ if ($max > 0 && ($dl_count >= $max))
     json_out(['status'=>'erro','mensagem'=>"Limite de $max downloads atingido para esta galeria."], 403);
 
 // Verifica se a quantidade solicitada agora extrapola o limite
-$futuro_dl = $dl_count + 1; // ZIP conta como 1 "sessão de download" ou contabiliza por fotos?
-// O sistema parece usar dl_count + count($fotos) na linha 47. Vamos respeitar isso.
 if ($max > 0 && ($dl_count + count($fotos) > $max)) {
     json_out(['status'=>'erro','mensagem'=>"Este download excede seu limite restante."], 403);
 }
@@ -7674,17 +7674,25 @@ if ($max > 0 && ($dl_count + count($fotos) > $max)) {
 $qtd_fotos = count($fotos);
 db()->prepare("UPDATE galerias SET dl_count = dl_count + ? WHERE id = ?")->execute([$qtd_fotos, $galeria_id]);
 
-// Cria ZIP temporário no uploads/tmp (para evitar restrições de shared hosting)
-$tmpDir = __DIR__.'/../../uploads/tmp/';
-if (!is_dir($tmpDir)) mkdir($tmpDir, 0775, true);
+// Cria ZIP no diretório temporário padrão do sistema para evitar falhas de permissão de gravação
+$tmpZip = tempnam(sys_get_temp_dir(), 'criavibe_zip_');
 
-$tmpZip = tempnam($tmpDir, 'criavibe_') . '_fotos.zip';
-
-if (!class_exists('ZipArchive')) json_out(['status'=>'erro','mensagem'=>'A extensao ZipArchive nao esta ativa no ambiente PHP.'], 500);
+if (!class_exists('ZipArchive')) {
+    json_out(['status'=>'erro','mensagem'=>'A extensão ZipArchive não está ativa no ambiente PHP.'], 500);
+}
 
 $zip = new ZipArchive();
-if ($zip->open($tmpZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true)
-    json_out(['status'=>'erro','mensagem'=>'Erro ao criar arquivo ZIP.'], 500);
+if ($zip->open($tmpZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+    json_out(['status'=>'erro','mensagem'=>'Erro ao inicializar o arquivo ZIP temporário.'], 500);
+}
+
+$tempFiles = [];
+$arrContextOptions = [
+    "ssl" => [
+        "verify_peer" => false,
+        "verify_peer_name" => false,
+    ],
+];
 
 foreach ($fotos as $f) {
     $caminho = $f['caminho_arquivo'];
@@ -7692,15 +7700,21 @@ foreach ($fotos as $f) {
     $fileName = $f['nome_arquivo'] ?: basename($caminho);
     
     if ($isRemote) {
-        $arrContextOptions = [
-            "ssl" => [
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ],
-        ];
-        $data = @file_get_contents($caminho, false, stream_context_create($arrContextOptions));
-        if ($data !== false) {
-            $zip->addFromString($fileName, $data);
+        // Baixa o arquivo sob fluxo direto (stream) para o disco para não estourar a memória RAM do PHP
+        $tempFile = tempnam(sys_get_temp_dir(), 'cv_img_');
+        $src = @fopen($caminho, 'r', false, stream_context_create($arrContextOptions));
+        $dest = @fopen($tempFile, 'w');
+        
+        if ($src && $dest) {
+            stream_copy_to_stream($src, $dest);
+            fclose($src);
+            fclose($dest);
+            $zip->addFile($tempFile, $fileName);
+            $tempFiles[] = $tempFile;
+        } else {
+            if ($src) fclose($src);
+            if ($dest) fclose($dest);
+            @unlink($tempFile);
         }
     } else {
         $path = __DIR__.'/../../'.$caminho;
@@ -7709,8 +7723,10 @@ foreach ($fotos as $f) {
         }
     }
 }
+
 $zip->close();
 
+// Envia o arquivo ZIP na resposta
 $nome_galeria = preg_replace('/[^a-zA-Z0-9_-]/', '_', $g['nome']);
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="'.$nome_galeria.'_fotos.zip"');
@@ -7723,7 +7739,15 @@ if (ob_get_length()) ob_clean();
 flush();
 
 readfile($tmpZip);
-unlink($tmpZip);
+
+// Deleta o arquivo ZIP temporário
+@unlink($tmpZip);
+
+// Deleta as imagens temporárias criadas durante o download do R2
+foreach ($tempFiles as $tf) {
+    @unlink($tf);
+}
+
 exit;
 ```
 
@@ -23662,26 +23686,6 @@ echo '404 - Arquivo nao encontrado';
 </body>
 
 </html>
-```
-
-### `scratch/check_db.php`
-
-- Linhas: 11
-- Tamanho: 443 B
-- Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\scratch\check_db.php`
-
-```php
-<?php
-require_once __DIR__ . '/../api/config.php';
-
-try {
-    $stmt = db()->query('SELECT count(*) as total, count(caminho_thumb_small) as small, count(caminho_thumb_medium) as medium, count(caminho_thumb_large) as large FROM imagens');
-    $res = $stmt->fetch(PDO::FETCH_ASSOC);
-    echo "ESTATISTICAS DE IMAGENS:\n";
-    print_r($res);
-} catch (Exception $e) {
-    echo "Erro ao conectar ou consultar o banco: " . $e->getMessage() . "\n";
-}
 ```
 
 ### `scripts/k6/upload_test.js`

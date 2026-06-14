@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__.'/../config.php';
 
+// Aumenta os limites para lidar com arquivos grandes e conexões lentas
+@ini_set('memory_limit', '512M');
+@set_time_limit(240);
+
 $body       = body();
 $galeria_id = (int)($body['galeria_id'] ?? 0);
 $foto_ids   = $body['foto_ids'] ?? [];
@@ -42,8 +46,6 @@ if ($max > 0 && ($dl_count >= $max))
     json_out(['status'=>'erro','mensagem'=>"Limite de $max downloads atingido para esta galeria."], 403);
 
 // Verifica se a quantidade solicitada agora extrapola o limite
-$futuro_dl = $dl_count + 1; // ZIP conta como 1 "sessão de download" ou contabiliza por fotos?
-// O sistema parece usar dl_count + count($fotos) na linha 47. Vamos respeitar isso.
 if ($max > 0 && ($dl_count + count($fotos) > $max)) {
     json_out(['status'=>'erro','mensagem'=>"Este download excede seu limite restante."], 403);
 }
@@ -52,17 +54,25 @@ if ($max > 0 && ($dl_count + count($fotos) > $max)) {
 $qtd_fotos = count($fotos);
 db()->prepare("UPDATE galerias SET dl_count = dl_count + ? WHERE id = ?")->execute([$qtd_fotos, $galeria_id]);
 
-// Cria ZIP temporário no uploads/tmp (para evitar restrições de shared hosting)
-$tmpDir = __DIR__.'/../../uploads/tmp/';
-if (!is_dir($tmpDir)) mkdir($tmpDir, 0775, true);
+// Cria ZIP no diretório temporário padrão do sistema para evitar falhas de permissão de gravação
+$tmpZip = tempnam(sys_get_temp_dir(), 'criavibe_zip_');
 
-$tmpZip = tempnam($tmpDir, 'criavibe_') . '_fotos.zip';
-
-if (!class_exists('ZipArchive')) json_out(['status'=>'erro','mensagem'=>'A extensao ZipArchive nao esta ativa no ambiente PHP.'], 500);
+if (!class_exists('ZipArchive')) {
+    json_out(['status'=>'erro','mensagem'=>'A extensão ZipArchive não está ativa no ambiente PHP.'], 500);
+}
 
 $zip = new ZipArchive();
-if ($zip->open($tmpZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true)
-    json_out(['status'=>'erro','mensagem'=>'Erro ao criar arquivo ZIP.'], 500);
+if ($zip->open($tmpZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+    json_out(['status'=>'erro','mensagem'=>'Erro ao inicializar o arquivo ZIP temporário.'], 500);
+}
+
+$tempFiles = [];
+$arrContextOptions = [
+    "ssl" => [
+        "verify_peer" => false,
+        "verify_peer_name" => false,
+    ],
+];
 
 foreach ($fotos as $f) {
     $caminho = $f['caminho_arquivo'];
@@ -70,15 +80,21 @@ foreach ($fotos as $f) {
     $fileName = $f['nome_arquivo'] ?: basename($caminho);
     
     if ($isRemote) {
-        $arrContextOptions = [
-            "ssl" => [
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ],
-        ];
-        $data = @file_get_contents($caminho, false, stream_context_create($arrContextOptions));
-        if ($data !== false) {
-            $zip->addFromString($fileName, $data);
+        // Baixa o arquivo sob fluxo direto (stream) para o disco para não estourar a memória RAM do PHP
+        $tempFile = tempnam(sys_get_temp_dir(), 'cv_img_');
+        $src = @fopen($caminho, 'r', false, stream_context_create($arrContextOptions));
+        $dest = @fopen($tempFile, 'w');
+        
+        if ($src && $dest) {
+            stream_copy_to_stream($src, $dest);
+            fclose($src);
+            fclose($dest);
+            $zip->addFile($tempFile, $fileName);
+            $tempFiles[] = $tempFile;
+        } else {
+            if ($src) fclose($src);
+            if ($dest) fclose($dest);
+            @unlink($tempFile);
         }
     } else {
         $path = __DIR__.'/../../'.$caminho;
@@ -87,8 +103,10 @@ foreach ($fotos as $f) {
         }
     }
 }
+
 $zip->close();
 
+// Envia o arquivo ZIP na resposta
 $nome_galeria = preg_replace('/[^a-zA-Z0-9_-]/', '_', $g['nome']);
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="'.$nome_galeria.'_fotos.zip"');
@@ -101,5 +119,13 @@ if (ob_get_length()) ob_clean();
 flush();
 
 readfile($tmpZip);
-unlink($tmpZip);
+
+// Deleta o arquivo ZIP temporário
+@unlink($tmpZip);
+
+// Deleta as imagens temporárias criadas durante o download do R2
+foreach ($tempFiles as $tf) {
+    @unlink($tf);
+}
+
 exit;
