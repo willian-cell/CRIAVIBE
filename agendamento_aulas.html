@@ -60,6 +60,16 @@
       box-shadow: var(--shadow);
       overflow: hidden;
       min-height: 720px;
+      transition: max-width 0.4s ease, grid-template-columns 0.4s ease;
+    }
+
+    .app-container.logged-in {
+      grid-template-columns: 1fr;
+      max-width: 1200px;
+    }
+
+    .app-container.logged-in .hero-panel {
+      display: none;
     }
 
     /* ── LEFT HERO PANEL ── */
@@ -1003,6 +1013,31 @@
       background: rgba(248, 113, 113, 0.05);
     }
 
+    .btn-logout {
+      background: rgba(248, 113, 113, 0.08);
+      border: 1.5px solid rgba(248, 113, 113, 0.15);
+      color: #b91c1c;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-logout:hover {
+      background: #b91c1c;
+      color: white;
+      border-color: #b91c1c;
+      box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+    }
+
     /* ── MODALS ── */
     .modal-overlay {
       position: fixed;
@@ -1470,14 +1505,16 @@
             <h2 id="student-welcome-title">Olá, Aluno!</h2>
             <p>Seja bem-vindo à sua área de estudos.</p>
           </div>
-          <button class="admin-btn-action danger" onclick="handleLogout()" title="Sair do sistema">
+          <button class="btn-logout" onclick="handleLogout()" title="Sair do sistema">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Sair</span>
           </button>
         </div>
 
         <div class="aluno-plan-card">
           <h3 id="panel-student-plan-name">Curso Fotografia Prática</h3>
           <p id="panel-student-plan-cidade">Local das aulas: Santo Antônio do Descoberto - GO</p>
+          <p id="panel-student-plan-pagamento" style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;"></p>
           <div class="aluno-plan-progress-container">
             <div class="aluno-plan-progress-fill" id="student-progress-bar"></div>
           </div>
@@ -1507,8 +1544,9 @@
               <h2 style="font-family: var(--font-title); color: var(--primary); font-size: 1.4rem;">Painel do Professor</h2>
               <p style="font-size: 0.75rem; color: var(--text-muted);" id="teacher-profile-info">willianb.o.1993@gmail.com</p>
             </div>
-            <button class="admin-btn-action danger" onclick="handleLogout()" title="Sair do painel administrativo">
+            <button class="btn-logout" onclick="handleLogout()" title="Sair do painel administrativo">
               <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Sair</span>
             </button>
           </div>
 
@@ -1698,6 +1736,19 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label for="edit-plan-payment">Forma de pagamento (Informativa)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-credit-card input-icon"></i>
+            <select id="edit-plan-payment">
+              <option value="PIX">PIX</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão de crédito">Cartão de crédito</option>
+              <option value="">Não informado</option>
+            </select>
+          </div>
+        </div>
+
         <div class="btn-actions-row">
           <button type="button" class="btn btn-secondary" onclick="closePlanModal()">Cancelar</button>
           <button type="submit" class="btn btn-primary">Salvar Plano</button>
@@ -1770,6 +1821,17 @@
       if (activeEl) {
         activeEl.classList.add('active');
         state.currentView = viewId;
+
+        const isDashboard = viewId === 'view-panel-student' || viewId === 'view-panel-teacher';
+        const container = document.querySelector('.app-container');
+        if (container) {
+          if (isDashboard) {
+            container.classList.add('logged-in');
+          } else {
+            container.classList.remove('logged-in');
+          }
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
         hideAlert();
       }
@@ -2152,6 +2214,9 @@
       const localText = plano.cidade ? `Localização das aulas: ${plano.cidade}` : 'Aulas práticas presenciais';
       document.getElementById('panel-student-plan-cidade').textContent = localText;
 
+      const pagText = plano.forma_pagamento ? `Forma de pagamento (Informativa): ${plano.forma_pagamento}` : 'Forma de pagamento não especificada';
+      document.getElementById('panel-student-plan-pagamento').textContent = pagText;
+
       const total = Number(plano.total_aulas || 0);
       const usadas = Number(plano.aulas_usadas || 0);
       const percent = total > 0 ? Math.min(100, Math.round((usadas / total) * 100)) : 0;
@@ -2286,6 +2351,7 @@
             total_aulas: item.total_aulas,
             aulas_usadas: item.aulas_usadas,
             plano_status: item.plano_status,
+            forma_pagamento: item.forma_pagamento,
             token_publico: item.token_publico
           });
         }
@@ -2305,13 +2371,19 @@
         tr.innerHTML = `
           <td><strong>${escapeHtml(aluno.nome)}</strong></td>
           <td><strong>${escapeHtml(aluno.telefone)}</strong><span style="font-size:0.7rem; color:var(--text-muted); display:block;">${escapeHtml(aluno.email)}</span></td>
-          <td><strong>${escapeHtml(aluno.plano_nome || 'Sem plano')}</strong> <span style="font-size:0.75rem; color:var(--text-muted);">(${aluno.plano_status})</span></td>
+          <td>
+            <strong>${escapeHtml(aluno.plano_nome || 'Sem plano')}</strong> 
+            <span style="font-size:0.75rem; color:var(--text-muted);">(${aluno.plano_status})</span>
+            <span style="font-size:0.7rem; color:var(--primary); display:block; margin-top:2px;">
+              <i class="fa-solid fa-credit-card"></i> ${escapeHtml(aluno.forma_pagamento || 'Não informado')}
+            </span>
+          </td>
           <td>
             <strong>${usadas} de ${total} aulas</strong>
             <span style="font-size:0.7rem; color:var(--text-muted); display:block;">${percent}% concluído</span>
           </td>
           <td class="admin-actions-cell">
-            <button class="admin-btn-action" onclick="openPlanEditModal(${aluno.id}, '${escapeHtml(aluno.plano_nome || '')}', ${total}, '${aluno.plano_status}')" title="Editar Créditos/Plano"><i class="fa-solid fa-receipt"></i></button>
+            <button class="admin-btn-action" onclick="openPlanEditModal(${aluno.id}, '${escapeHtml(aluno.plano_nome || '')}', ${total}, '${aluno.plano_status}', '${escapeHtml(aluno.forma_pagamento || '')}')" title="Editar Créditos/Plano"><i class="fa-solid fa-receipt"></i></button>
             <button class="admin-btn-action danger" onclick="deleteStudent('${aluno.token_publico}')" title="Excluir Aluno Completo"><i class="fa-solid fa-user-xmark"></i></button>
           </td>
         `;
@@ -2652,11 +2724,12 @@
     }
 
     /* ── MODAL: EDITAR PLANO ── */
-    function openPlanEditModal(alunoId, planName, totalAulas, status) {
+    function openPlanEditModal(alunoId, planName, totalAulas, status, formaPagamento) {
       document.getElementById('edit-plan-aluno-id').value = alunoId;
       document.getElementById('edit-plan-name').value = planName;
       document.getElementById('edit-plan-total').value = totalAulas;
       document.getElementById('edit-plan-status').value = status;
+      document.getElementById('edit-plan-payment').value = formaPagamento || '';
       
       document.getElementById('plan-modal').classList.add('open');
     }
@@ -2670,6 +2743,7 @@
       const planName = document.getElementById('edit-plan-name').value.trim();
       const total = Number(document.getElementById('edit-plan-total').value);
       const status = document.getElementById('edit-plan-status').value;
+      const payment = document.getElementById('edit-plan-payment').value;
 
       // Procura algum dado de aluno no board para reuso do payload completo
       const ref = state.board.find(a => a.aluno_id === alunoId);
@@ -2701,7 +2775,8 @@
         plano: {
           nome: planName,
           total_aulas: total,
-          status: status
+          status: status,
+          forma_pagamento: payment
         },
         aulas: aulas
       };

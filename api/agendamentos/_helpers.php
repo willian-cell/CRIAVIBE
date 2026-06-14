@@ -470,6 +470,7 @@ function agendamento_fetch_board(PDO $db): array {
             p.total_aulas,
             p.aulas_usadas,
             p.status AS plano_status,
+            p.forma_pagamento AS plano_forma_pagamento,
             m.nome AS modulo_nome,
             s.titulo AS assunto_titulo,
             al.criado_em,
@@ -517,6 +518,7 @@ function agendamento_format_board(array $rows, ?string $currentToken, bool $isAd
             $item['token_publico'] = $row['token_publico'];
             $item['email'] = $row['email'];
             $item['telefone'] = $row['telefone'];
+            $item['forma_pagamento'] = $row['plano_forma_pagamento'] ?? null;
         } else {
             $item['plano_id'] = null;
             $item['modulo_id'] = null;

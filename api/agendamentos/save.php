@@ -58,22 +58,24 @@ try {
         $planStatus = 'ativo';
     }
 
+    $formaPagamento = trim($planData['forma_pagamento'] ?? '');
+
     $planStmt = $db->prepare("SELECT id FROM agendamento_planos WHERE aluno_id = ? ORDER BY id ASC LIMIT 1");
     $planStmt->execute([$studentId]);
     $planId = (int)($planStmt->fetchColumn() ?: 0);
     if ($planId > 0) {
         $updPlan = $db->prepare("
             UPDATE agendamento_planos
-            SET nome = ?, total_aulas = ?, aulas_usadas = ?, status = ?
+            SET nome = ?, total_aulas = ?, aulas_usadas = ?, status = ?, forma_pagamento = ?
             WHERE id = ?
         ");
-        $updPlan->execute([$planName, $totalAulas, count($lessons), $planStatus, $planId]);
+        $updPlan->execute([$planName, $totalAulas, count($lessons), $planStatus, $formaPagamento ?: null, $planId]);
     } else {
         $insPlan = $db->prepare("
-            INSERT INTO agendamento_planos (aluno_id, nome, total_aulas, aulas_usadas, status)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO agendamento_planos (aluno_id, nome, total_aulas, aulas_usadas, status, forma_pagamento)
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
-        $insPlan->execute([$studentId, $planName, $totalAulas, count($lessons), $planStatus]);
+        $insPlan->execute([$studentId, $planName, $totalAulas, count($lessons), $planStatus, $formaPagamento ?: null]);
         $planId = (int)$db->lastInsertId();
     }
 

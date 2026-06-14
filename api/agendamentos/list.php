@@ -24,7 +24,7 @@ $course = agendamento_fetch_course($db);
 $plan = null;
 if ($student) {
     $stmt = $db->prepare("
-        SELECT id, nome, total_aulas, aulas_usadas, status
+        SELECT id, nome, total_aulas, aulas_usadas, status, forma_pagamento, cidade, valor_hora_centavos
         FROM agendamento_planos
         WHERE aluno_id = ?
         ORDER BY id ASC
