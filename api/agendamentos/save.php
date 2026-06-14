@@ -27,6 +27,24 @@ if ($token !== '' && !$student && !$isAdmin) {
     json_out(['status' => 'erro', 'mensagem' => 'Pre-agendamento nao encontrado para este navegador.'], 404);
 }
 
+if (!$isAdmin) {
+    $horasPorDia = [];
+    foreach ($lessons as $lesson) {
+        $data = $lesson['data_aula'];
+        $horas = (int)$lesson['quantidade_horas'];
+        if ($horas > 3) {
+            json_out(['status' => 'erro', 'mensagem' => 'O limite máximo é de 3 horas de aula por dia para alunos.'], 400);
+        }
+        if (!isset($horasPorDia[$data])) {
+            $horasPorDia[$data] = 0;
+        }
+        $horasPorDia[$data] += $horas;
+        if ($horasPorDia[$data] > 3) {
+            json_out(['status' => 'erro', 'mensagem' => 'Você não pode agendar mais de 3 horas de aula no mesmo dia (data: ' . date('d/m/Y', strtotime($data)) . ').'], 400);
+        }
+    }
+}
+
 $db->beginTransaction();
 
 try {

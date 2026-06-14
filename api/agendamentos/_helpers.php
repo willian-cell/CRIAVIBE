@@ -13,6 +13,111 @@ const AGENDAMENTO_HORAS_OPCOES = [1, 2, 3, 4, 5, 6, 7, 8];
 const AGENDAMENTO_STATUS = ['pre_agendado', 'confirmado', 'concluido', 'cancelado', 'remarcado'];
 
 function agendamento_ensure_schema(PDO $db): void {
+    $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+    if ($driver === 'sqlite') {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_alunos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome VARCHAR(160) NOT NULL,
+                email VARCHAR(190) NOT NULL,
+                telefone VARCHAR(40) NOT NULL,
+                senha_hash VARCHAR(255) DEFAULT NULL,
+                token_publico VARCHAR(96) NOT NULL UNIQUE,
+                codigo_acesso VARCHAR(12) DEFAULT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_agendamento_alunos_email ON agendamento_alunos (email)");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_modulos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome VARCHAR(160) NOT NULL,
+                descricao TEXT NULL,
+                ordem INT NOT NULL DEFAULT 0,
+                ativo TINYINT(1) NOT NULL DEFAULT 1,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_assuntos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                modulo_id INT NOT NULL,
+                titulo VARCHAR(180) NOT NULL,
+                descricao TEXT NULL,
+                ordem INT NOT NULL DEFAULT 0,
+                ativo TINYINT(1) NOT NULL DEFAULT 1,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_assuntos_modulo ON agendamento_assuntos (modulo_id)");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_planos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                aluno_id INT NOT NULL,
+                nome VARCHAR(180) NOT NULL,
+                total_aulas INT NOT NULL DEFAULT 0,
+                aulas_usadas INT NOT NULL DEFAULT 0,
+                status VARCHAR(30) NOT NULL DEFAULT 'ativo',
+                forma_pagamento VARCHAR(50) DEFAULT NULL,
+                cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
+                valor_hora_centavos INT NOT NULL DEFAULT 7500,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_planos_aluno ON agendamento_planos (aluno_id)");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_aulas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                aluno_id INT NOT NULL,
+                plano_id INT NULL,
+                modulo_id INT NULL,
+                assunto_id INT NULL,
+                dia_semana VARCHAR(20) NOT NULL,
+                data_aula DATE NOT NULL,
+                horario VARCHAR(5) NOT NULL,
+                quantidade_horas INT NOT NULL DEFAULT 1,
+                cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
+                valor_hora_centavos INT NOT NULL DEFAULT 7500,
+                valor_centavos INT NOT NULL DEFAULT 7500,
+                status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
+                observacoes TEXT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (data_aula, horario)
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_aulas_aluno ON agendamento_aulas (aluno_id)");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_aulas_plano ON agendamento_aulas (plano_id)");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_aulas_data ON agendamento_aulas (data_aula)");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_historico (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                aula_id INT NULL,
+                aluno_id INT NULL,
+                acao VARCHAR(80) NOT NULL,
+                detalhes TEXT NULL,
+                autor_tipo VARCHAR(30) NOT NULL DEFAULT 'sistema',
+                autor_email VARCHAR(190) NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_historico_aula ON agendamento_historico (aula_id)");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_historico_aluno ON agendamento_historico (aluno_id)");
+
+        try {
+            agendamento_seed_course_defaults($db);
+        } catch (Throwable $e) {}
+
+        return;
+    }
+
     $db->exec("
         CREATE TABLE IF NOT EXISTS agendamento_alunos (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -480,7 +585,7 @@ function agendamento_fetch_board(PDO $db): array {
         LEFT JOIN agendamento_planos p ON p.id = a.plano_id
         LEFT JOIN agendamento_modulos m ON m.id = a.modulo_id
         LEFT JOIN agendamento_assuntos s ON s.id = a.assunto_id
-        ORDER BY FIELD(a.dia_semana, 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'), a.data_aula, a.horario
+        ORDER BY CASE a.dia_semana WHEN 'SEGUNDA' THEN 1 WHEN 'TERÇA' THEN 2 WHEN 'QUARTA' THEN 3 WHEN 'QUINTA' THEN 4 WHEN 'SEXTA' THEN 5 ELSE 6 END, a.data_aula, a.horario
     ");
     return $stmt->fetchAll();
 }

@@ -1304,7 +1304,7 @@
         </div>
 
         <div class="hero-welcome-texts">
-          <h2>Bem-vindo!</h2>
+          <h2 id="hero-step-title">Bem-vindo!</h2>
           <p>Acesse sua conta e agende sua próxima aula.</p>
         </div>
       </div>
@@ -1669,7 +1669,12 @@
         <h2 class="form-title">Agende sua aula!</h2>
         <p class="form-subtitle">Escolha a data e o horário que melhor se encaixam na sua rotina.</p>
 
-        <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 8px;">Escolha a data</label>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <label style="font-size: 0.8rem; font-weight: 700; margin: 0;">Escolha a data</label>
+          <a href="#" id="btn-back-to-months" style="display: none; font-size: 0.75rem; color: var(--primary); font-weight: 700; text-decoration: none;" onclick="backToMonths(event)">
+            <i class="fa-solid fa-arrow-left"></i> Mudar mês
+          </a>
+        </div>
         <div class="horizontal-calendar" id="reg-calendar-days">
           <!-- Calendar buttons generated dynamically by JS -->
         </div>
@@ -1985,6 +1990,7 @@
       adminLogado: null,
       token: localStorage.getItem(STORAGE_KEY) || '',
       currentView: 'view-login',
+      selectedMonth: null,
 
       // Dados do formulário de cadastro (Steps)
       regData: {
@@ -2030,12 +2036,45 @@
     }
 
     /* ── NAVEGAÇÃO DE VIEWS ── */
+    const HERO_COPY = {
+      'view-login': {
+        title: 'Bem-vindo!',
+        text: 'Acesse sua conta e agende sua pr\u00f3xima aula.'
+      },
+      'view-register-step1': {
+        title: 'Vamos come\u00e7ar?',
+        text: 'Preencha seus dados para criar seu acesso \u00e0s aulas.'
+      },
+      'view-register-step2': {
+        title: 'Escolha seu plano',
+        text: 'Selecione onde as aulas ser\u00e3o realizadas.'
+      },
+      'view-register-step3': {
+        title: 'Forma de pagamento',
+        text: 'Escolha como prefere pagar no dia da aula.'
+      },
+      'view-register-step4': {
+        title: 'Vamos agendar sua aula!',
+        text: 'Escolha a data e o hor\u00e1rio que melhor se encaixam na sua rotina.'
+      }
+    };
+
+    function updateHeroCopy(viewId) {
+      const copy = HERO_COPY[viewId] || HERO_COPY['view-login'];
+      const titleEl = document.getElementById('hero-step-title') || document.querySelector('.hero-welcome-texts h2');
+      const textEl = document.getElementById('hero-step-text') || document.querySelector('.hero-welcome-texts p');
+
+      if (titleEl) titleEl.textContent = copy.title;
+      if (textEl) textEl.textContent = copy.text;
+    }
+
     function changeView(viewId) {
       document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
       const activeEl = document.getElementById(viewId);
       if (activeEl) {
         activeEl.classList.add('active');
         state.currentView = viewId;
+        updateHeroCopy(viewId);
 
         const isDashboard = viewId === 'view-panel-student' || viewId === 'view-panel-teacher';
         const container = document.querySelector('.app-container');
@@ -2206,7 +2245,8 @@
 
     function goToStep4() {
       changeView('view-register-step4');
-      generateCalendarDays();
+      state.selectedMonth = null;
+      generateCalendarMonths();
       updateStep4Summary();
     }
 
@@ -2224,21 +2264,84 @@
       return result;
     }
 
-    // Gera botões do calendário horizontal de Segunda a Sexta
-    function generateCalendarDays() {
+    // Gera botões de meses
+    function generateCalendarMonths() {
       const container = document.getElementById('reg-calendar-days');
       container.innerHTML = '';
 
       const today = new Date();
-      let count = 0;
-      let dateCursor = new Date(today);
-      dateCursor.setDate(today.getDate() + 1); // Começa a partir de amanhã
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth(); // 0-11
 
-      while (count < 10) {
+      const monthsToShow = [];
+      // Mostrar os próximos 6 meses
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(currentYear, currentMonth + i, 1);
+        monthsToShow.push({
+          year: d.getFullYear(),
+          month: d.getMonth(),
+          name: d.toLocaleString('pt-BR', { month: 'long' }),
+          short: d.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '')
+        });
+      }
+
+      monthsToShow.forEach(m => {
+        const btn = document.createElement('div');
+        btn.className = 'calendar-day-btn';
+        
+        let isSelected = false;
+        if (state.regData.data_aula) {
+          const [sYear, sMonth] = state.regData.data_aula.split('-').map(Number);
+          if (sYear === m.year && (sMonth - 1) === m.month) {
+            isSelected = true;
+          }
+        }
+        
+        if (isSelected) {
+          btn.classList.add('selected');
+        }
+
+        btn.innerHTML = `
+          <span class="day-name">${m.year}</span>
+          <span class="day-num">${m.short}</span>
+        `;
+        btn.onclick = () => selectRegMonth(m.year, m.month);
+        container.appendChild(btn);
+      });
+
+      document.getElementById('btn-back-to-months').style.display = 'none';
+    }
+
+    function selectRegMonth(year, month) {
+      state.selectedMonth = { year, month };
+      document.querySelectorAll('#reg-calendar-days .calendar-day-btn').forEach(btn => btn.classList.remove('selected'));
+      generateCalendarDaysForMonth(year, month);
+      document.getElementById('btn-back-to-months').style.display = 'inline-block';
+    }
+
+    function generateCalendarDaysForMonth(year, month) {
+      const container = document.getElementById('reg-calendar-days');
+      container.innerHTML = '';
+
+      const today = new Date();
+      let dateCursor = new Date(year, month, 1);
+      
+      // Se for o mês atual, os dias começam a partir de amanhã
+      if (year === today.getFullYear() && month === today.getMonth()) {
+        dateCursor.setDate(today.getDate() + 1);
+      }
+
+      const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+
+      while (dateCursor.getDate() <= lastDayOfMonth && dateCursor.getMonth() === month) {
         const dayOfWeek = dateCursor.getDay();
         // Apenas Segunda (1) a Sexta (5)
         if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-          const formattedDate = dateCursor.toISOString().slice(0, 10);
+          const y = dateCursor.getFullYear();
+          const mStr = String(dateCursor.getMonth() + 1).padStart(2, '0');
+          const dStr = String(dateCursor.getDate()).padStart(2, '0');
+          const formattedDate = `${y}-${mStr}-${dStr}`;
+          
           const dayName = DAYS_NAMES[dayOfWeek];
           const dayShort = DAYS_SHORT[dayOfWeek];
           const dayNum = dateCursor.getDate();
@@ -2254,15 +2357,29 @@
           `;
           btn.onclick = () => selectRegDate(formattedDate, dayName);
           container.appendChild(btn);
-          count++;
         }
-        dateCursor.setDate(dateCursor.getDate() + 1);
+        
+        const prevDate = dateCursor.getDate();
+        dateCursor.setDate(prevDate + 1);
+        if (dateCursor.getDate() === prevDate) {
+          break;
+        }
       }
 
-      // Se não houver data selecionada, seleciona a primeira
-      if (!state.regData.data_aula && container.firstChild) {
+      // Se nenhuma data está selecionada e há dias disponíveis, clica no primeiro para inicializar
+      const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+      if (container.firstChild && (!state.regData.data_aula || !state.regData.data_aula.startsWith(monthPrefix))) {
         container.firstChild.click();
+      } else if (state.regData.data_aula && state.regData.data_aula.startsWith(monthPrefix)) {
+        const dayOfWeek = new Date(state.regData.data_aula + 'T00:00:00').getDay();
+        generateRegHours(state.regData.data_aula, DAYS_NAMES[dayOfWeek]);
       }
+    }
+
+    function backToMonths(e) {
+      if (e) e.preventDefault();
+      state.selectedMonth = null;
+      generateCalendarMonths();
     }
 
     function selectRegDate(dateString, dayName) {
@@ -2270,7 +2387,11 @@
       document.querySelectorAll('#reg-calendar-days .calendar-day-btn').forEach(btn => btn.classList.remove('selected'));
 
       // Acha e marca selecionado
-      generateCalendarDays();
+      if (state.selectedMonth) {
+        generateCalendarDaysForMonth(state.selectedMonth.year, state.selectedMonth.month);
+      } else {
+        generateCalendarMonths();
+      }
       generateRegHours(dateString, dayName);
       updateStep4Summary();
     }
@@ -2649,8 +2770,10 @@
       `;
 
       // Popula horas
+      const maxHours = state.alunoLogado ? 3 : 8;
+      const filteredOptions = state.horasOpcoes.filter(h => h <= maxHours);
       const hourSelect = document.getElementById('slot-hours');
-      hourSelect.innerHTML = state.horasOpcoes.map(h => `<option value="${h}">${h} hora${h > 1 ? 's' : ''}</option>`).join('');
+      hourSelect.innerHTML = filteredOptions.map(h => `<option value="${h}">${h} hora${h > 1 ? 's' : ''}</option>`).join('');
       hourSelect.value = 1;
 
       // Popula módulos
@@ -2698,8 +2821,10 @@
       citySelect.value = aula.cidade.includes('Santo Antônio') ? 'Santo Antônio do Descoberto' : 'Outra cidade';
 
       // Horas
+      const maxHours = state.adminLogado ? 8 : 3;
+      const filteredOptions = state.horasOpcoes.filter(h => h <= maxHours);
       const hourSelect = document.getElementById('slot-hours');
-      hourSelect.innerHTML = state.horasOpcoes.map(h => `<option value="${h}">${h} hora${h > 1 ? 's' : ''}</option>`).join('');
+      hourSelect.innerHTML = filteredOptions.map(h => `<option value="${h}">${h} hora${h > 1 ? 's' : ''}</option>`).join('');
       hourSelect.value = aula.quantidade_horas;
 
       // Datas
@@ -2815,6 +2940,20 @@
       if (dateObj.getDay() === 0 || dateObj.getDay() === 6) {
         alert('Aulas práticas ocorrem apenas de segunda a sexta-feira.');
         return;
+      }
+
+      // Regra: Limite de 3 horas por dia para o aluno
+      if (state.alunoLogado) {
+        if (hoursCount > 3) {
+          alert('Você não pode agendar mais de 3 horas por dia.');
+          return;
+        }
+        const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dataVal && a.aula_id !== state.modalEditingLessonId);
+        const somaHorasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
+        if (somaHorasExistentes + hoursCount > 3) {
+          alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${somaHorasExistentes}h agendadas para este dia.`);
+          return;
+        }
       }
 
       const rateCentavos = cidade.includes('Santo Antônio') ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
