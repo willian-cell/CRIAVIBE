@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,11 @@
   <meta name="description" content="Sistema de cursos e agendamento de aulas práticas CriaVibe Fotografia.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
+
   <style>
     :root {
       --primary: #777a43;
@@ -74,13 +77,55 @@
 
     /* ── LEFT HERO PANEL ── */
     .hero-panel {
-      background: linear-gradient(180deg, rgba(238, 247, 244, 0.85) 0%, rgba(224, 235, 247, 0.85) 100%),
-                  url('/api/agendamentos/img/camera.png') center/cover no-repeat;
-      padding: 60px 40px;
+      background: var(--bg-gradient);
+      padding: 50px 40px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 30px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-header-content {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      border-right: 1px solid var(--border);
+      justify-content: flex-start;
+      gap: 30px;
+    }
+
+    .hero-welcome-texts h2 {
+      font-family: var(--font-title);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    .hero-welcome-texts p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .hero-camera-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      height: 100%;
+    }
+
+    .hero-camera-img {
+      max-width: 140%;
+      height: auto;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      transform: scale(1.15) translateX(10px);
+      transform-origin: center right;
     }
 
     .brand-section h1 {
@@ -185,6 +230,7 @@
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -300,7 +346,7 @@
       font-size: 0.8rem;
       font-weight: 700;
       margin-bottom: 8px;
-      color: var(--text);
+      color: var(--primary);
     }
 
     .input-wrapper {
@@ -312,7 +358,7 @@
     .input-wrapper i.input-icon {
       position: absolute;
       left: 16px;
-      color: var(--text-muted);
+      color: var(--primary);
       font-size: 1rem;
       pointer-events: none;
     }
@@ -326,7 +372,7 @@
       font-family: var(--font-body);
       font-size: 0.85rem;
       color: var(--text);
-      background: var(--surface-sub);
+      background: var(--surface);
       outline: none;
       transition: var(--transition);
     }
@@ -444,8 +490,13 @@
       background: var(--border);
     }
 
-    .or-separator::before { left: 0; }
-    .or-separator::after { right: 0; }
+    .or-separator::before {
+      left: 0;
+    }
+
+    .or-separator::after {
+      right: 0;
+    }
 
     /* ── CARDS SELECTABLE ── */
     .selectable-card {
@@ -894,11 +945,30 @@
       text-transform: uppercase;
     }
 
-    .lesson-status-badge.pre_agendado { background: #e0f2fe; color: #0369a1; }
-    .lesson-status-badge.confirmado { background: #dcfce7; color: #15803d; }
-    .lesson-status-badge.concluido { background: #f1f5f9; color: #475569; }
-    .lesson-status-badge.cancelado { background: #fee2e2; color: #b91c1c; }
-    .lesson-status-badge.remarcado { background: #fef3c7; color: #b45309; }
+    .lesson-status-badge.pre_agendado {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .lesson-status-badge.confirmado {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .lesson-status-badge.concluido {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .lesson-status-badge.cancelado {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .lesson-status-badge.remarcado {
+      background: #fef3c7;
+      color: #b45309;
+    }
 
     /* ── PAINEL DO FOTÓGRAFO ── */
     .admin-layout {
@@ -1069,6 +1139,7 @@
         transform: scale(0.9) translateY(20px);
         opacity: 0;
       }
+
       to {
         transform: scale(1) translateY(0);
         opacity: 1;
@@ -1104,81 +1175,84 @@
 
     /* ── RESPONSIVIDADE ── */
     @media (max-width: 900px) {
+      body {
+        padding: 0;
+        background: var(--bg-gradient);
+      }
+
       .app-container {
         grid-template-columns: 1fr;
-        min-height: auto;
-        border-radius: 24px;
-        margin: 20px auto;
+        min-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+        box-shadow: none;
+        background: transparent;
       }
 
       .hero-panel {
-        padding: 40px;
+        grid-template-columns: 1.25fr 0.75fr;
+        padding: 35px 24px;
         border-right: none;
-        border-bottom: 1px solid var(--border);
-        min-height: 300px;
-        gap: 30px;
+        border-bottom: none;
+        min-height: auto;
+        background: transparent;
+      }
+
+      .hero-camera-img {
+        max-width: 150%;
+        transform: scale(1.2) translateX(10px);
+      }
+
+      .hero-welcome-texts {
+        margin-top: 15px;
+      }
+
+      .hero-welcome-texts h2 {
+        font-size: 1.5rem;
+      }
+
+      .hero-welcome-texts p {
+        font-size: 0.8rem;
       }
 
       .flow-panel {
-        padding: 30px 20px;
+        padding: 40px 24px;
+        background: var(--surface);
+        border-radius: 32px 32px 0 0;
+        margin-top: -10px;
+        box-shadow: 0 -10px 30px rgba(119, 122, 67, 0.05);
+        flex: 1;
       }
     }
   </style>
 </head>
+
 <body>
 
   <div class="app-container">
-    
+
     <!-- LEFT PANEL: DECORATIVE HEADER -->
     <header class="hero-panel">
-      <div class="brand-section">
-        <h1>Criavibe</h1>
-        <div class="subtitle">FOTOGRAFIA</div>
-      </div>
+      <div class="hero-header-content">
+        <div class="brand-section">
+          <h1>Criavibe</h1>
+          <div class="subtitle">FOTOGRAFIA</div>
+        </div>
 
-      <div class="contact-info">
-        <div class="contact-item">
-          <i class="fa-brands fa-whatsapp"></i>
-          <span>(61) 98196-5384</span>
-        </div>
-        <div class="contact-item">
-          <i class="fa-brands fa-instagram"></i>
-          <span>@criavibe_</span>
-        </div>
-        <div class="contact-item">
-          <i class="fa-solid fa-location-dot"></i>
-          <span style="white-space: normal;">Qr 71 L 8 Centro - Santo Antônio do Descoberto - GO</span>
+        <div class="hero-welcome-texts">
+          <h2>Bem-vindo!</h2>
+          <p>Acesse sua conta e agende sua próxima aula.</p>
         </div>
       </div>
 
-      <div class="features-list">
-        <div class="feature-badge">
-          <i class="fa-solid fa-graduation-cap"></i>
-          <div class="info">
-            <strong>Mais de 12 Cursos</strong>
-            <span>E técnicas profissionais</span>
-          </div>
-        </div>
-        <div class="feature-badge">
-          <i class="fa-solid fa-award"></i>
-          <div class="info">
-            <strong>Certificação CriaVibe</strong>
-            <span>Garantia de aprendizado</span>
-          </div>
-        </div>
-        <div class="feature-badge">
-          <i class="fa-solid fa-camera"></i>
-          <div class="info">
-            <strong>Aulas Práticas</strong>
-            <span>Presenciais e online</span>
-          </div>
-        </div>
+      <div class="hero-camera-wrapper">
+        <img src="/api/agendamentos/img/camera.png" alt="Câmera" class="hero-camera-img">
       </div>
     </header>
 
     <!-- RIGHT PANEL: INTERACTIVE CONTENT -->
     <main class="flow-panel">
-      
+
       <!-- STATUS/ERROR TOAST -->
       <div class="status-error-msg" id="status-alert">
         <i class="fa-solid fa-circle-exclamation"></i>
@@ -1187,8 +1261,8 @@
 
       <!-- VIEW 1: LOGIN -->
       <section class="view-container active" id="view-login">
-        <h2 class="form-title">Bem-vindo de volta!</h2>
-        <p class="form-subtitle">Acesse sua conta e agende sua próxima aula.</p>
+        <h2 class="form-title" style="margin-top: 10px;">Login</h2>
+        <p class="form-subtitle">Entre com seus dados para continuar.</p>
 
         <form id="form-login" onsubmit="event.preventDefault(); handleLogin();">
           <div class="form-group">
@@ -1211,7 +1285,9 @@
           </div>
 
           <div style="text-align: right; margin-top: -10px; margin-bottom: 24px;">
-            <a href="#" onclick="handleForgotPassword(event)" style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-decoration: none;">Esqueci minha senha</a>
+            <a href="#" onclick="handleForgotPassword(event)"
+              style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-decoration: none;">Esqueci minha
+              senha</a>
           </div>
 
           <button type="submit" class="btn btn-primary" id="btn-login-submit">
@@ -1222,13 +1298,14 @@
 
         <div class="or-separator">ou</div>
 
-        <button type="button" class="btn btn-secondary" onclick="changeView('view-register-step1')">
-          <i class="fa-solid fa-user-plus"></i>
-          <span>Criar Nova Conta</span>
-        </button>
+        <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 20px;">
+          Ainda não tem uma conta? 
+          <a href="#" onclick="changeView('view-register-step1'); event.preventDefault();"
+            style="color: var(--primary); font-weight: 700; text-decoration: underline;">Cadastre-se</a>
+        </div>
 
         <div class="footer-note">
-          <i class="fa-solid fa-lock"></i>
+          <i class="fa-solid fa-lock" style="color: var(--primary);"></i>
           <span>Seus dados estão seguros conosco.</span>
         </div>
       </section>
@@ -1236,11 +1313,25 @@
       <!-- VIEW 2: REGISTER STEP 1 (DADOS) -->
       <section class="view-container" id="view-register-step1">
         <div class="steps-header">
-          <div class="steps-line"><div class="steps-line-progress" style="width: 0%;"></div></div>
-          <div class="step-item active"><div class="step-circle">1</div><div class="step-label">Dados</div></div>
-          <div class="step-item"><div class="step-circle">2</div><div class="step-label">Plano</div></div>
-          <div class="step-item"><div class="step-circle">3</div><div class="step-label">Pagto</div></div>
-          <div class="step-item"><div class="step-circle">4</div><div class="step-label">Agenda</div></div>
+          <div class="steps-line">
+            <div class="steps-line-progress" style="width: 0%;"></div>
+          </div>
+          <div class="step-item active">
+            <div class="step-circle">1</div>
+            <div class="step-label">Dados</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-label">Plano</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-label">Pagto</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-label">Agenda</div>
+          </div>
         </div>
 
         <h2 class="form-title">Cadastro do Aluno</h2>
@@ -1306,11 +1397,25 @@
       <!-- VIEW 3: REGISTER STEP 2 (PLANO) -->
       <section class="view-container" id="view-register-step2">
         <div class="steps-header">
-          <div class="steps-line"><div class="steps-line-progress" style="width: 33%;"></div></div>
-          <div class="step-item completed"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">Dados</div></div>
-          <div class="step-item active"><div class="step-circle">2</div><div class="step-label">Plano</div></div>
-          <div class="step-item"><div class="step-circle">3</div><div class="step-label">Pagto</div></div>
-          <div class="step-item"><div class="step-circle">4</div><div class="step-label">Agenda</div></div>
+          <div class="steps-line">
+            <div class="steps-line-progress" style="width: 33%;"></div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Dados</div>
+          </div>
+          <div class="step-item active">
+            <div class="step-circle">2</div>
+            <div class="step-label">Plano</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-label">Pagto</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-label">Agenda</div>
+          </div>
         </div>
 
         <h2 class="form-title">Escolha seu plano</h2>
@@ -1383,11 +1488,25 @@
       <!-- VIEW 4: REGISTER STEP 3 (PAGAMENTO) -->
       <section class="view-container" id="view-register-step3">
         <div class="steps-header">
-          <div class="steps-line"><div class="steps-line-progress" style="width: 66%;"></div></div>
-          <div class="step-item completed"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">Dados</div></div>
-          <div class="step-item completed"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">Plano</div></div>
-          <div class="step-item active"><div class="step-circle">3</div><div class="step-label">Pagto</div></div>
-          <div class="step-item"><div class="step-circle">4</div><div class="step-label">Agenda</div></div>
+          <div class="steps-line">
+            <div class="steps-line-progress" style="width: 66%;"></div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Dados</div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Plano</div>
+          </div>
+          <div class="step-item active">
+            <div class="step-circle">3</div>
+            <div class="step-label">Pagto</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-label">Agenda</div>
+          </div>
         </div>
 
         <h2 class="form-title">Forma de pagamento</h2>
@@ -1395,7 +1514,8 @@
 
         <!-- PAGAMENTO CARD 1 -->
         <div class="selectable-card selected" id="pay-card-pix" onclick="selectPayment('PIX')">
-          <div class="card-icon" style="background: rgba(74, 222, 128, 0.08); color: #22c55e;"><i class="fa-solid fa-qrcode"></i></div>
+          <div class="card-icon" style="background: rgba(74, 222, 128, 0.08); color: #22c55e;"><i
+              class="fa-solid fa-qrcode"></i></div>
           <div class="card-content">
             <div class="card-title">PIX</div>
             <div class="card-desc">Transferência instantânea informada no estúdio.</div>
@@ -1405,7 +1525,8 @@
 
         <!-- PAGAMENTO CARD 2 -->
         <div class="selectable-card" id="pay-card-dinheiro" onclick="selectPayment('Dinheiro')">
-          <div class="card-icon" style="background: rgba(234, 179, 8, 0.08); color: #eab308;"><i class="fa-solid fa-money-bill-wave"></i></div>
+          <div class="card-icon" style="background: rgba(234, 179, 8, 0.08); color: #eab308;"><i
+              class="fa-solid fa-money-bill-wave"></i></div>
           <div class="card-content">
             <div class="card-title">Dinheiro físico</div>
             <div class="card-desc">Pagamento em cédulas realizado no início da aula.</div>
@@ -1415,7 +1536,8 @@
 
         <!-- PAGAMENTO CARD 3 -->
         <div class="selectable-card" id="pay-card-cartao" onclick="selectPayment('Cartão de crédito')">
-          <div class="card-icon" style="background: rgba(99, 102, 241, 0.08); color: #6366f1;"><i class="fa-solid fa-credit-card"></i></div>
+          <div class="card-icon" style="background: rgba(99, 102, 241, 0.08); color: #6366f1;"><i
+              class="fa-solid fa-credit-card"></i></div>
           <div class="card-content">
             <div class="card-title">Cartão de Crédito/Débito</div>
             <div class="card-desc">Aceitamos as principais bandeiras no dia da aula.</div>
@@ -1429,7 +1551,8 @@
             <span>Importante</span>
           </div>
           <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
-            As formas de pagamento são informativas para controle de cadastro. Todos os pagamentos podem ser realizados diretamente no dia da aula, antes do início da sessão com o professor.
+            As formas de pagamento são informativas para controle de cadastro. Todos os pagamentos podem ser realizados
+            diretamente no dia da aula, antes do início da sessão com o professor.
           </p>
         </div>
 
@@ -1439,7 +1562,8 @@
             <span>Resumo da contratação</span>
           </div>
           <div class="summary-grid">
-            <div class="summary-item"><label>Plano Escolhido</label><span class="sum-plano-nome-txt">Santo Antônio</span></div>
+            <div class="summary-item"><label>Plano Escolhido</label><span class="sum-plano-nome-txt">Santo
+                Antônio</span></div>
             <div class="summary-item"><label>Forma de Pagto</label><span id="sum-pagto-forma">PIX</span></div>
             <div class="summary-item"><label>Valor Final</label><span class="sum-plano-valor-txt">R$ 100,00</span></div>
           </div>
@@ -1457,11 +1581,25 @@
       <!-- VIEW 5: REGISTER STEP 4 (AGENDAMENTO DE HORÁRIO) -->
       <section class="view-container" id="view-register-step4">
         <div class="steps-header">
-          <div class="steps-line"><div class="steps-line-progress" style="width: 100%;"></div></div>
-          <div class="step-item completed"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">Dados</div></div>
-          <div class="step-item completed"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">Plano</div></div>
-          <div class="step-item completed"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">Pagto</div></div>
-          <div class="step-item active"><div class="step-circle">4</div><div class="step-label">Agenda</div></div>
+          <div class="steps-line">
+            <div class="steps-line-progress" style="width: 100%;"></div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Dados</div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Plano</div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Pagto</div>
+          </div>
+          <div class="step-item active">
+            <div class="step-circle">4</div>
+            <div class="step-label">Agenda</div>
+          </div>
         </div>
 
         <h2 class="form-title">Agende sua aula!</h2>
@@ -1472,7 +1610,8 @@
           <!-- Calendar buttons generated dynamically by JS -->
         </div>
 
-        <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 8px;">Escolha o horário</label>
+        <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 8px;">Escolha o
+          horário</label>
         <div class="hours-grid" id="reg-calendar-hours">
           <!-- Hour buttons generated dynamically by JS -->
         </div>
@@ -1483,7 +1622,8 @@
             <span>Resumo do agendamento</span>
           </div>
           <div class="summary-grid">
-            <div class="summary-item"><label>Plano Escolhido</label><span class="sum-plano-nome-txt">Santo Antônio</span></div>
+            <div class="summary-item"><label>Plano Escolhido</label><span class="sum-plano-nome-txt">Santo
+                Antônio</span></div>
             <div class="summary-item"><label>Data da aula</label><span id="sum-agenda-data">Selecione...</span></div>
             <div class="summary-item"><label>Horário</label><span id="sum-agenda-hora">Selecione...</span></div>
           </div>
@@ -1526,7 +1666,9 @@
 
         <div class="section-header-row">
           <h3>Suas Aulas Práticas</h3>
-          <button class="btn btn-primary" style="padding: 8px 14px; font-size: 0.75rem; width: auto; border-radius: 8px;" onclick="openNewLessonModal()">
+          <button class="btn btn-primary"
+            style="padding: 8px 14px; font-size: 0.75rem; width: auto; border-radius: 8px;"
+            onclick="openNewLessonModal()">
             <i class="fa-solid fa-plus"></i> Agendar Aula
           </button>
         </div>
@@ -1541,8 +1683,10 @@
         <div class="admin-layout">
           <div class="admin-topbar">
             <div>
-              <h2 style="font-family: var(--font-title); color: var(--primary); font-size: 1.4rem;">Painel do Professor</h2>
-              <p style="font-size: 0.75rem; color: var(--text-muted);" id="teacher-profile-info">willianb.o.1993@gmail.com</p>
+              <h2 style="font-family: var(--font-title); color: var(--primary); font-size: 1.4rem;">Painel do Professor
+              </h2>
+              <p style="font-size: 0.75rem; color: var(--text-muted);" id="teacher-profile-info">
+                willianb.o.1993@gmail.com</p>
             </div>
             <button class="btn-logout" onclick="handleLogout()" title="Sair do painel administrativo">
               <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -1551,8 +1695,10 @@
           </div>
 
           <div class="admin-tabs">
-            <button class="admin-tab-btn active" id="tab-btn-aulas" onclick="switchAdminTab('aulas')"><i class="fa-solid fa-calendar-days"></i> Aulas Agendadas</button>
-            <button class="admin-tab-btn" id="tab-btn-alunos" onclick="switchAdminTab('alunos')"><i class="fa-solid fa-users"></i> Alunos Matriculados</button>
+            <button class="admin-tab-btn active" id="tab-btn-aulas" onclick="switchAdminTab('aulas')"><i
+                class="fa-solid fa-calendar-days"></i> Aulas Agendadas</button>
+            <button class="admin-tab-btn" id="tab-btn-alunos" onclick="switchAdminTab('alunos')"><i
+                class="fa-solid fa-users"></i> Alunos Matriculados</button>
           </div>
 
           <!-- TAB CONTENT: AULAS -->
@@ -1669,7 +1815,8 @@
         </div>
 
         <!-- ADMIN ONLY FIELDS -->
-        <div class="admin-only-fields" id="admin-fields" style="display: none; border-top: 1.5px dashed var(--border); padding-top: 15px; margin-top: 15px;">
+        <div class="admin-only-fields" id="admin-fields"
+          style="display: none; border-top: 1.5px dashed var(--border); padding-top: 15px; margin-top: 15px;">
           <div class="form-group">
             <label for="slot-status">Status da Aula</label>
             <div class="input-wrapper">
@@ -1681,13 +1828,17 @@
           </div>
           <div class="form-group">
             <label for="slot-notes">Observações e Planejamento</label>
-            <textarea id="slot-notes" style="width: 100%; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; font-family: var(--font-body); font-size: 0.8rem; background: var(--surface-sub); outline: none; min-height: 80px;" placeholder="Planejamento pedagógico ou observações de logística..."></textarea>
+            <textarea id="slot-notes"
+              style="width: 100%; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; font-family: var(--font-body); font-size: 0.8rem; background: var(--surface-sub); outline: none; min-height: 80px;"
+              placeholder="Planejamento pedagógico ou observações de logística..."></textarea>
           </div>
         </div>
 
-        <div class="form-group" style="background: var(--surface-sub); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <div class="form-group"
+          style="background: var(--surface-sub); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">VALOR DO AGENDAMENTO</span>
-          <span style="font-size: 1.15rem; font-weight: 800; color: var(--primary); font-family: var(--font-title);" id="slot-calc-value">R$ 0,00</span>
+          <span style="font-size: 1.15rem; font-weight: 800; color: var(--primary); font-family: var(--font-title);"
+            id="slot-calc-value">R$ 0,00</span>
         </div>
 
         <div class="btn-actions-row">
@@ -1770,7 +1921,7 @@
       adminLogado: null,
       token: localStorage.getItem(STORAGE_KEY) || '',
       currentView: 'view-login',
-      
+
       // Dados do formulário de cadastro (Steps)
       regData: {
         nome: '',
@@ -1790,7 +1941,7 @@
       statusOpcoes: ['pre_agendado', 'confirmado', 'concluido', 'cancelado', 'remarcado'],
       course: { modulos: [], assuntos: [] },
       board: [], // Todos os agendamentos cadastrados no banco
-      
+
       // Valores de aula (centavos)
       valorSantoAntonioCentavos: 7500,
       valorOutraCidadeCentavos: 12000,
@@ -1865,13 +2016,13 @@
     function maskPhone(input) {
       let v = input.value.replace(/\D/g, '');
       if (v.length > 11) v = v.substring(0, 11);
-      
+
       if (v.length > 10) {
-        input.value = `(${v.substring(0,2)}) ${v.substring(2,7)}-${v.substring(7,11)}`;
+        input.value = `(${v.substring(0, 2)}) ${v.substring(2, 7)}-${v.substring(7, 11)}`;
       } else if (v.length > 5) {
-        input.value = `(${v.substring(0,2)}) ${v.substring(2,6)}-${v.substring(6,10)}`;
+        input.value = `(${v.substring(0, 2)}) ${v.substring(2, 6)}-${v.substring(6, 10)}`;
       } else if (v.length > 2) {
-        input.value = `(${v.substring(0,2)}) ${v.substring(2)}`;
+        input.value = `(${v.substring(0, 2)}) ${v.substring(2)}`;
       } else if (v.length > 0) {
         input.value = `(${v}`;
       } else {
@@ -1920,8 +2071,8 @@
       if (!confirm('Deseja realmente sair?')) return;
       try {
         await request('/logout.php', { method: 'POST' });
-      } catch (err) {}
-      
+      } catch (err) { }
+
       state.alunoLogado = null;
       state.adminLogado = null;
       state.token = '';
@@ -1972,10 +2123,10 @@
     function updatePlanSummary() {
       const planName = state.regData.plano === 'local' ? 'Santo Antônio' : 'Outra localidade';
       const planPrice = state.regData.plano === 'local' ? 'R$ 100,00' : 'R$ 150,00';
-      
+
       document.getElementById('sum-plano-nome').textContent = planName;
       document.getElementById('sum-plano-valor').textContent = planPrice;
-      
+
       document.querySelectorAll('.sum-plano-nome-txt').forEach(el => el.textContent = planName);
       document.querySelectorAll('.sum-plano-valor-txt').forEach(el => el.textContent = planPrice);
     }
@@ -1983,7 +2134,7 @@
     function selectPayment(paymentMethod) {
       state.regData.forma_pagamento = paymentMethod;
       document.querySelectorAll('#view-register-step3 .selectable-card').forEach(c => c.classList.remove('selected'));
-      
+
       const map = { 'PIX': 'pix', 'Dinheiro': 'dinheiro', 'Cartão de crédito': 'cartao' };
       document.getElementById('pay-card-' + map[paymentMethod]).classList.add('selected');
       document.getElementById('sum-pagto-forma').textContent = paymentMethod;
@@ -2002,7 +2153,7 @@
       const currentDay = today.getDay();
       let diff = targetIndex - currentDay;
       if (diff <= 0) diff += 7; // Próxima semana
-      
+
       const result = new Date();
       result.setDate(today.getDate() + diff + (offsetWeeks * 7));
       result.setHours(0, 0, 0, 0);
@@ -2013,7 +2164,7 @@
     function generateCalendarDays() {
       const container = document.getElementById('reg-calendar-days');
       container.innerHTML = '';
-      
+
       const today = new Date();
       let count = 0;
       let dateCursor = new Date(today);
@@ -2043,7 +2194,7 @@
         }
         dateCursor.setDate(dateCursor.getDate() + 1);
       }
-      
+
       // Se não houver data selecionada, seleciona a primeira
       if (!state.regData.data_aula && container.firstChild) {
         container.firstChild.click();
@@ -2053,7 +2204,7 @@
     function selectRegDate(dateString, dayName) {
       state.regData.data_aula = dateString;
       document.querySelectorAll('#reg-calendar-days .calendar-day-btn').forEach(btn => btn.classList.remove('selected'));
-      
+
       // Acha e marca selecionado
       generateCalendarDays();
       generateRegHours(dateString, dayName);
@@ -2097,7 +2248,7 @@
     function selectRegHour(hour) {
       state.regData.horario = hour;
       document.querySelectorAll('#reg-calendar-hours .hour-btn').forEach(btn => btn.classList.remove('selected'));
-      
+
       // Marca selecionado
       generateRegHours(state.regData.data_aula, DAYS_NAMES[new Date(state.regData.data_aula + 'T00:00:00').getDay()]);
       updateStep4Summary();
@@ -2106,7 +2257,7 @@
     function updateStep4Summary() {
       const dateText = state.regData.data_aula ? formatDateText(state.regData.data_aula) : 'Selecione...';
       const hourText = state.regData.horario ? state.regData.horario : 'Selecione...';
-      
+
       document.getElementById('sum-agenda-data').textContent = dateText;
       document.getElementById('sum-agenda-hora').textContent = hourText;
     }
@@ -2210,7 +2361,7 @@
 
       const plano = state.alunoLogado.plano || { nome: 'Sem plano ativo', total_aulas: 0, aulas_usadas: 0, status: 'inativo' };
       document.getElementById('panel-student-plan-name').textContent = plano.nome;
-      
+
       const localText = plano.cidade ? `Localização das aulas: ${plano.cidade}` : 'Aulas práticas presenciais';
       document.getElementById('panel-student-plan-cidade').textContent = localText;
 
@@ -2245,7 +2396,7 @@
       minhasAulas.forEach(aula => {
         const card = document.createElement('div');
         card.className = 'lesson-item-card';
-        
+
         const [year, month, day] = aula.data_aula.split('-');
         const monthsShort = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
         const mShort = monthsShort[Number(month) - 1];
@@ -2300,7 +2451,7 @@
     function switchAdminTab(tab) {
       document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.admin-tab-panel').forEach(panel => panel.style.display = 'none');
-      
+
       document.getElementById('tab-btn-' + tab).classList.add('active');
       document.getElementById('admin-panel-' + tab).style.display = 'block';
     }
@@ -2442,7 +2593,7 @@
       const modSelect = document.getElementById('slot-module');
       modSelect.innerHTML = '<option value="">Sem módulo específico</option>' + state.course.modulos.map(m => `<option value="${m.id}">${escapeHtml(m.nome)}</option>`).join('');
       modSelect.value = '';
-      
+
       // Popula assuntos
       renderModalSubjects();
 
@@ -2470,7 +2621,7 @@
 
       document.getElementById('slot-modal-title').textContent = 'Editar Aula';
       document.getElementById('btn-save-slot').textContent = 'Salvar Alterações';
-      
+
       // Admin fields
       document.getElementById('admin-fields').style.display = 'block';
 
@@ -2525,7 +2676,7 @@
       const modId = Number(document.getElementById('slot-module').value || 0);
       const subSelect = document.getElementById('slot-subject');
       const subjects = state.course.assuntos.filter(s => Number(s.modulo_id) === modId);
-      
+
       subSelect.innerHTML = '<option value="">Sem assunto específico</option>' + subjects.map(s => `<option value="${s.id}">${escapeHtml(s.titulo)}</option>`).join('');
       subSelect.value = '';
     }
@@ -2547,7 +2698,7 @@
       const city = document.getElementById('slot-city').value;
       const hours = Number(document.getElementById('slot-hours').value || 1);
       const rate = city.includes('Santo Antônio') ? 100 : 150;
-      
+
       document.getElementById('slot-calc-value').textContent = (rate * hours).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
@@ -2555,7 +2706,7 @@
       const dateVal = document.getElementById('slot-date').value;
       const hoursVal = Number(document.getElementById('slot-hours').value || 1);
       const select = document.getElementById('slot-time');
-      
+
       const occupied = new Set();
       state.board.forEach(item => {
         // Ignora a própria aula que estamos editando na lista de ocupados
@@ -2621,7 +2772,7 @@
 
       // Monta payload de salvamento
       const isNew = !state.modalEditingLessonId;
-      
+
       // Se for aluno agendando
       let payload = {};
       if (state.alunoLogado) {
@@ -2660,7 +2811,7 @@
           },
           aulas: minhasAulas
         };
-      } 
+      }
       // Se for professor editando uma aula de algum aluno
       else if (state.adminLogado) {
         // Acha o aluno dono dessa aula específica
@@ -2730,7 +2881,7 @@
       document.getElementById('edit-plan-total').value = totalAulas;
       document.getElementById('edit-plan-status').value = status;
       document.getElementById('edit-plan-payment').value = formaPagamento || '';
-      
+
       document.getElementById('plan-modal').classList.add('open');
     }
 
@@ -2844,4 +2995,5 @@
     init();
   </script>
 </body>
+
 </html>
