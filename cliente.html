@@ -1936,9 +1936,50 @@
         fotosRenderizadas = 0;
         renderizarProximoLoteFotos(true);
         atualizarToolbar();
+
+        // Verifica se há alguma imagem que ainda não possui miniatura e dispara o processamento em segundo plano
+        const temFotosSemThumb = FOTOS.some(f => !f.caminho_thumb_medium);
+        if (temFotosSemThumb) {
+          setTimeout(dispararProcessamentoLento, 1000);
+        }
       } catch (e) {
         console.error('Erro ao carregar galeria:', e);
         grid.innerHTML = '<div class="loading" style="color:#f87171"><i class="fa-solid fa-triangle-exclamation"></i><br>Erro ao carregar fotos.</div>';
+      }
+    }
+
+    let _processandoThumbs = false;
+    async function dispararProcessamentoLento() {
+      if (!GALERIA || _processandoThumbs) return;
+      _processandoThumbs = true;
+      try {
+        const r = await fetch(`/api/fotos/process_thumbs.php?galeria_id=${GALERIA.id}`, { credentials: 'include' });
+        const d = await r.json();
+        _processandoThumbs = false;
+        if (d.status === 'ok' && d.processadas > 0) {
+          // Atualiza as imagens locais sem resetar toda a tela
+          d.fotos_atualizadas.forEach(f => {
+            const idx = FOTOS.findIndex(x => x.id === f.id);
+            if (idx !== -1) {
+              FOTOS[idx].caminho_thumb_small = f.caminho_thumb_small;
+              FOTOS[idx].caminho_thumb_medium = f.caminho_thumb_medium;
+              FOTOS[idx].caminho_thumb_large = f.caminho_thumb_large;
+              // Atualiza o src da imagem no grid se ela já foi renderizada
+              const imgEl = document.querySelector(`#foto-${f.id} img`);
+              if (imgEl) {
+                imgEl.src = fotoGridSrc(FOTOS[idx]);
+              }
+            }
+          });
+          // Se ainda há fotos pendentes, chama novamente
+          const aindaTem = FOTOS.some(f => !f.caminho_thumb_medium);
+          if (aindaTem) {
+            setTimeout(dispararProcessamentoLento, 1500);
+          }
+        }
+      } catch (err) {
+        _processandoThumbs = false;
+        console.error('Erro ao processar miniaturas em segundo plano:', err);
       }
     }
 
