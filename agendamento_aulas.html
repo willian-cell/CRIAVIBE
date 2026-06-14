@@ -809,6 +809,136 @@
       color: var(--text-muted);
     }
 
+    .student-profile-card {
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+      background: var(--surface-sub);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .student-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(119, 122, 67, 0.12);
+      border: 1.5px solid rgba(119, 122, 67, 0.18);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 800;
+      overflow: hidden;
+    }
+
+    .student-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .student-profile-main h3 {
+      font-family: var(--font-title);
+      color: var(--primary);
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .student-profile-grid,
+    .student-plan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .student-info-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .student-info-chip i {
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .student-info-chip span {
+      overflow-wrap: anywhere;
+    }
+
+    .student-inline-form {
+      display: none;
+      grid-column: 1 / -1;
+      border-top: 1px dashed var(--border);
+      padding-top: 14px;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .student-profile-card.editing .student-inline-form,
+    .aluno-plan-card.editing .student-inline-form {
+      display: grid;
+    }
+
+    .student-plan-grid {
+      margin: 12px 0 16px;
+    }
+
+    .student-plan-detail {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .student-plan-detail label {
+      display: block;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      opacity: 0.72;
+      margin-bottom: 4px;
+    }
+
+    .student-plan-detail span {
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .inline-action-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--primary);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .inline-action-btn:hover {
+      border-color: var(--primary);
+      background: rgba(119, 122, 67, 0.06);
+    }
+
     .aluno-plan-card {
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
       color: white;
@@ -968,6 +1098,13 @@
     .lesson-status-badge.remarcado {
       background: #fef3c7;
       color: #b45309;
+    }
+
+    .lesson-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     /* ── PAINEL DO FOTÓGRAFO ── */
@@ -1278,6 +1415,32 @@
 
       .form-group {
         margin-bottom: 16px;
+      }
+
+      .student-profile-card {
+        grid-template-columns: auto 1fr;
+        align-items: flex-start;
+      }
+
+      .student-profile-card > .inline-action-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+
+      .student-profile-grid,
+      .student-plan-grid,
+      .student-inline-form {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-item-card {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .lesson-item-actions {
+        width: 100%;
+        justify-content: flex-end;
       }
 
       .or-separator {
@@ -1699,7 +1862,7 @@
         </div>
 
         <div class="btn-actions-row">
-          <button class="btn btn-secondary" onclick="changeView('view-register-step3')">Voltar</button>
+          <button class="btn btn-secondary" onclick="handleScheduleBack()">Voltar</button>
           <button class="btn btn-primary" onclick="submitRegistration()" id="btn-submit-registration">
             <span>Confirmar Agendamento</span>
             <i class="fa-solid fa-check"></i>
@@ -1720,10 +1883,76 @@
           </button>
         </div>
 
-        <div class="aluno-plan-card">
+        <div class="student-profile-card" id="student-profile-card">
+          <div class="student-avatar" id="student-avatar">AL</div>
+          <div class="student-profile-main">
+            <h3 id="student-profile-name">Aluno</h3>
+            <div class="student-profile-grid">
+              <div class="student-info-chip"><i class="fa-solid fa-envelope"></i><span id="student-profile-email">email</span></div>
+              <div class="student-info-chip"><i class="fa-solid fa-phone"></i><span id="student-profile-phone">telefone</span></div>
+              <div class="student-info-chip"><i class="fa-solid fa-id-badge"></i><span id="student-profile-code">Cadastro ativo</span></div>
+            </div>
+          </div>
+          <button class="inline-action-btn" onclick="toggleStudentProfileEdit()" type="button">
+            <i class="fa-solid fa-pen"></i> Editar
+          </button>
+          <div class="student-inline-form" id="student-profile-form">
+            <div class="form-group">
+              <label for="student-edit-name">Nome completo</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-user input-icon"></i>
+                <input type="text" id="student-edit-name">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="student-edit-email">E-mail</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-envelope input-icon"></i>
+                <input type="email" id="student-edit-email">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="student-edit-phone">WhatsApp</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-phone input-icon"></i>
+                <input type="tel" id="student-edit-phone" oninput="maskPhone(this)">
+              </div>
+            </div>
+            <div class="btn-actions-row" style="grid-column: 1 / -1; margin-top: 0;">
+              <button type="button" class="btn btn-secondary" onclick="toggleStudentProfileEdit(false)">Cancelar</button>
+              <button type="button" class="btn btn-primary" onclick="saveStudentProfileInline()">Salvar dados</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="aluno-plan-card" id="student-plan-card">
           <h3 id="panel-student-plan-name">Curso Fotografia Prática</h3>
           <p id="panel-student-plan-cidade">Local das aulas: Santo Antônio do Descoberto - GO</p>
-          <p id="panel-student-plan-pagamento" style="font-size: 0.75rem; opacity: 0.85; margin-top: 4px;"></p>
+          <div class="student-plan-grid">
+            <div class="student-plan-detail"><label>Pagamento</label><span id="panel-student-plan-pagamento">Nao informado</span></div>
+            <div class="student-plan-detail"><label>Status</label><span id="panel-student-plan-status">Ativo</span></div>
+            <div class="student-plan-detail"><label>Total contratado</label><span id="panel-student-plan-total">0 aulas</span></div>
+          </div>
+          <button class="inline-action-btn" style="background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.24); margin-bottom: 14px;" onclick="toggleStudentPlanEdit()" type="button">
+            <i class="fa-solid fa-pen"></i> Editar pagamento
+          </button>
+          <div class="student-inline-form" id="student-plan-form" style="border-color: rgba(255,255,255,0.22); margin-bottom: 14px;">
+            <div class="form-group">
+              <label for="student-edit-payment" style="color: white;">Forma de pagamento</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-credit-card input-icon"></i>
+                <select id="student-edit-payment">
+                  <option value="PIX">PIX</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                  <option value="Cartao de credito">Cartao de credito/debito</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-actions-row" style="grid-column: 1 / -1; margin-top: 0;">
+              <button type="button" class="btn btn-secondary" onclick="toggleStudentPlanEdit(false)">Cancelar</button>
+              <button type="button" class="btn btn-primary" onclick="saveStudentPlanInline()">Salvar pagamento</button>
+            </div>
+          </div>
           <div class="aluno-plan-progress-container">
             <div class="aluno-plan-progress-fill" id="student-progress-bar"></div>
           </div>
@@ -1737,7 +1966,7 @@
           <h3>Suas Aulas Práticas</h3>
           <button class="btn btn-primary"
             style="padding: 8px 14px; font-size: 0.75rem; width: auto; border-radius: 8px;"
-            onclick="openNewLessonModal()">
+            onclick="openStudentScheduleScreen()">
             <i class="fa-solid fa-plus"></i> Agendar Aula
           </button>
         </div>
@@ -2250,7 +2479,35 @@
       updateStep4Summary();
     }
 
-    // Retorna a próxima data de um dia específico
+    // Reaproveita a tela de agenda para alunos ja cadastrados.
+    function openStudentScheduleScreen() {
+      if (!state.alunoLogado) {
+        changeView('view-login');
+        return;
+      }
+
+      const plano = state.alunoLogado.plano || {};
+      state.regData.plano = (plano.cidade || '').includes('Santo Ant') ? 'local' : 'out';
+      state.regData.forma_pagamento = plano.forma_pagamento || state.regData.forma_pagamento || 'PIX';
+      state.regData.data_aula = '';
+      state.regData.horario = '';
+
+      updatePlanSummary();
+      changeView('view-register-step4');
+      state.selectedMonth = null;
+      generateCalendarMonths();
+      updateStep4Summary();
+    }
+
+    function handleScheduleBack() {
+      if (state.alunoLogado) {
+        loadStudentDashboard();
+        return;
+      }
+
+      changeView('view-register-step3');
+    }
+
     function getNextDateForDayName(dayName, offsetWeeks = 0) {
       const targetIndex = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'].indexOf(dayName);
       const today = new Date();
@@ -2400,10 +2657,24 @@
       const set = new Set();
       state.board.forEach(item => {
         if (item.data_aula === dateString) {
-          set.add(item.horario);
+          const start = timeToMinutes(item.horario);
+          const end = start + (Number(item.quantidade_horas || 1) * 60);
+
+          state.horarios.forEach(h => {
+            const slotStart = timeToMinutes(h);
+            const slotEnd = slotStart + 60;
+            if (slotStart < end && slotEnd > start) {
+              set.add(h);
+            }
+          });
         }
       });
       return set;
+    }
+
+    function timeToMinutes(time) {
+      const [hour, minute] = String(time || '00:00').split(':').map(Number);
+      return (hour * 60) + (minute || 0);
     }
 
     function generateRegHours(dateString, dayName) {
@@ -2452,7 +2723,100 @@
       return `${day}/${month}/${year}`;
     }
 
+    function getStudentLessonsPayload() {
+      return state.board.filter(a => a.is_owner).map(a => ({
+        aula_id: a.aula_id,
+        dia_semana: a.dia_semana,
+        data_aula: a.data_aula,
+        horario: a.horario,
+        quantidade_horas: a.quantidade_horas,
+        cidade: a.cidade,
+        modulo_id: a.modulo_id,
+        assunto_id: a.assunto_id,
+        status: a.status,
+        observacoes: a.observacoes || ''
+      }));
+    }
+
+    async function saveStudentDataInline({ aluno = null, plano = null, aulas = null } = {}) {
+      if (!state.alunoLogado || !state.token) return;
+
+      const currentPlan = state.alunoLogado.plano || {};
+      await request('/save.php', {
+        method: 'POST',
+        body: JSON.stringify({
+          token_publico: state.token,
+          aluno: aluno || {
+            nome: state.alunoLogado.nome,
+            email: state.alunoLogado.email,
+            telefone: state.alunoLogado.telefone
+          },
+          plano: {
+            nome: plano?.nome || currentPlan.nome || 'Curso Pr\u00e1tico',
+            total_aulas: plano?.total_aulas || currentPlan.total_aulas || 10,
+            status: plano?.status || currentPlan.status || 'ativo',
+            forma_pagamento: plano?.forma_pagamento ?? currentPlan.forma_pagamento ?? ''
+          },
+          aulas: aulas || getStudentLessonsPayload()
+        })
+      });
+    }
+
+    async function submitStudentScheduleFromCalendar() {
+      const btn = document.getElementById('btn-submit-registration');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Agendando...';
+
+      const plano = state.alunoLogado.plano || {};
+      const cidade = plano.cidade || (state.regData.plano === 'local' ? 'Santo Ant\u00f4nio do Descoberto' : 'Outra localidade');
+      const rateCentavos = cidade.includes('Santo Ant') ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
+      const dayOfWeek = DAYS_NAMES[new Date(state.regData.data_aula + 'T00:00:00').getDay()];
+
+      const minhasAulas = getStudentLessonsPayload();
+
+      minhasAulas.push({
+        dia_semana: dayOfWeek,
+        data_aula: state.regData.data_aula,
+        horario: state.regData.horario,
+        quantidade_horas: 1,
+        cidade: cidade,
+        modulo_id: null,
+        assunto_id: null,
+        status: 'pre_agendado',
+        observacoes: '',
+        valor_hora_centavos: rateCentavos,
+        valor_centavos: rateCentavos
+      });
+
+      try {
+        await saveStudentDataInline({
+          plano: {
+            nome: plano.nome || 'Curso Pr\u00e1tico',
+            total_aulas: plano.total_aulas || 10,
+            status: plano.status || 'ativo',
+            forma_pagamento: plano.forma_pagamento || state.regData.forma_pagamento || ''
+          },
+          aulas: minhasAulas
+        });
+
+        alert('Aula agendada com sucesso!');
+        state.regData.data_aula = '';
+        state.regData.horario = '';
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+
     async function submitRegistration() {
+      if (state.alunoLogado && state.token && state.regData.data_aula && state.regData.horario) {
+        await submitStudentScheduleFromCalendar();
+        return;
+      }
       if (!state.regData.data_aula || !state.regData.horario) {
         showAlert('Por favor, selecione uma data e horário para a sua aula.');
         return;
@@ -2542,7 +2906,16 @@
 
     function renderStudentPanelData() {
       if (!state.alunoLogado) return;
+      const alunoNome = state.alunoLogado.nome || 'Aluno';
+      const alunoEmail = state.alunoLogado.email || 'E-mail nao informado';
+      const alunoTelefone = state.alunoLogado.telefone || 'Telefone nao informado';
       document.getElementById('student-welcome-title').textContent = `Olá, ${state.alunoLogado.nome}!`;
+
+      document.getElementById('student-profile-name').textContent = alunoNome;
+      document.getElementById('student-profile-email').textContent = alunoEmail;
+      document.getElementById('student-profile-phone').textContent = alunoTelefone;
+      document.getElementById('student-profile-code').textContent = state.token ? `Token ${state.token.slice(0, 8)}...` : 'Cadastro ativo';
+      renderStudentAvatar(state.alunoLogado);
 
       const plano = state.alunoLogado.plano || { nome: 'Sem plano ativo', total_aulas: 0, aulas_usadas: 0, status: 'inativo' };
       document.getElementById('panel-student-plan-name').textContent = plano.nome;
@@ -2557,6 +2930,9 @@
       const usadas = Number(plano.aulas_usadas || 0);
       const percent = total > 0 ? Math.min(100, Math.round((usadas / total) * 100)) : 0;
 
+      document.getElementById('panel-student-plan-pagamento').textContent = plano.forma_pagamento || 'Nao informado';
+      document.getElementById('panel-student-plan-status').textContent = plano.status || 'ativo';
+      document.getElementById('panel-student-plan-total').textContent = `${total} aulas`;
       document.getElementById('student-progress-bar').style.width = percent + '%';
       document.getElementById('student-progress-text').textContent = `${usadas} de ${total} aulas utilizadas`;
       document.getElementById('student-progress-percent').textContent = `${percent}% concluído`;
@@ -2585,6 +2961,7 @@
         const [year, month, day] = aula.data_aula.split('-');
         const monthsShort = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
         const mShort = monthsShort[Number(month) - 1];
+        const valorText = aula.valor_centavos ? (Number(aula.valor_centavos) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Valor a confirmar';
 
         const moduloText = [aula.modulo_nome, aula.assunto_titulo].filter(Boolean).join(' • ') || 'Módulo Geral';
 
@@ -2599,8 +2976,105 @@
           </div>
           <span class="lesson-status-badge ${aula.status}">${(aula.status || 'pre_agendado').replace('_', ' ')}</span>
         `;
+        card.querySelector('.lesson-item-info').insertAdjacentHTML('beforeend', `
+          <p><i class="fa-solid fa-calendar-day"></i> ${formatDateText(aula.data_aula)} - ${escapeHtml(aula.dia_semana || '')}</p>
+          <p><i class="fa-solid fa-book-open"></i> ${escapeHtml(aula.modulo_nome || 'Modulo nao definido')}</p>
+          <p><i class="fa-solid fa-bookmark"></i> ${escapeHtml(aula.assunto_titulo || 'Assunto nao definido')}</p>
+          <p><i class="fa-solid fa-money-bill-wave"></i> ${escapeHtml(valorText)}</p>
+          <p><i class="fa-solid fa-circle-info"></i> ${escapeHtml(aula.observacoes || 'Sem observacoes registradas')}</p>
+        `);
+        card.insertAdjacentHTML('beforeend', `
+          <div class="lesson-item-actions">
+            <button class="inline-action-btn" type="button" onclick="openEditLessonModal(${aula.aula_id})">
+              <i class="fa-solid fa-pen"></i> Editar
+            </button>
+          </div>
+        `);
         container.appendChild(card);
       });
+    }
+
+    function getInitials(name) {
+      return String(name || 'Aluno')
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join('') || 'AL';
+    }
+
+    function renderStudentAvatar(aluno) {
+      const avatar = document.getElementById('student-avatar');
+      const fotoUrl = aluno?.foto_url || aluno?.foto || aluno?.avatar || '';
+
+      if (fotoUrl) {
+        avatar.innerHTML = `<img src="${escapeHtml(fotoUrl)}" alt="Foto de ${escapeHtml(aluno.nome || 'aluno')}">`;
+        return;
+      }
+
+      avatar.textContent = getInitials(aluno?.nome || 'Aluno');
+    }
+
+    function toggleStudentProfileEdit(force) {
+      const card = document.getElementById('student-profile-card');
+      const shouldOpen = typeof force === 'boolean' ? force : !card.classList.contains('editing');
+      card.classList.toggle('editing', shouldOpen);
+
+      if (shouldOpen) {
+        document.getElementById('student-edit-name').value = state.alunoLogado.nome || '';
+        document.getElementById('student-edit-email').value = state.alunoLogado.email || '';
+        document.getElementById('student-edit-phone').value = state.alunoLogado.telefone || '';
+      }
+    }
+
+    function toggleStudentPlanEdit(force) {
+      const card = document.getElementById('student-plan-card');
+      const shouldOpen = typeof force === 'boolean' ? force : !card.classList.contains('editing');
+      card.classList.toggle('editing', shouldOpen);
+
+      if (shouldOpen) {
+        const plano = state.alunoLogado?.plano || {};
+        document.getElementById('student-edit-payment').value = plano.forma_pagamento || 'PIX';
+      }
+    }
+
+    async function saveStudentProfileInline() {
+      const aluno = {
+        nome: document.getElementById('student-edit-name').value.trim(),
+        email: document.getElementById('student-edit-email').value.trim(),
+        telefone: document.getElementById('student-edit-phone').value.trim()
+      };
+
+      if (!aluno.nome || !aluno.email || !aluno.telefone) {
+        showAlert('Preencha nome, e-mail e telefone para salvar o cadastro.');
+        return;
+      }
+
+      try {
+        await saveStudentDataInline({ aluno });
+        toggleStudentProfileEdit(false);
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+
+    async function saveStudentPlanInline() {
+      const plano = state.alunoLogado?.plano || {};
+      try {
+        await saveStudentDataInline({
+          plano: {
+            nome: plano.nome || 'Curso Pratico',
+            total_aulas: plano.total_aulas || 10,
+            status: plano.status || 'ativo',
+            forma_pagamento: document.getElementById('student-edit-payment').value
+          }
+        });
+        toggleStudentPlanEdit(false);
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+      }
     }
 
     function getEndTime(start, duration = 1) {
@@ -2809,8 +3283,8 @@
       document.getElementById('slot-modal-title').textContent = 'Editar Aula';
       document.getElementById('btn-save-slot').textContent = 'Salvar Alterações';
 
-      // Admin fields
-      document.getElementById('admin-fields').style.display = 'block';
+      // Campos administrativos aparecem apenas para o professor.
+      document.getElementById('admin-fields').style.display = state.adminLogado ? 'block' : 'none';
 
       // Cidades
       const citySelect = document.getElementById('slot-city');
