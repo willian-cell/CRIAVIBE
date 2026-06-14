@@ -21,10 +21,14 @@ $sql = "
            COUNT(i.id) as total_fotos,
            SUM(CASE WHEN i.selecionada = 1 THEN 1 ELSE 0 END) as total_selecionadas,
            COALESCE(
-            NULLIF(g.capa_apresentacao, ''),
-            (SELECT COALESCE(i2.caminho_thumb_medium, i2.caminho_thumb_large, i2.caminho_thumb_small, i2.caminho_arquivo) FROM imagens i2
-            WHERE i2.galeria_id = g.id
-            ORDER BY i2.is_capa DESC, i2.ordem ASC LIMIT 1)
+            (SELECT COALESCE(i3.caminho_thumb_medium, i3.caminho_thumb_large, i3.caminho_thumb_small, i3.caminho_arquivo)
+             FROM imagens i3
+             WHERE i3.galeria_id = g.id AND i3.caminho_arquivo = g.capa_apresentacao LIMIT 1),
+            (SELECT COALESCE(i2.caminho_thumb_medium, i2.caminho_thumb_large, i2.caminho_thumb_small, i2.caminho_arquivo)
+             FROM imagens i2
+             WHERE i2.galeria_id = g.id
+             ORDER BY i2.is_capa DESC, i2.ordem ASC LIMIT 1),
+            NULLIF(g.capa_apresentacao, '')
            ) as thumb,
            (SELECT COUNT(*) FROM musicas m WHERE m.galeria_id = g.id) as total_musicas,
            (SELECT GROUP_CONCAT(m2.nome_exibicao SEPARATOR '||')

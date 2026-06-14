@@ -1120,6 +1120,47 @@
       }
 
       renderFotos();
+
+      // Dispara o processamento assíncrono caso existam fotos sem thumbnail de 700px
+      const temFotosSemThumb = fotos.some(f => !f.caminho_thumb_medium);
+      if (temFotosSemThumb) {
+        setTimeout(dispararProcessamentoLento, 1000);
+      }
+    }
+
+    let _processandoThumbs = false;
+    async function dispararProcessamentoLento() {
+      if (!galeriaId || _processandoThumbs) return;
+      _processandoThumbs = true;
+      try {
+        const d = await API.get(`/fotos/process_thumbs.php?galeria_id=${galeriaId}`);
+        _processandoThumbs = false;
+        if (d && d.status === 'ok' && d.processadas > 0) {
+          // Atualiza as imagens locais sem resetar toda a tela
+          d.fotos_atualizadas.forEach(f => {
+            const idx = fotos.findIndex(x => x.id === f.id);
+            if (idx !== -1) {
+              fotos[idx].caminho_thumb_small = f.caminho_thumb_small;
+              fotos[idx].caminho_thumb_medium = f.caminho_thumb_medium;
+              fotos[idx].caminho_thumb_large = f.caminho_thumb_large;
+              
+              // Atualiza o src da imagem na grade se ela estiver renderizada
+              const cardImg = document.querySelector(`#pc-${f.id} img`);
+              if (cardImg) {
+                cardImg.src = fotoGridSrc(fotos[idx]);
+              }
+            }
+          });
+          // Se ainda há fotos pendentes, chama novamente
+          const aindaTem = fotos.some(f => !f.caminho_thumb_medium);
+          if (aindaTem) {
+            setTimeout(dispararProcessamentoLento, 1500);
+          }
+        }
+      } catch (err) {
+        _processandoThumbs = false;
+        console.error('Erro ao processar miniaturas de forma assincrona:', err);
+      }
     }
 
     function mediaSrc(path) {
@@ -1283,7 +1324,7 @@
     document.addEventListener('pointercancel', finalizarCropDrag);
 
     function fotoGridSrc(f) {
-      return mediaSrc(f.caminho_thumb_small || f.caminho_thumb_medium || f.caminho_thumb_large || f.caminho_arquivo);
+      return mediaSrc(f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_thumb_large || f.caminho_arquivo);
     }
 
     function fotoLightboxSrc(f) {
