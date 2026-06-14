@@ -5,7 +5,7 @@ require_once __DIR__ . '/_helpers.php';
 $body = body();
 $studentData = agendamento_validate_student($body['aluno'] ?? []);
 $lessons = agendamento_validate_lessons($body['aulas'] ?? []);
-$token = trim($body['token_publico'] ?? '');
+$token = trim($body['token_publico'] ?? $_SESSION['agendamento_aluno_token'] ?? '');
 $isAdmin = agendamento_is_admin();
 $planData = $body['plano'] ?? [];
 

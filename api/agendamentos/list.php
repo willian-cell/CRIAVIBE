@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/_helpers.php';
 
-$token = trim($_GET['token'] ?? '');
+$token = trim($_GET['token'] ?? $_SESSION['agendamento_aluno_token'] ?? '');
 $isAdmin = agendamento_is_admin();
 
 try {

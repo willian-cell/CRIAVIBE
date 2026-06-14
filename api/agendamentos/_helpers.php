@@ -19,6 +19,7 @@ function agendamento_ensure_schema(PDO $db): void {
             nome VARCHAR(160) NOT NULL,
             email VARCHAR(190) NOT NULL,
             telefone VARCHAR(40) NOT NULL,
+            senha_hash VARCHAR(255) DEFAULT NULL,
             token_publico VARCHAR(96) NOT NULL UNIQUE,
             codigo_acesso VARCHAR(12) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -59,6 +60,9 @@ function agendamento_ensure_schema(PDO $db): void {
             total_aulas INT NOT NULL DEFAULT 0,
             aulas_usadas INT NOT NULL DEFAULT 0,
             status VARCHAR(30) NOT NULL DEFAULT 'ativo',
+            forma_pagamento VARCHAR(50) DEFAULT NULL,
+            cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
+            valor_hora_centavos INT NOT NULL DEFAULT 7500,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_planos_aluno (aluno_id)
@@ -106,6 +110,7 @@ function agendamento_ensure_schema(PDO $db): void {
     ");
 
     agendamento_ensure_columns($db, 'agendamento_alunos', [
+        'senha_hash' => 'VARCHAR(255) DEFAULT NULL',
         'codigo_acesso' => 'VARCHAR(12) DEFAULT NULL',
         'criado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
         'atualizado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
@@ -115,6 +120,9 @@ function agendamento_ensure_schema(PDO $db): void {
         'total_aulas' => 'INT NOT NULL DEFAULT 0',
         'aulas_usadas' => 'INT NOT NULL DEFAULT 0',
         'status' => "VARCHAR(30) NOT NULL DEFAULT 'ativo'",
+        'forma_pagamento' => 'VARCHAR(50) DEFAULT NULL',
+        'cidade' => "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'",
+        'valor_hora_centavos' => 'INT NOT NULL DEFAULT 7500',
         'criado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
         'atualizado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
     ]);
