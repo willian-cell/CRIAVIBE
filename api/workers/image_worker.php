@@ -29,7 +29,7 @@ while (true) {
     $r2_path = $job['r2_path'] ?? null;
     $public_url = $job['public_url'] ?? null;
     $orig_name = $job['original_name'] ?? '';
-    $sizes = $job['sizes'] ?? ['small'=>360,'medium'=>900,'large'=>1080];
+    $sizes = $job['sizes'] ?? ['small'=>360,'medium'=>700,'large'=>1080];
     $qualities = $job['qualities'] ?? ['small'=>68,'medium'=>72,'large'=>76];
 
     if (!$r2_path && $public_url) {

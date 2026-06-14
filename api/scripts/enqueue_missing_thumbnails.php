@@ -71,7 +71,7 @@ try {
             'r2_path' => $r2Path,
             'public_url' => $public,
             'original_name' => $row['nome_arquivo'] ?? '',
-            'sizes' => ['small' => 360, 'medium' => 900, 'large' => 1080],
+            'sizes' => ['small' => 360, 'medium' => 700, 'large' => 1080],
             'qualities' => ['small' => 68, 'medium' => 72, 'large' => 76],
         ]);
         $enfileiradas++;
