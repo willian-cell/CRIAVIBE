@@ -1188,6 +1188,93 @@
       border-bottom: none;
     }
 
+    .admin-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .admin-metric-card {
+      border: 1.5px solid var(--border);
+      background: var(--surface-sub);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .admin-metric-card span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .admin-metric-card strong {
+      color: var(--primary);
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+    }
+
+    .admin-filter-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .admin-filter-bar .input-wrapper {
+      flex: 1;
+    }
+
+    .admin-filter-bar select {
+      max-width: 190px;
+    }
+
+    .teacher-student-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 210px;
+    }
+
+    .teacher-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(119, 122, 67, 0.1);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .teacher-cell-muted {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .teacher-details-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .admin-btn-action.success:hover {
+      border-color: #22c55e;
+      color: #15803d;
+      background: rgba(34, 197, 94, 0.08);
+    }
+
     .admin-actions-cell {
       display: flex;
       gap: 6px;
@@ -1441,6 +1528,19 @@
       .lesson-item-actions {
         width: 100%;
         justify-content: flex-end;
+      }
+
+      .admin-metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .admin-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .admin-filter-bar select {
+        max-width: none;
       }
 
       .or-separator {
@@ -2001,6 +2101,29 @@
 
           <!-- TAB CONTENT: AULAS -->
           <div class="admin-tab-panel" id="admin-panel-aulas">
+            <div class="admin-metrics-grid">
+              <div class="admin-metric-card"><span>Aulas</span><strong id="teacher-metric-aulas">0</strong></div>
+              <div class="admin-metric-card"><span>Alunos</span><strong id="teacher-metric-alunos">0</strong></div>
+              <div class="admin-metric-card"><span>Pre agendadas</span><strong id="teacher-metric-pendentes">0</strong></div>
+              <div class="admin-metric-card"><span>Receita prevista</span><strong id="teacher-metric-receita">R$ 0</strong></div>
+            </div>
+            <div class="admin-filter-bar">
+              <div class="input-wrapper">
+                <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                <input type="search" id="teacher-search-input" placeholder="Buscar aluno, e-mail, telefone, cidade ou assunto" oninput="renderTeacherAulasPanel()">
+              </div>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-filter input-icon"></i>
+                <select id="teacher-status-filter" onchange="renderTeacherAulasPanel()">
+                  <option value="">Todos os status</option>
+                  <option value="pre_agendado">Pre agendado</option>
+                  <option value="confirmado">Confirmado</option>
+                  <option value="concluido">Concluido</option>
+                  <option value="cancelado">Cancelado</option>
+                  <option value="remarcado">Remarcado</option>
+                </select>
+              </div>
+            </div>
             <div class="admin-table-container">
               <table class="admin-table">
                 <thead>
@@ -3144,6 +3267,76 @@
       });
     }
 
+    function renderTeacherAulasPanel() {
+      const tbody = document.getElementById('teacher-aulas-tbody');
+      tbody.innerHTML = '';
+      updateTeacherMetrics();
+
+      const search = (document.getElementById('teacher-search-input')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('teacher-status-filter')?.value || '';
+      const aulasFiltradas = state.board.filter(aula => {
+        if (statusFilter && aula.status !== statusFilter) return false;
+        if (!search) return true;
+
+        return [
+          aula.aluno,
+          aula.email,
+          aula.telefone,
+          aula.cidade,
+          aula.modulo_nome,
+          aula.assunto_titulo,
+          aula.status
+        ].some(value => String(value || '').toLowerCase().includes(search));
+      });
+
+      if (aulasFiltradas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhuma aula encontrada para os filtros atuais.</td></tr>';
+        return;
+      }
+
+      aulasFiltradas.forEach(aula => {
+        const tr = document.createElement('tr');
+        const formattedDate = formatDateText(aula.data_aula) + ' as ' + aula.horario;
+        const moduloText = [aula.modulo_nome, aula.assunto_titulo].filter(Boolean).join(' - ') || 'Nao especificado';
+        const valorText = aula.valor_centavos ? (Number(aula.valor_centavos) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Valor a confirmar';
+        const statusText = (aula.status || 'pre_agendado').replace('_', ' ');
+
+        tr.innerHTML = `
+          <td><strong>${formattedDate}</strong><span class="teacher-cell-muted">${escapeHtml(aula.dia_semana || '')} - ${aula.quantidade_horas}h ate ${getEndTime(aula.horario, aula.quantidade_horas)}</span></td>
+          <td>
+            <div class="teacher-student-cell">
+              <span class="teacher-avatar">${getInitials(aula.aluno || 'Aluno')}</span>
+              <div>
+                <strong>${escapeHtml(aula.aluno || 'Ex-aluno')}</strong>
+                <span class="teacher-cell-muted">${escapeHtml(aula.email || '')}</span>
+                <span class="teacher-cell-muted">${escapeHtml(aula.telefone || '')}</span>
+              </div>
+            </div>
+          </td>
+          <td><strong>${escapeHtml(aula.cidade)}</strong><span class="teacher-cell-muted">${escapeHtml(valorText)}</span></td>
+          <td><strong>${escapeHtml(moduloText)}</strong><span class="teacher-cell-muted">${escapeHtml(aula.observacoes || 'Sem observacoes')}</span></td>
+          <td><span class="lesson-status-badge ${aula.status}">${escapeHtml(statusText)}</span></td>
+          <td class="admin-actions-cell">
+            <button class="admin-btn-action success" onclick="quickUpdateLessonStatus(${aula.aula_id}, 'confirmado')" title="Confirmar Aula"><i class="fa-solid fa-check"></i></button>
+            <button class="admin-btn-action" onclick="openEditLessonModal(${aula.aula_id})" title="Editar Aula"><i class="fa-solid fa-pen"></i></button>
+            <button class="admin-btn-action danger" onclick="deleteLesson(${aula.aula_id})" title="Excluir Aula"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateTeacherMetrics() {
+      const alunos = new Set(state.board.map(a => a.aluno_id).filter(Boolean));
+      const pendentes = state.board.filter(a => (a.status || 'pre_agendado') === 'pre_agendado').length;
+      const receita = state.board.reduce((sum, a) => sum + Number(a.valor_centavos || 0), 0);
+
+      document.getElementById('teacher-metric-aulas').textContent = state.board.length;
+      document.getElementById('teacher-metric-alunos').textContent = alunos.size;
+      document.getElementById('teacher-metric-pendentes').textContent = pendentes;
+      document.getElementById('teacher-metric-receita').textContent = (receita / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
     function renderTeacherAlunosPanel() {
       const tbody = document.getElementById('teacher-alunos-tbody');
       tbody.innerHTML = '';
@@ -3199,6 +3392,110 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function renderTeacherAlunosPanel() {
+      const tbody = document.getElementById('teacher-alunos-tbody');
+      tbody.innerHTML = '';
+
+      const alunosMap = new Map();
+      state.board.forEach(item => {
+        if (item.aluno_id && !alunosMap.has(item.aluno_id)) {
+          alunosMap.set(item.aluno_id, {
+            id: item.aluno_id,
+            nome: item.aluno,
+            email: item.email,
+            telefone: item.telefone,
+            plano_nome: item.plano_nome,
+            total_aulas: item.total_aulas,
+            aulas_usadas: item.aulas_usadas,
+            plano_status: item.plano_status,
+            forma_pagamento: item.forma_pagamento,
+            token_publico: item.token_publico
+          });
+        }
+      });
+
+      if (alunosMap.size === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum aluno matriculado.</td></tr>';
+        return;
+      }
+
+      alunosMap.forEach(aluno => {
+        const tr = document.createElement('tr');
+        const total = Number(aluno.total_aulas || 0);
+        const usadas = Number(aluno.aulas_usadas || 0);
+        const percent = total > 0 ? Math.min(100, Math.round((usadas / total) * 100)) : 0;
+
+        tr.innerHTML = `
+          <td>
+            <div class="teacher-student-cell">
+              <span class="teacher-avatar">${getInitials(aluno.nome || 'Aluno')}</span>
+              <div><strong>${escapeHtml(aluno.nome)}</strong><span class="teacher-cell-muted">ID ${aluno.id}</span></div>
+            </div>
+          </td>
+          <td><strong>${escapeHtml(aluno.telefone)}</strong><span class="teacher-cell-muted">${escapeHtml(aluno.email)}</span></td>
+          <td>
+            <strong>${escapeHtml(aluno.plano_nome || 'Sem plano')}</strong>
+            <span class="teacher-cell-muted">Status: ${escapeHtml(aluno.plano_status || 'ativo')}</span>
+            <span class="teacher-cell-muted"><i class="fa-solid fa-credit-card"></i> ${escapeHtml(aluno.forma_pagamento || 'Nao informado')}</span>
+          </td>
+          <td>
+            <strong>${usadas} de ${total} aulas</strong>
+            <div class="aluno-plan-progress-container" style="background: var(--border); margin: 8px 0 4px;">
+              <div class="aluno-plan-progress-fill" style="width: ${percent}%; background: var(--primary);"></div>
+            </div>
+            <span class="teacher-cell-muted">${percent}% concluido</span>
+          </td>
+          <td class="admin-actions-cell">
+            <button class="admin-btn-action" onclick="openPlanEditModal(${aluno.id}, '${escapeHtml(aluno.plano_nome || '')}', ${total}, '${aluno.plano_status}', '${escapeHtml(aluno.forma_pagamento || '')}')" title="Editar creditos/plano"><i class="fa-solid fa-receipt"></i></button>
+            <button class="admin-btn-action danger" onclick="deleteStudent('${aluno.token_publico}')" title="Excluir aluno completo"><i class="fa-solid fa-user-xmark"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function quickUpdateLessonStatus(aulaId, nextStatus) {
+      const aulaRef = state.board.find(a => a.aula_id === aulaId);
+      if (!aulaRef) return;
+
+      const aulasDoAluno = state.board.filter(a => a.aluno_id === aulaRef.aluno_id).map(a => ({
+        aula_id: a.aula_id,
+        dia_semana: a.dia_semana,
+        data_aula: a.data_aula,
+        horario: a.horario,
+        quantidade_horas: a.quantidade_horas,
+        cidade: a.cidade,
+        modulo_id: a.modulo_id,
+        assunto_id: a.assunto_id,
+        status: a.aula_id === aulaId ? nextStatus : a.status,
+        observacoes: a.observacoes || ''
+      }));
+
+      try {
+        await request('/save.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            token_publico: aulaRef.token_publico,
+            aluno: {
+              nome: aulaRef.aluno,
+              email: aulaRef.email,
+              telefone: aulaRef.telefone
+            },
+            plano: {
+              nome: aulaRef.plano_nome || 'Curso Pratico',
+              total_aulas: aulaRef.total_aulas || 10,
+              status: aulaRef.plano_status || 'ativo',
+              forma_pagamento: aulaRef.forma_pagamento || ''
+            },
+            aulas: aulasDoAluno
+          })
+        });
+        await loadAdminDashboard();
+      } catch (err) {
+        alert(err.message);
+      }
     }
 
     async function deleteLesson(aulaId) {
