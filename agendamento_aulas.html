@@ -12,6 +12,8 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
     :root {
@@ -835,6 +837,28 @@
       font-size: 1.35rem;
       font-weight: 800;
       overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .student-avatar::after {
+      content: '\f030';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .student-avatar:hover::after {
+      opacity: 1;
     }
 
     .student-avatar img {
@@ -1341,8 +1365,9 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 20px;
       backdrop-filter: blur(4px);
+      overflow-y: auto;
     }
 
     .modal-overlay.open {
@@ -1354,8 +1379,19 @@
       border-radius: 24px;
       padding: 30px;
       width: min(500px, 100%);
+      max-height: calc(100vh - 40px);
       box-shadow: 0 30px 60px rgba(44, 46, 27, 0.15);
       animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-box > form {
+      overflow-y: auto;
+      flex-grow: 1;
+      padding-right: 6px;
+      margin-right: -6px;
     }
 
     @keyframes modalPop {
@@ -1368,6 +1404,34 @@
         transform: scale(1) translateY(0);
         opacity: 1;
       }
+    }
+
+    .address-suggestions-dropdown {
+      position: absolute;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1050;
+      box-shadow: var(--shadow);
+      margin-top: 4px;
+    }
+    .address-suggestion-item {
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: var(--text);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s ease;
+      text-align: left;
+    }
+    .address-suggestion-item:hover {
+      background: var(--surface-sub);
+    }
+    .address-suggestion-item:last-child {
+      border-bottom: none;
     }
 
     .modal-header {
@@ -1948,6 +2012,22 @@
           <!-- Hour buttons generated dynamically by JS -->
         </div>
 
+        <!-- GEOLOCALIZAÇÃO DA AULA PRÁTICA -->
+        <div style="margin-top: 24px; margin-bottom: 24px; position: relative;">
+          <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 8px;">
+            <i class="fa-solid fa-map-location-dot"></i> Local exato da aula
+          </label>
+          <div class="form-group" id="reg-address-section" style="margin-bottom: 15px;">
+            <div class="input-wrapper" style="display: flex;">
+              <i class="fa-solid fa-magnifying-glass input-icon"></i>
+              <input type="text" id="reg-address-input" placeholder="Digite seu endereço completo para buscar..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none;" autocomplete="off">
+              <button type="button" class="btn" style="border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 20px; font-weight: 700; cursor: pointer;" onclick="searchAddressReg()">Buscar</button>
+            </div>
+            <div id="address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
+          </div>
+          <div id="reg-map-container" style="height: 220px; border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; position: relative; z-index: 10;"></div>
+        </div>
+
         <div class="summary-box">
           <div class="summary-title" style="color: var(--primary);">
             <i class="fa-solid fa-calendar-check"></i>
@@ -1984,7 +2064,8 @@
         </div>
 
         <div class="student-profile-card" id="student-profile-card">
-          <div class="student-avatar" id="student-avatar">AL</div>
+          <div class="student-avatar" id="student-avatar" onclick="document.getElementById('student-avatar-input').click()" title="Clique para alterar a foto de perfil">AL</div>
+          <input type="file" id="student-avatar-input" accept="image/*" style="display: none;" onchange="uploadStudentAvatar(this)">
           <div class="student-profile-main">
             <h3 id="student-profile-name">Aluno</h3>
             <div class="student-profile-grid">
@@ -2235,6 +2316,20 @@
           </div>
         </div>
 
+        <!-- ENDEREÇO E MAPA NO MODAL -->
+        <div class="form-group" id="modal-address-group" style="margin-bottom: 15px; position: relative;">
+          <label for="modal-address-input">Endereço Exato da Aula</label>
+          <div class="input-wrapper" style="display: flex;">
+            <i class="fa-solid fa-magnifying-glass input-icon"></i>
+            <input type="text" id="modal-address-input" placeholder="Endereço, número, bairro..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none;" autocomplete="off">
+            <button type="button" class="btn" style="border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 16px; font-weight: 700; cursor: pointer;" onclick="searchAddressModal()">Buscar</button>
+          </div>
+          <div id="modal-address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
+        </div>
+        <div id="modal-map-container" style="height: 180px; border-radius: 12px; border: 1.5px solid var(--border); margin-bottom: 15px; overflow: hidden; position: relative; z-index: 10;"></div>
+        <input type="hidden" id="modal-lat">
+        <input type="hidden" id="modal-lng">
+
         <!-- ADMIN ONLY FIELDS -->
         <div class="admin-only-fields" id="admin-fields"
           style="display: none; border-top: 1.5px dashed var(--border); padding-top: 15px; margin-top: 15px;">
@@ -2440,6 +2535,9 @@
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
         hideAlert();
+        if (viewId === 'view-register-step4') {
+          initRegisterMap();
+        }
       }
     }
 
@@ -2857,7 +2955,10 @@
         modulo_id: a.modulo_id,
         assunto_id: a.assunto_id,
         status: a.status,
-        observacoes: a.observacoes || ''
+        observacoes: a.observacoes || '',
+        endereco: a.endereco || null,
+        latitude: a.latitude || null,
+        longitude: a.longitude || null
       }));
     }
 
@@ -2909,7 +3010,10 @@
         status: 'pre_agendado',
         observacoes: '',
         valor_hora_centavos: rateCentavos,
-        valor_centavos: rateCentavos
+        valor_centavos: rateCentavos,
+        endereco: state.regData.endereco || null,
+        latitude: state.regData.latitude || null,
+        longitude: state.regData.longitude || null
       });
 
       try {
@@ -2976,7 +3080,10 @@
             horario: state.regData.horario,
             quantidade_horas: 1,
             cidade: cidade,
-            status: 'pre_agendado'
+            status: 'pre_agendado',
+            endereco: state.regData.endereco || null,
+            latitude: state.regData.latitude || null,
+            longitude: state.regData.longitude || null
           }
         ]
       };
@@ -3099,10 +3206,21 @@
           </div>
           <span class="lesson-status-badge ${aula.status}">${(aula.status || 'pre_agendado').replace('_', ' ')}</span>
         `;
+        let addressHtml = '';
+        if (aula.endereco) {
+          const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(aula.endereco)}`;
+          addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.endereco)} 
+            <a href="${mapLink}" target="_blank" style="color: var(--primary); font-weight: 700; margin-left: 6px; text-decoration: none;"><i class="fa-solid fa-location-arrow"></i> Como Chegar</a>
+          </p>`;
+        } else {
+          addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.cidade)}</p>`;
+        }
+
         card.querySelector('.lesson-item-info').insertAdjacentHTML('beforeend', `
           <p><i class="fa-solid fa-calendar-day"></i> ${formatDateText(aula.data_aula)} - ${escapeHtml(aula.dia_semana || '')}</p>
           <p><i class="fa-solid fa-book-open"></i> ${escapeHtml(aula.modulo_nome || 'Modulo nao definido')}</p>
           <p><i class="fa-solid fa-bookmark"></i> ${escapeHtml(aula.assunto_titulo || 'Assunto nao definido')}</p>
+          ${addressHtml}
           <p><i class="fa-solid fa-money-bill-wave"></i> ${escapeHtml(valorText)}</p>
           <p><i class="fa-solid fa-circle-info"></i> ${escapeHtml(aula.observacoes || 'Sem observacoes registradas')}</p>
         `);
@@ -3197,6 +3315,39 @@
         await loadStudentDashboard();
       } catch (err) {
         showAlert(err.message);
+      }
+    }
+
+    async function uploadStudentAvatar(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+
+      const avatar = document.getElementById('student-avatar');
+      const originalHtml = avatar.innerHTML;
+      avatar.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color: var(--primary);"></i>';
+
+      const formData = new FormData();
+      formData.append('foto_aluno', file);
+      formData.append('token_publico', state.token || '');
+
+      try {
+        const res = await fetch(API_BASE + '/upload_foto.php', {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.status === 'erro') {
+          throw new Error(data.mensagem || 'Erro ao realizar upload da foto de perfil.');
+        }
+
+        alert('Foto de perfil atualizada com sucesso!');
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+        avatar.innerHTML = originalHtml;
+      } finally {
+        input.value = '';
       }
     }
 
@@ -3300,6 +3451,15 @@
         const moduloText = [aula.modulo_nome, aula.assunto_titulo].filter(Boolean).join(' - ') || 'Nao especificado';
         const valorText = aula.valor_centavos ? (Number(aula.valor_centavos) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Valor a confirmar';
         const statusText = (aula.status || 'pre_agendado').replace('_', ' ');
+        let localDesc = `<strong>${escapeHtml(aula.cidade)}</strong>`;
+        if (aula.endereco) {
+          const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(aula.endereco)}`;
+          localDesc += `<span class="teacher-cell-muted" style="display:block; font-size:0.75rem; margin-top:2px;">
+            <i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> ${escapeHtml(aula.endereco)}
+            <a href="${mapLink}" target="_blank" style="color:var(--primary); font-weight:700; margin-left:4px; text-decoration:none;"><i class="fa-solid fa-location-arrow"></i> Mapa</a>
+          </span>`;
+        }
+        localDesc += `<span class="teacher-cell-muted">${escapeHtml(valorText)}</span>`;
 
         tr.innerHTML = `
           <td><strong>${formattedDate}</strong><span class="teacher-cell-muted">${escapeHtml(aula.dia_semana || '')} - ${aula.quantidade_horas}h ate ${getEndTime(aula.horario, aula.quantidade_horas)}</span></td>
@@ -3313,7 +3473,7 @@
               </div>
             </div>
           </td>
-          <td><strong>${escapeHtml(aula.cidade)}</strong><span class="teacher-cell-muted">${escapeHtml(valorText)}</span></td>
+          <td>${localDesc}</td>
           <td><strong>${escapeHtml(moduloText)}</strong><span class="teacher-cell-muted">${escapeHtml(aula.observacoes || 'Sem observacoes')}</span></td>
           <td><span class="lesson-status-badge ${aula.status}">${escapeHtml(statusText)}</span></td>
           <td class="admin-actions-cell">
@@ -3526,6 +3686,256 @@
       }
     }
 
+    }
+
+    /* ── MAPAS E GEOLOCALIZAÇÃO (LEAFLET + NOMINATIM) ── */
+    let registerMap = null;
+    let registerMarker = null;
+    let modalMap = null;
+    let modalMarker = null;
+
+    const STUDIO_LAT = -15.93278;
+    const STUDIO_LNG = -48.2575;
+    const DEFAULT_STUDIO_ADDRESS = "Studio Criavibe - Santo Antônio do Descoberto, GO";
+
+    function initRegisterMap() {
+      if (registerMap) {
+        registerMap.remove();
+        registerMap = null;
+        registerMarker = null;
+      }
+
+      const isLocal = state.regData.plano === 'local';
+      const addressInput = document.getElementById('reg-address-input');
+      const addressSection = document.getElementById('reg-address-section');
+
+      if (isLocal) {
+        addressInput.value = DEFAULT_STUDIO_ADDRESS;
+        addressInput.disabled = true;
+        addressSection.style.opacity = '0.7';
+        state.regData.endereco = DEFAULT_STUDIO_ADDRESS;
+        state.regData.latitude = STUDIO_LAT;
+        state.regData.longitude = STUDIO_LNG;
+      } else {
+        addressInput.value = state.regData.endereco || '';
+        addressInput.disabled = false;
+        addressSection.style.opacity = '1';
+      }
+
+      const initialLat = state.regData.latitude || STUDIO_LAT;
+      const initialLng = state.regData.longitude || STUDIO_LNG;
+
+      registerMap = L.map('reg-map-container').setView([initialLat, initialLng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(registerMap);
+
+      const markerOptions = {
+        draggable: !isLocal
+      };
+
+      registerMarker = L.marker([initialLat, initialLng], markerOptions).addTo(registerMap);
+
+      if (!isLocal) {
+        registerMarker.on('dragend', async function(e) {
+          const latlng = registerMarker.getLatLng();
+          state.regData.latitude = latlng.lat;
+          state.regData.longitude = latlng.lng;
+          await reverseGeocode(latlng.lat, latlng.lng, 'reg-address-input', 'reg');
+        });
+      }
+
+      addressInput.onkeypress = function(ev) {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          window.searchAddressReg();
+        }
+      };
+
+      setTimeout(() => {
+        if (registerMap) {
+          registerMap.invalidateSize();
+        }
+      }, 300);
+    }
+
+    function initModalMap(aula = null) {
+      if (modalMap) {
+        modalMap.remove();
+        modalMap = null;
+        modalMarker = null;
+      }
+
+      const city = document.getElementById('slot-city').value;
+      const isLocal = city.includes('Santo Antônio');
+      
+      const addressInput = document.getElementById('modal-address-input');
+      const addressGroup = document.getElementById('modal-address-group');
+
+      let initialLat = STUDIO_LAT;
+      let initialLng = STUDIO_LNG;
+      let initialAddress = '';
+
+      if (aula) {
+        initialLat = aula.latitude || STUDIO_LAT;
+        initialLng = aula.longitude || STUDIO_LNG;
+        initialAddress = aula.endereco || '';
+      } else if (isLocal) {
+        initialLat = STUDIO_LAT;
+        initialLng = STUDIO_LNG;
+        initialAddress = DEFAULT_STUDIO_ADDRESS;
+      }
+
+      document.getElementById('modal-lat').value = initialLat;
+      document.getElementById('modal-lng').value = initialLng;
+      addressInput.value = initialAddress;
+
+      if (isLocal) {
+        addressInput.disabled = true;
+        addressGroup.style.opacity = '0.7';
+      } else {
+        addressInput.disabled = false;
+        addressGroup.style.opacity = '1';
+      }
+
+      modalMap = L.map('modal-map-container').setView([initialLat, initialLng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(modalMap);
+
+      const markerOptions = {
+        draggable: !isLocal
+      };
+
+      modalMarker = L.marker([initialLat, initialLng], markerOptions).addTo(modalMap);
+
+      if (!isLocal) {
+        modalMarker.on('dragend', async function(e) {
+          const latlng = modalMarker.getLatLng();
+          document.getElementById('modal-lat').value = latlng.lat;
+          document.getElementById('modal-lng').value = latlng.lng;
+          await reverseGeocode(latlng.lat, latlng.lng, 'modal-address-input', 'modal');
+        });
+      }
+
+      addressInput.onkeypress = function(ev) {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          window.searchAddressModal();
+        }
+      };
+
+      setTimeout(() => {
+        if (modalMap) {
+          modalMap.invalidateSize();
+        }
+      }, 300);
+    }
+
+    async function searchAddress(query, inputId, suggestionsId, mapType) {
+      if (!query || query.trim().length < 3) return;
+      const suggestionsContainer = document.getElementById(suggestionsId);
+      suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</div>';
+      suggestionsContainer.style.display = 'block';
+
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=br`;
+        const res = await fetch(url, {
+          headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+        });
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+          suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--text-muted);">Nenhum endereço encontrado. Tente digitar o nome da rua e cidade.</div>';
+          return;
+        }
+
+        suggestionsContainer.innerHTML = data.map(item => {
+          const name = escapeHtml(item.display_name);
+          const lat = parseFloat(item.lat);
+          const lon = parseFloat(item.lon);
+          return `
+            <div class="address-suggestion-item" 
+                 style="padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.2s;"
+                 onmouseover="this.style.background='var(--surface-sub)'"
+                 onmouseout="this.style.background='transparent'"
+                 onclick="selectSuggestion('${name.replace(/'/g, "\\'")}', ${lat}, ${lon}, '${inputId}', '${suggestionsId}', '${mapType}')">
+              <i class="fa-solid fa-location-dot" style="color: var(--primary); margin-right: 8px;"></i>
+              <span style="font-size: 0.75rem;">${name}</span>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+        suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--danger);">Erro ao buscar endereço.</div>';
+      }
+    }
+
+    window.selectSuggestion = function(name, lat, lon, inputId, suggestionsId, mapType) {
+      document.getElementById(inputId).value = name;
+      document.getElementById(suggestionsId).style.display = 'none';
+
+      if (mapType === 'reg') {
+        state.regData.endereco = name;
+        state.regData.latitude = lat;
+        state.regData.longitude = lon;
+        if (registerMarker && registerMap) {
+          registerMarker.setLatLng([lat, lon]);
+          registerMap.setView([lat, lon], 16);
+        }
+      } else if (mapType === 'modal') {
+        document.getElementById('modal-lat').value = lat;
+        document.getElementById('modal-lng').value = lon;
+        if (modalMarker && modalMap) {
+          modalMarker.setLatLng([lat, lon]);
+          modalMap.setView([lat, lon], 16);
+        }
+      }
+    };
+
+    window.searchAddressReg = function() {
+      const q = document.getElementById('reg-address-input').value;
+      searchAddress(q, 'reg-address-input', 'address-suggestions', 'reg');
+    };
+
+    window.searchAddressModal = function() {
+      const q = document.getElementById('modal-address-input').value;
+      searchAddress(q, 'modal-address-input', 'modal-address-suggestions', 'modal');
+    };
+
+    async function reverseGeocode(lat, lng, inputId, mapType) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+        const res = await fetch(url, {
+          headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+        });
+        const data = await res.json();
+        if (data && data.display_name) {
+          const name = data.display_name;
+          document.getElementById(inputId).value = name;
+          if (mapType === 'reg') {
+            state.regData.endereco = name;
+          }
+        }
+      } catch (err) {
+        console.error("Erro no reverse geocoding:", err);
+      }
+    }
+
+    // Fecha sugestões ao clicar fora
+    document.addEventListener('click', function(ev) {
+      const regSuggestions = document.getElementById('address-suggestions');
+      if (regSuggestions && !regSuggestions.contains(ev.target) && ev.target.id !== 'reg-address-input') {
+        regSuggestions.style.display = 'none';
+      }
+      const modalSuggestions = document.getElementById('modal-address-suggestions');
+      if (modalSuggestions && !modalSuggestions.contains(ev.target) && ev.target.id !== 'modal-address-input') {
+        modalSuggestions.style.display = 'none';
+      }
+    });
+
     /* ── MODAL: AGENDAR / EDITAR AULAS ── */
     function openNewLessonModal() {
       state.modalEditingLessonId = null;
@@ -3570,6 +3980,7 @@
       updateModalCalculatedValue();
 
       document.getElementById('slot-modal').classList.add('open');
+      initModalMap();
     }
 
     function openEditLessonModal(aulaId) {
@@ -3622,6 +4033,7 @@
       updateModalCalculatedValue();
 
       document.getElementById('slot-modal').classList.add('open');
+      initModalMap(aula);
     }
 
     function closeSlotModal() {
@@ -3643,6 +4055,38 @@
 
     function handleModalCityChange() {
       updateModalCalculatedValue();
+      
+      const city = document.getElementById('slot-city').value;
+      const isLocal = city.includes('Santo Antônio');
+      
+      const addressInput = document.getElementById('modal-address-input');
+      const addressGroup = document.getElementById('modal-address-group');
+
+      if (isLocal) {
+        addressInput.value = DEFAULT_STUDIO_ADDRESS;
+        addressInput.disabled = true;
+        addressGroup.style.opacity = '0.7';
+        document.getElementById('modal-lat').value = STUDIO_LAT;
+        document.getElementById('modal-lng').value = STUDIO_LNG;
+        
+        if (modalMarker && modalMap) {
+          modalMarker.setLatLng([STUDIO_LAT, STUDIO_LNG]);
+          modalMarker.dragging.disable();
+          modalMap.setView([STUDIO_LAT, STUDIO_LNG], 15);
+        }
+      } else {
+        if (addressInput.value === DEFAULT_STUDIO_ADDRESS) {
+          addressInput.value = '';
+          document.getElementById('modal-lat').value = '';
+          document.getElementById('modal-lng').value = '';
+        }
+        addressInput.disabled = false;
+        addressGroup.style.opacity = '1';
+        
+        if (modalMarker) {
+          modalMarker.dragging.enable();
+        }
+      }
     }
 
     function handleModalTimeChange() {
@@ -3728,6 +4172,9 @@
       }
 
       const rateCentavos = cidade.includes('Santo Antônio') ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
+      const enderecoVal = document.getElementById('modal-address-input').value.trim();
+      const latVal = document.getElementById('modal-lat').value;
+      const lngVal = document.getElementById('modal-lng').value;
 
       const newLesson = {
         aula_id: state.modalEditingLessonId,
@@ -3741,7 +4188,10 @@
         status: state.adminLogado ? status : 'pre_agendado',
         observacoes: state.adminLogado ? observacoes : '',
         valor_hora_centavos: rateCentavos,
-        valor_centavos: rateCentavos * hoursCount
+        valor_centavos: rateCentavos * hoursCount,
+        endereco: enderecoVal || null,
+        latitude: latVal ? Number(latVal) : null,
+        longitude: lngVal ? Number(lngVal) : null
       };
 
       // Monta payload de salvamento
@@ -3761,7 +4211,10 @@
           modulo_id: a.modulo_id,
           assunto_id: a.assunto_id,
           status: a.status,
-          observacoes: a.observacoes || ''
+          observacoes: a.observacoes || '',
+          endereco: a.endereco || null,
+          latitude: a.latitude || null,
+          longitude: a.longitude || null
         }));
 
         if (isNew) {
@@ -3805,7 +4258,10 @@
           modulo_id: a.modulo_id,
           assunto_id: a.assunto_id,
           status: a.status,
-          observacoes: a.observacoes || ''
+          observacoes: a.observacoes || '',
+          endereco: a.endereco || null,
+          latitude: a.latitude || null,
+          longitude: a.longitude || null
         }));
 
         const idx = aulasDoAluno.findIndex(a => a.aula_id === state.modalEditingLessonId);

@@ -56,6 +56,7 @@ $payload = [
         'nome' => $student['nome'],
         'email' => $student['email'],
         'telefone' => $student['telefone'],
+        'foto_url' => $student['foto_url'] ?? null,
         'total_centavos' => $total,
         'plano' => $plan,
     ] : null,

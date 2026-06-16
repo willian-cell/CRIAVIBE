@@ -25,6 +25,7 @@ function agendamento_ensure_schema(PDO $db): void {
                 senha_hash VARCHAR(255) DEFAULT NULL,
                 token_publico VARCHAR(96) NOT NULL UNIQUE,
                 codigo_acesso VARCHAR(12) DEFAULT NULL,
+                foto_url VARCHAR(512) DEFAULT NULL,
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -88,6 +89,9 @@ function agendamento_ensure_schema(PDO $db): void {
                 valor_centavos INT NOT NULL DEFAULT 10000,
                 status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
                 observacoes TEXT NULL,
+                endereco VARCHAR(512) DEFAULT NULL,
+                latitude DECIMAL(10, 8) DEFAULT NULL,
+                longitude DECIMAL(11, 8) DEFAULT NULL,
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE (data_aula, horario)
@@ -128,6 +132,7 @@ function agendamento_ensure_schema(PDO $db): void {
             senha_hash VARCHAR(255) DEFAULT NULL,
             token_publico VARCHAR(96) NOT NULL UNIQUE,
             codigo_acesso VARCHAR(12) DEFAULT NULL,
+            foto_url VARCHAR(512) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_agendamento_alunos_email (email)
@@ -191,6 +196,9 @@ function agendamento_ensure_schema(PDO $db): void {
             valor_centavos INT NOT NULL DEFAULT 10000,
             status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
             observacoes TEXT NULL,
+            endereco VARCHAR(512) DEFAULT NULL,
+            latitude DECIMAL(10, 8) DEFAULT NULL,
+            longitude DECIMAL(11, 8) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_agendamento_slot (data_aula, horario),
@@ -218,6 +226,7 @@ function agendamento_ensure_schema(PDO $db): void {
     agendamento_ensure_columns($db, 'agendamento_alunos', [
         'senha_hash' => 'VARCHAR(255) DEFAULT NULL',
         'codigo_acesso' => 'VARCHAR(12) DEFAULT NULL',
+        'foto_url' => 'VARCHAR(512) DEFAULT NULL',
         'criado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
         'atualizado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
     ]);
@@ -242,6 +251,9 @@ function agendamento_ensure_schema(PDO $db): void {
         'valor_hora_centavos' => 'INT NOT NULL DEFAULT 10000',
         'status' => "VARCHAR(30) NOT NULL DEFAULT 'pre_agendado'",
         'observacoes' => 'TEXT NULL',
+        'endereco' => 'VARCHAR(512) DEFAULT NULL',
+        'latitude' => 'DECIMAL(10, 8) DEFAULT NULL',
+        'longitude' => 'DECIMAL(11, 8) DEFAULT NULL',
     ] as $column => $definition) {
         $stmt = $db->prepare("
             SELECT COUNT(*)
@@ -545,6 +557,9 @@ function agendamento_validate_lessons(array $lessons): array {
             'observacoes' => $observacoes ?: null,
             'valor_hora_centavos' => $valorHora,
             'valor_centavos' => $valorHora * $quantidadeHoras,
+            'endereco' => isset($lesson['endereco']) ? trim($lesson['endereco']) : null,
+            'latitude' => isset($lesson['latitude']) ? (float)$lesson['latitude'] : null,
+            'longitude' => isset($lesson['longitude']) ? (float)$lesson['longitude'] : null,
         ];
     }
 
@@ -567,6 +582,9 @@ function agendamento_fetch_board(PDO $db): array {
             a.valor_centavos,
             a.status,
             a.observacoes,
+            a.endereco,
+            a.latitude,
+            a.longitude,
             al.id AS aluno_id,
             al.token_publico,
             al.nome,
@@ -625,6 +643,9 @@ function agendamento_format_board(array $rows, ?string $currentToken, bool $isAd
             $item['email'] = $row['email'];
             $item['telefone'] = $row['telefone'];
             $item['forma_pagamento'] = $row['plano_forma_pagamento'] ?? null;
+            $item['endereco'] = $row['endereco'] ?? null;
+            $item['latitude'] = isset($row['latitude']) ? (float)$row['latitude'] : null;
+            $item['longitude'] = isset($row['longitude']) ? (float)$row['longitude'] : null;
         } else {
             $item['plano_id'] = null;
             $item['modulo_id'] = null;

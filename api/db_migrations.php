@@ -193,6 +193,7 @@ try {
             telefone VARCHAR(40) NOT NULL,
             token_publico VARCHAR(96) NOT NULL UNIQUE,
             codigo_acesso VARCHAR(12) DEFAULT NULL,
+            foto_url VARCHAR(512) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_agendamento_alunos_email (email)
@@ -253,6 +254,9 @@ try {
             valor_centavos INT NOT NULL DEFAULT 10000,
             status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
             observacoes TEXT NULL,
+            endereco VARCHAR(512) DEFAULT NULL,
+            latitude DECIMAL(10, 8) DEFAULT NULL,
+            longitude DECIMAL(11, 8) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_agendamento_slot (data_aula, horario),
@@ -316,6 +320,7 @@ try {
     add_column_if_missing($db, 'pre_agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
     add_column_if_missing($db, 'pre_agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 10000');
     add_column_if_missing($db, 'agendamento_alunos', 'codigo_acesso', 'VARCHAR(12) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_alunos', 'foto_url', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'agendamento_planos', 'total_aulas', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'agendamento_planos', 'aulas_usadas', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'agendamento_planos', 'status', "VARCHAR(30) NOT NULL DEFAULT 'ativo'");
@@ -329,6 +334,9 @@ try {
     add_column_if_missing($db, 'agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 10000');
     add_column_if_missing($db, 'agendamento_aulas', 'status', "VARCHAR(30) NOT NULL DEFAULT 'pre_agendado'");
     add_column_if_missing($db, 'agendamento_aulas', 'observacoes', 'TEXT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'endereco', 'VARCHAR(512) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'latitude', 'DECIMAL(10, 8) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'longitude', 'DECIMAL(11, 8) DEFAULT NULL');
 
     try {
         if (index_exists($db, 'agendamento_alunos', 'email')) {

@@ -113,9 +113,12 @@ try {
             valor_hora_centavos,
             valor_centavos,
             status,
-            observacoes
+            observacoes,
+            endereco,
+            latitude,
+            longitude
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     foreach ($lessons as $lesson) {
@@ -133,6 +136,9 @@ try {
             $lesson['valor_centavos'],
             $lesson['status'],
             $lesson['observacoes'],
+            $lesson['endereco'] ?? null,
+            $lesson['latitude'] ?? null,
+            $lesson['longitude'] ?? null,
         ]);
         agendamento_log($db, (int)$db->lastInsertId(), $studentId, 'aula_salva', $lesson, $isAdmin ? 'fotografo' : 'aluno', $isAdmin ? ($_SESSION['agendamento_admin_email'] ?? null) : $studentData['email']);
     }

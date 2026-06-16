@@ -99,8 +99,9 @@ try {
         $insertAula = $db->prepare("
             INSERT INTO agendamento_aulas (
                 aluno_id, plano_id, dia_semana, data_aula, horario,
-                quantidade_horas, cidade, valor_hora_centavos, valor_centavos, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pre_agendado')
+                quantidade_horas, cidade, valor_hora_centavos, valor_centavos, status,
+                endereco, latitude, longitude
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pre_agendado', ?, ?, ?)
         ");
 
         foreach ($aulasValidadas as $aula) {
@@ -113,7 +114,10 @@ try {
                 $aula['quantidade_horas'],
                 $aula['cidade'],
                 $aula['valor_hora_centavos'],
-                $aula['valor_centavos']
+                $aula['valor_centavos'],
+                $aula['endereco'] ?? null,
+                $aula['latitude'] ?? null,
+                $aula['longitude'] ?? null
             ]);
             agendamento_log($db, (int)$db->lastInsertId(), $alunoId, 'aula_inicial_agendada', $aula, 'aluno', $email);
         }

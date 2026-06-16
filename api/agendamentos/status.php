@@ -58,6 +58,7 @@ try {
                 'nome' => $student['nome'],
                 'email' => $student['email'],
                 'telefone' => $student['telefone'],
+                'foto_url' => $student['foto_url'] ?? null,
                 'plano' => $plan
             ]
         ]);
