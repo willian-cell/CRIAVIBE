@@ -175,8 +175,8 @@ try {
             horario VARCHAR(5) NOT NULL,
             quantidade_horas INT NOT NULL DEFAULT 1,
             cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-            valor_hora_centavos INT NOT NULL DEFAULT 7500,
-            valor_centavos INT NOT NULL DEFAULT 7500,
+            valor_hora_centavos INT NOT NULL DEFAULT 10000,
+            valor_centavos INT NOT NULL DEFAULT 10000,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_pre_agendamento_slot (data_aula, horario),
@@ -249,8 +249,8 @@ try {
             horario VARCHAR(5) NOT NULL,
             quantidade_horas INT NOT NULL DEFAULT 1,
             cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-            valor_hora_centavos INT NOT NULL DEFAULT 7500,
-            valor_centavos INT NOT NULL DEFAULT 7500,
+            valor_hora_centavos INT NOT NULL DEFAULT 10000,
+            valor_centavos INT NOT NULL DEFAULT 10000,
             status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
             observacoes TEXT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -314,7 +314,7 @@ try {
     add_column_if_missing($db, 'pre_agendamento_aulas', 'atualizado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'pre_agendamento_aulas', 'quantidade_horas', 'INT NOT NULL DEFAULT 1');
     add_column_if_missing($db, 'pre_agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
-    add_column_if_missing($db, 'pre_agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
+    add_column_if_missing($db, 'pre_agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 10000');
     add_column_if_missing($db, 'agendamento_alunos', 'codigo_acesso', 'VARCHAR(12) DEFAULT NULL');
     add_column_if_missing($db, 'agendamento_planos', 'total_aulas', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'agendamento_planos', 'aulas_usadas', 'INT NOT NULL DEFAULT 0');
@@ -326,7 +326,7 @@ try {
     add_column_if_missing($db, 'agendamento_aulas', 'assunto_id', 'INT NULL');
     add_column_if_missing($db, 'agendamento_aulas', 'quantidade_horas', 'INT NOT NULL DEFAULT 1');
     add_column_if_missing($db, 'agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
-    add_column_if_missing($db, 'agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
+    add_column_if_missing($db, 'agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 10000');
     add_column_if_missing($db, 'agendamento_aulas', 'status', "VARCHAR(30) NOT NULL DEFAULT 'pre_agendado'");
     add_column_if_missing($db, 'agendamento_aulas', 'observacoes', 'TEXT NULL');
 
@@ -365,6 +365,15 @@ try {
         add_index_if_missing($db, 'imagens', 'idx_imagens_tamanho', 'tamanho_bytes');
     } catch (Throwable $e) {
         error_log('Não foi possível adicionar índice idx_imagens_tamanho: ' . $e->getMessage());
+    }
+
+    try {
+        $db->exec("UPDATE agendamento_aulas SET valor_hora_centavos = 10000, valor_centavos = 10000 * quantidade_horas WHERE valor_hora_centavos = 7500");
+        $db->exec("UPDATE agendamento_aulas SET valor_hora_centavos = 15000, valor_centavos = 15000 * quantidade_horas WHERE valor_hora_centavos = 12000");
+        $db->exec("UPDATE agendamento_planos SET valor_hora_centavos = 10000 WHERE valor_hora_centavos = 7500");
+        $db->exec("UPDATE agendamento_planos SET valor_hora_centavos = 15000 WHERE valor_hora_centavos = 12000");
+    } catch (Throwable $e) {
+        error_log('Erro ao atualizar valores antigos de agendamento nas tabelas: ' . $e->getMessage());
     }
 
     json_out(['status' => 'ok', 'mensagem' => 'Banco verificado e schema preparado com sucesso.']);

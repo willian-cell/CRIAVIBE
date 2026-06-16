@@ -7,8 +7,8 @@ const AGENDAMENTO_ADMIN_EMAILS = [
 
 const AGENDAMENTO_DIAS = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'];
 const AGENDAMENTO_HORARIOS = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
-const AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS = 7500;
-const AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS = 12000;
+const AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS = 10000;
+const AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS = 15000;
 const AGENDAMENTO_HORAS_OPCOES = [1, 2, 3, 4, 5, 6, 7, 8];
 const AGENDAMENTO_STATUS = ['pre_agendado', 'confirmado', 'concluido', 'cancelado', 'remarcado'];
 
@@ -64,7 +64,7 @@ function agendamento_ensure_schema(PDO $db): void {
                 status VARCHAR(30) NOT NULL DEFAULT 'ativo',
                 forma_pagamento VARCHAR(50) DEFAULT NULL,
                 cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-                valor_hora_centavos INT NOT NULL DEFAULT 7500,
+                valor_hora_centavos INT NOT NULL DEFAULT 10000,
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -83,8 +83,8 @@ function agendamento_ensure_schema(PDO $db): void {
                 horario VARCHAR(5) NOT NULL,
                 quantidade_horas INT NOT NULL DEFAULT 1,
                 cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-                valor_hora_centavos INT NOT NULL DEFAULT 7500,
-                valor_centavos INT NOT NULL DEFAULT 7500,
+                valor_hora_centavos INT NOT NULL DEFAULT 10000,
+                valor_centavos INT NOT NULL DEFAULT 10000,
                 status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
                 observacoes TEXT NULL,
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -167,7 +167,7 @@ function agendamento_ensure_schema(PDO $db): void {
             status VARCHAR(30) NOT NULL DEFAULT 'ativo',
             forma_pagamento VARCHAR(50) DEFAULT NULL,
             cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-            valor_hora_centavos INT NOT NULL DEFAULT 7500,
+            valor_hora_centavos INT NOT NULL DEFAULT 10000,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_planos_aluno (aluno_id)
@@ -186,8 +186,8 @@ function agendamento_ensure_schema(PDO $db): void {
             horario VARCHAR(5) NOT NULL,
             quantidade_horas INT NOT NULL DEFAULT 1,
             cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-            valor_hora_centavos INT NOT NULL DEFAULT 7500,
-            valor_centavos INT NOT NULL DEFAULT 7500,
+            valor_hora_centavos INT NOT NULL DEFAULT 10000,
+            valor_centavos INT NOT NULL DEFAULT 10000,
             status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
             observacoes TEXT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -227,7 +227,7 @@ function agendamento_ensure_schema(PDO $db): void {
         'status' => "VARCHAR(30) NOT NULL DEFAULT 'ativo'",
         'forma_pagamento' => 'VARCHAR(50) DEFAULT NULL',
         'cidade' => "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'",
-        'valor_hora_centavos' => 'INT NOT NULL DEFAULT 7500',
+        'valor_hora_centavos' => 'INT NOT NULL DEFAULT 10000',
         'criado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
         'atualizado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
     ]);
@@ -238,7 +238,7 @@ function agendamento_ensure_schema(PDO $db): void {
         'assunto_id' => 'INT NULL',
         'quantidade_horas' => 'INT NOT NULL DEFAULT 1',
         'cidade' => "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'",
-        'valor_hora_centavos' => 'INT NOT NULL DEFAULT 7500',
+        'valor_hora_centavos' => 'INT NOT NULL DEFAULT 10000',
         'status' => "VARCHAR(30) NOT NULL DEFAULT 'pre_agendado'",
         'observacoes' => 'TEXT NULL',
     ] as $column => $definition) {
@@ -387,8 +387,8 @@ function agendamento_migrate_pre_agendamento(PDO $db): void {
         ? "COALESCE(a.cidade, 'Santo Antônio do Descoberto')"
         : "'Santo Antônio do Descoberto'";
     $valorHoraExpr = agendamento_column_exists($db, 'pre_agendamento_aulas', 'valor_hora_centavos')
-        ? 'COALESCE(a.valor_hora_centavos, 7500)'
-        : '7500';
+        ? 'COALESCE(a.valor_hora_centavos, 10000)'
+        : '10000';
 
     $rows = $db->query("
         SELECT

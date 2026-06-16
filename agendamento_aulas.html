@@ -2365,8 +2365,8 @@
       board: [], // Todos os agendamentos cadastrados no banco
 
       // Valores de aula (centavos)
-      valorSantoAntonioCentavos: 7500,
-      valorOutraCidadeCentavos: 12000,
+      valorSantoAntonioCentavos: 10000,
+      valorOutraCidadeCentavos: 15000,
 
       // Modal State
       modalActiveDayName: null,
@@ -3011,8 +3011,8 @@
         const data = await request(`/list.php`);
         state.board = data.aulas || [];
         state.course = data.curso || state.course;
-        state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 7500;
-        state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 12000;
+        state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 10000;
+        state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 15000;
         state.horarios = data.horarios || state.horarios;
         state.horasOpcoes = data.horas_opcoes || state.horasOpcoes;
         state.statusOpcoes = data.status_opcoes || state.statusOpcoes;
@@ -3213,8 +3213,8 @@
         const data = await request('/list.php');
         state.board = data.aulas || [];
         state.course = data.curso || state.course;
-        state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 7500;
-        state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 12000;
+        state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 10000;
+        state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 15000;
         state.horarios = data.horarios || state.horarios;
         state.horasOpcoes = data.horas_opcoes || state.horasOpcoes;
         state.statusOpcoes = data.status_opcoes || state.statusOpcoes;
@@ -3927,8 +3927,8 @@
         const listData = await request('/list.php');
         state.board = listData.aulas || [];
         state.course = listData.curso || state.course;
-        state.valorSantoAntonioCentavos = listData.valor_santo_antonio_centavos || 7500;
-        state.valorOutraCidadeCentavos = listData.valor_outra_cidade_centavos || 12000;
+        state.valorSantoAntonioCentavos = listData.valor_santo_antonio_centavos || 10000;
+        state.valorOutraCidadeCentavos = listData.valor_outra_cidade_centavos || 15000;
         state.horarios = listData.horarios || state.horarios;
         state.horasOpcoes = listData.horas_opcoes || state.horasOpcoes;
         state.statusOpcoes = listData.status_opcoes || state.statusOpcoes;
