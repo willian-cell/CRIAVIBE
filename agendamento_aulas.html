@@ -1613,7 +1613,49 @@
 
       .footer-note {
         margin-top: 15px;
-      }
+    }
+
+    /* Estilos para os Chips de Horário */
+    .time-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .time-chip {
+      padding: 10px 16px;
+      background: var(--surface-sub);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 80px;
+    }
+    .time-chip:hover:not(.disabled) {
+      border-color: var(--primary);
+      background: var(--surface);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .time-chip.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(119, 122, 67, 0.2);
+    }
+    .time-chip.disabled {
+      opacity: 0.4;
+      background: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -2277,7 +2319,7 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="slot-hours-group">
           <label for="slot-hours">Quantidade de horas</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-clock input-icon"></i>
@@ -2296,13 +2338,11 @@
         </div>
 
         <div class="form-group">
-          <label for="slot-time">Horário de início</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-clock-rotate-left input-icon"></i>
-            <select id="slot-time" required>
-              <!-- Populated dynamically -->
-            </select>
+          <label id="slot-time-label" style="font-weight: 700;">Selecione os Horários (Selecione até 3)</label>
+          <div id="slot-time-container" class="time-chips-container">
+            <!-- Populated dynamically with chips -->
           </div>
+          <input type="hidden" id="slot-time" value="">
         </div>
 
         <div class="form-group">
@@ -4197,9 +4237,17 @@
     /* ── MODAL: AGENDAR / EDITAR AULAS ── */
     function openNewLessonModal() {
       state.modalEditingLessonId = null;
+      state.modalSelectedTimes = [];
       document.getElementById('slot-modal-title').textContent = 'Agendar Nova Aula';
       document.getElementById('btn-save-slot').textContent = 'Confirmar Agendamento';
       document.getElementById('admin-fields').style.display = 'none';
+
+      // Oculta duração manual para novas aulas
+      const hoursGroup = document.getElementById('slot-hours-group');
+      if (hoursGroup) hoursGroup.style.display = 'none';
+
+      const timeLabel = document.getElementById('slot-time-label');
+      if (timeLabel) timeLabel.textContent = 'Selecione os Horários (Selecione até 3)';
 
       const cepInput = document.getElementById('modal-cep-input');
       if (cepInput) cepInput.value = '';
@@ -4248,6 +4296,15 @@
       state.modalEditingLessonId = aulaId;
       const aula = state.board.find(a => a.aula_id === aulaId);
       if (!aula) return;
+
+      state.modalSelectedTimes = [aula.horario];
+
+      // Exibe duração manual na edição de aula existente
+      const hoursGroup = document.getElementById('slot-hours-group');
+      if (hoursGroup) hoursGroup.style.display = 'block';
+
+      const timeLabel = document.getElementById('slot-time-label');
+      if (timeLabel) timeLabel.textContent = 'Selecione o Horário de Início (1 horário)';
 
       const cepInput = document.getElementById('modal-cep-input');
       if (cepInput) cepInput.value = '';
@@ -4364,7 +4421,10 @@
 
     function updateModalCalculatedValue() {
       const city = document.getElementById('slot-city').value;
-      const hours = Number(document.getElementById('slot-hours').value || 1);
+      const isEditing = state.modalEditingLessonId !== null;
+      const hours = isEditing 
+        ? Number(document.getElementById('slot-hours').value || 1) 
+        : Math.max(1, state.modalSelectedTimes.length);
       const rate = city.includes('Santo Antônio') ? 100 : 150;
 
       document.getElementById('slot-calc-value').textContent = (rate * hours).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -4372,43 +4432,84 @@
 
     function updateModalHours(selectHourValue = null) {
       const dateVal = document.getElementById('slot-date').value;
-      const hoursVal = Number(document.getElementById('slot-hours').value || 1);
-      const select = document.getElementById('slot-time');
+      const container = document.getElementById('slot-time-container');
+      if (!container) return;
 
       const occupied = new Set();
       state.board.forEach(item => {
-        // Ignora a própria aula que estamos editando na lista de ocupados
         if (item.data_aula === dateVal && item.aula_id !== state.modalEditingLessonId) {
           occupied.add(item.horario);
         }
       });
 
-      select.innerHTML = state.horarios.map(h => {
+      container.innerHTML = state.horarios.map(h => {
         const isOccupied = occupied.has(h);
-        return `<option value="${h}" ${isOccupied ? 'disabled' : ''}>${h}${isOccupied ? ' - Indisponível' : ''}</option>`;
+        const isSelected = state.modalSelectedTimes.includes(h);
+        
+        return `
+          <div class="time-chip ${isOccupied ? 'disabled' : ''} ${isSelected ? 'selected' : ''}" 
+               data-time="${h}" 
+               onclick="toggleTimeChip('${h}', ${isOccupied})">
+            ${h}
+          </div>
+        `;
       }).join('');
 
-      if (selectHourValue && !occupied.has(selectHourValue)) {
-        select.value = selectHourValue;
-      } else {
-        // Pega a primeira hora livre
-        const firstFree = [...select.options].find(opt => !opt.disabled);
-        if (firstFree) select.value = firstFree.value;
-      }
+      document.getElementById('slot-time').value = state.modalSelectedTimes[0] || '';
     }
+
+    window.toggleTimeChip = function(time, isOccupied) {
+      if (isOccupied) return;
+
+      const isEditing = state.modalEditingLessonId !== null;
+      const idx = state.modalSelectedTimes.indexOf(time);
+
+      if (isEditing) {
+        state.modalSelectedTimes = [time];
+      } else {
+        if (idx !== -1) {
+          state.modalSelectedTimes.splice(idx, 1);
+        } else {
+          // Validação de limite diário para alunos
+          if (state.alunoLogado) {
+            const dateVal = document.getElementById('slot-date').value;
+            const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dateVal);
+            const horasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
+            
+            if (horasExistentes + state.modalSelectedTimes.length >= 3) {
+              alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${horasExistentes}h agendadas para este dia.`);
+              return;
+            }
+          }
+
+          if (state.modalSelectedTimes.length >= 3) {
+            alert("Você pode selecionar no máximo 3 horários simultaneamente para o mesmo dia.");
+            return;
+          }
+
+          state.modalSelectedTimes.push(time);
+        }
+      }
+
+      updateModalHours();
+      updateModalCalculatedValue();
+    };
 
     async function saveLessonFromModal() {
       const dataVal = document.getElementById('slot-date').value;
-      const horaVal = document.getElementById('slot-time').value;
-      const hoursCount = Number(document.getElementById('slot-hours').value || 1);
       const cidade = document.getElementById('slot-city').value;
       const moduloId = Number(document.getElementById('slot-module').value || 0) || null;
       const assuntoId = Number(document.getElementById('slot-subject').value || 0) || null;
       const status = document.getElementById('slot-status').value || 'pre_agendado';
       const observacoes = document.getElementById('slot-notes').value.trim();
 
-      if (!dataVal || !horaVal) {
-        alert('Selecione uma data e horário.');
+      if (!dataVal) {
+        alert('Selecione uma data.');
+        return;
+      }
+
+      if (state.modalSelectedTimes.length === 0) {
+        alert('Selecione pelo menos um horário para a aula.');
         return;
       }
 
@@ -4421,51 +4522,84 @@
         return;
       }
 
-      // Regra: Limite de 3 horas por dia para o aluno
-      if (state.alunoLogado) {
-        if (hoursCount > 3) {
-          alert('Você não pode agendar mais de 3 horas por dia.');
-          return;
-        }
-        const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dataVal && a.aula_id !== state.modalEditingLessonId);
-        const somaHorasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
-        if (somaHorasExistentes + hoursCount > 3) {
-          alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${somaHorasExistentes}h agendadas para este dia.`);
-          return;
-        }
-      }
-
       const rateCentavos = cidade.includes('Santo Antônio') ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
       const enderecoVal = document.getElementById('modal-address-input').value.trim();
       const latVal = document.getElementById('modal-lat').value;
       const lngVal = document.getElementById('modal-lng').value;
 
-      const newLesson = {
-        aula_id: state.modalEditingLessonId,
-        dia_semana: dayOfWeekName,
-        data_aula: dataVal,
-        horario: horaVal,
-        quantidade_horas: hoursCount,
-        cidade: cidade,
-        modulo_id: moduloId,
-        assunto_id: assuntoId,
-        status: state.adminLogado ? status : 'pre_agendado',
-        observacoes: state.adminLogado ? observacoes : '',
-        valor_hora_centavos: rateCentavos,
-        valor_centavos: rateCentavos * hoursCount,
-        endereco: enderecoVal || null,
-        latitude: latVal ? Number(latVal) : null,
-        longitude: lngVal ? Number(lngVal) : null
-      };
-
-      // Monta payload de salvamento
       const isNew = !state.modalEditingLessonId;
+      let newLessonsList = [];
 
-      // Se for aluno agendando
+      if (isNew) {
+        state.modalSelectedTimes.forEach(hora => {
+          newLessonsList.push({
+            aula_id: null,
+            dia_semana: dayOfWeekName,
+            data_aula: dataVal,
+            horario: hora,
+            quantidade_horas: 1,
+            cidade: cidade,
+            modulo_id: moduloId,
+            assunto_id: assuntoId,
+            status: state.adminLogado ? status : 'pre_agendado',
+            observacoes: state.adminLogado ? observacoes : '',
+            valor_hora_centavos: rateCentavos,
+            valor_centavos: rateCentavos * 1,
+            endereco: enderecoVal || null,
+            latitude: latVal ? Number(latVal) : null,
+            longitude: lngVal ? Number(lngVal) : null
+          });
+        });
+
+        // Regra de limite diário para o aluno
+        if (state.alunoLogado) {
+          const totalHorasNovas = newLessonsList.length;
+          const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dataVal);
+          const somaHorasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
+          if (somaHorasExistentes + totalHorasNovas > 3) {
+            alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${somaHorasExistentes}h agendadas para este dia.`);
+            return;
+          }
+        }
+      } else {
+        const hoursCount = Number(document.getElementById('slot-hours').value || 1);
+        
+        // Regra de limite diário para o aluno
+        if (state.alunoLogado) {
+          if (hoursCount > 3) {
+            alert('Você não pode agendar mais de 3 horas por dia.');
+            return;
+          }
+          const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dataVal && a.aula_id !== state.modalEditingLessonId);
+          const somaHorasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
+          if (somaHorasExistentes + hoursCount > 3) {
+            alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${somaHorasExistentes}h agendadas para este dia.`);
+            return;
+          }
+        }
+
+        newLessonsList.push({
+          aula_id: state.modalEditingLessonId,
+          dia_semana: dayOfWeekName,
+          data_aula: dataVal,
+          horario: state.modalSelectedTimes[0],
+          quantidade_horas: hoursCount,
+          cidade: cidade,
+          modulo_id: moduloId,
+          assunto_id: assuntoId,
+          status: state.adminLogado ? status : 'pre_agendado',
+          observacoes: state.adminLogado ? observacoes : '',
+          valor_hora_centavos: rateCentavos,
+          valor_centavos: rateCentavos * hoursCount,
+          endereco: enderecoVal || null,
+          latitude: latVal ? Number(latVal) : null,
+          longitude: lngVal ? Number(lngVal) : null
+        });
+      }
+
       let payload = {};
       if (state.alunoLogado) {
-        // Sincroniza aulas existentes
-        const minhasAulas = state.board.filter(a => a.is_owner).map(a => ({
+        let minhasAulas = state.board.filter(a => a.is_owner && a.aula_id !== state.modalEditingLessonId).map(a => ({
           aula_id: a.aula_id,
           dia_semana: a.dia_semana,
           data_aula: a.data_aula,
@@ -4481,12 +4615,7 @@
           longitude: a.longitude || null
         }));
 
-        if (isNew) {
-          minhasAulas.push(newLesson);
-        } else {
-          const idx = minhasAulas.findIndex(a => a.aula_id === state.modalEditingLessonId);
-          if (idx !== -1) minhasAulas[idx] = newLesson;
-        }
+        minhasAulas = minhasAulas.concat(newLessonsList);
 
         payload = {
           token_publico: state.token,
@@ -4503,50 +4632,50 @@
           aulas: minhasAulas
         };
       }
-      // Se for professor editando uma aula de algum aluno
       else if (state.adminLogado) {
-        // Acha o aluno dono dessa aula específica
-        const aulaRef = state.board.find(a => a.aula_id === state.modalEditingLessonId);
-        if (!aulaRef) {
-          alert('Erro ao referenciar aluno da aula editada.');
+        if (!isNew) {
+          const aulaRef = state.board.find(a => a.aula_id === state.modalEditingLessonId);
+          if (!aulaRef) {
+            alert('Erro ao referenciar aluno da aula editada.');
+            return;
+          }
+
+          let aulasDoAluno = state.board.filter(a => a.aluno_id === aulaRef.aluno_id && a.aula_id !== state.modalEditingLessonId).map(a => ({
+            aula_id: a.aula_id,
+            dia_semana: a.dia_semana,
+            data_aula: a.data_aula,
+            horario: a.horario,
+            quantidade_horas: a.quantidade_horas,
+            cidade: a.cidade,
+            modulo_id: a.modulo_id,
+            assunto_id: a.assunto_id,
+            status: a.status,
+            observacoes: a.observacoes || '',
+            endereco: a.endereco || null,
+            latitude: a.latitude || null,
+            longitude: a.longitude || null
+          }));
+
+          aulasDoAluno = aulasDoAluno.concat(newLessonsList);
+
+          payload = {
+            token_publico: aulaRef.token_publico,
+            aluno: {
+              nome: aulaRef.aluno,
+              email: aulaRef.email,
+              telefone: aulaRef.telefone
+            },
+            plano: {
+              nome: aulaRef.plano_nome || 'Curso Prático',
+              total_aulas: aulaRef.total_aulas || 10,
+              status: aulaRef.plano_status || 'ativo'
+            },
+            aulas: aulasDoAluno
+          };
+        } else {
+          alert('Função de agendamento do zero pelo professor não disponível por esta via.');
           return;
         }
-
-        const aulasDoAluno = state.board.filter(a => a.aluno_id === aulaRef.aluno_id).map(a => ({
-          aula_id: a.aula_id,
-          dia_semana: a.dia_semana,
-          data_aula: a.data_aula,
-          horario: a.horario,
-          quantidade_horas: a.quantidade_horas,
-          cidade: a.cidade,
-          modulo_id: a.modulo_id,
-          assunto_id: a.assunto_id,
-          status: a.status,
-          observacoes: a.observacoes || '',
-          endereco: a.endereco || null,
-          latitude: a.latitude || null,
-          longitude: a.longitude || null
-        }));
-
-        const idx = aulasDoAluno.findIndex(a => a.aula_id === state.modalEditingLessonId);
-        if (idx !== -1) {
-          aulasDoAluno[idx] = newLesson;
-        }
-
-        payload = {
-          token_publico: aulaRef.token_publico,
-          aluno: {
-            nome: aulaRef.aluno,
-            email: aulaRef.email,
-            telefone: aulaRef.telefone
-          },
-          plano: {
-            nome: aulaRef.plano_nome || 'Curso Prático',
-            total_aulas: aulaRef.total_aulas || 10,
-            status: aulaRef.plano_status || 'ativo'
-          },
-          aulas: aulasDoAluno
-        };
       }
 
       try {
@@ -4555,7 +4684,7 @@
           body: JSON.stringify(payload)
         });
 
-        alert(isNew ? 'Aula agendada com sucesso!' : 'Agendamento atualizado com sucesso!');
+        alert(isNew ? 'Aula(s) agendada(s) com sucesso!' : 'Agendamento atualizado com sucesso!');
         closeSlotModal();
 
         if (state.adminLogado) {
