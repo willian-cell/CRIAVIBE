@@ -3686,9 +3686,17 @@
       }
     }
 
+    /* ── MAPAS E GEOLOCALIZAÇÃO (LEAFLET + NOMINATIM) ── */
+    // Corrigir caminhos de imagens de marcadores padrão do Leaflet carregados por CDN
+    if (typeof L !== 'undefined' && L.Icon && L.Icon.Default) {
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      });
     }
 
-    /* ── MAPAS E GEOLOCALIZAÇÃO (LEAFLET + NOMINATIM) ── */
     let registerMap = null;
     let registerMarker = null;
     let modalMap = null;
@@ -3852,21 +3860,33 @@
           return;
         }
 
-        suggestionsContainer.innerHTML = data.map(item => {
-          const name = escapeHtml(item.display_name);
+        suggestionsContainer.innerHTML = '';
+        data.forEach(item => {
+          const name = item.display_name;
           const lat = parseFloat(item.lat);
           const lon = parseFloat(item.lon);
-          return `
-            <div class="address-suggestion-item" 
-                 style="padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.2s;"
-                 onmouseover="this.style.background='var(--surface-sub)'"
-                 onmouseout="this.style.background='transparent'"
-                 onclick="selectSuggestion('${name.replace(/'/g, "\\'")}', ${lat}, ${lon}, '${inputId}', '${suggestionsId}', '${mapType}')">
-              <i class="fa-solid fa-location-dot" style="color: var(--primary); margin-right: 8px;"></i>
-              <span style="font-size: 0.75rem;">${name}</span>
-            </div>
+          
+          const div = document.createElement('div');
+          div.className = 'address-suggestion-item';
+          div.style.padding = '10px 12px';
+          div.style.cursor = 'pointer';
+          div.style.borderBottom = '1px solid var(--border)';
+          div.style.transition = 'background 0.2s';
+          div.style.textAlign = 'left';
+          
+          div.onmouseover = () => { div.style.background = 'var(--surface-sub)'; };
+          div.onmouseout = () => { div.style.background = 'transparent'; };
+          
+          div.onclick = () => {
+            selectSuggestion(name, lat, lon, inputId, suggestionsId, mapType);
+          };
+          
+          div.innerHTML = `
+            <i class="fa-solid fa-location-dot" style="color: var(--primary); margin-right: 8px;"></i>
+            <span style="font-size: 0.75rem;">${escapeHtml(name)}</span>
           `;
-        }).join('');
+          suggestionsContainer.appendChild(div);
+        });
       } catch (err) {
         console.error(err);
         suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--danger);">Erro ao buscar endereço.</div>';
