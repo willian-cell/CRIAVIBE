@@ -2017,11 +2017,20 @@
           <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 8px;">
             <i class="fa-solid fa-map-location-dot"></i> Local exato da aula
           </label>
-          <div class="form-group" id="reg-address-section" style="margin-bottom: 15px;">
+          <div class="form-group" id="reg-address-section" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+            <!-- Linha 1: CEP -->
+            <div style="display: flex; gap: 8px;">
+              <div class="input-wrapper" style="flex: 1; min-width: 120px; max-width: 180px;">
+                <i class="fa-solid fa-map-pin input-icon"></i>
+                <input type="text" id="reg-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;" oninput="maskCEP(this)" maxlength="9">
+              </div>
+              <button type="button" class="btn btn-secondary" style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;" onclick="searchCEPReg()">Buscar CEP</button>
+            </div>
+            <!-- Linha 2: Endereço -->
             <div class="input-wrapper" style="display: flex;">
               <i class="fa-solid fa-magnifying-glass input-icon"></i>
-              <input type="text" id="reg-address-input" placeholder="Digite seu endereço completo para buscar..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none;" autocomplete="off">
-              <button type="button" class="btn" style="border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 20px; font-weight: 700; cursor: pointer;" onclick="searchAddressReg()">Buscar</button>
+              <input type="text" id="reg-address-input" placeholder="Ou digite o endereço completo..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off">
+              <button type="button" class="btn" style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 20px; font-weight: 700; cursor: pointer;" onclick="searchAddressReg()">Buscar</button>
             </div>
             <div id="address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
           </div>
@@ -2317,12 +2326,21 @@
         </div>
 
         <!-- ENDEREÇO E MAPA NO MODAL -->
-        <div class="form-group" id="modal-address-group" style="margin-bottom: 15px; position: relative;">
-          <label for="modal-address-input">Endereço Exato da Aula</label>
+        <div class="form-group" id="modal-address-group" style="margin-bottom: 15px; position: relative; display: flex; flex-direction: column; gap: 8px;">
+          <label for="modal-address-input" style="font-weight: 700;">Endereço Exato da Aula</label>
+          <!-- Linha 1: CEP -->
+          <div style="display: flex; gap: 8px;">
+            <div class="input-wrapper" style="flex: 1; min-width: 120px; max-width: 180px;">
+              <i class="fa-solid fa-map-pin input-icon"></i>
+              <input type="text" id="modal-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;" oninput="maskCEP(this)" maxlength="9">
+            </div>
+            <button type="button" class="btn btn-secondary" style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;" onclick="searchCEPModal()">Buscar CEP</button>
+          </div>
+          <!-- Linha 2: Endereço -->
           <div class="input-wrapper" style="display: flex;">
             <i class="fa-solid fa-magnifying-glass input-icon"></i>
-            <input type="text" id="modal-address-input" placeholder="Endereço, número, bairro..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none;" autocomplete="off">
-            <button type="button" class="btn" style="border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 16px; font-weight: 700; cursor: pointer;" onclick="searchAddressModal()">Buscar</button>
+            <input type="text" id="modal-address-input" placeholder="Endereço, número, bairro..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off">
+            <button type="button" class="btn" style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 16px; font-weight: 700; cursor: pointer;" onclick="searchAddressModal()">Buscar</button>
           </div>
           <div id="modal-address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
         </div>
@@ -3752,6 +3770,13 @@
           state.regData.longitude = latlng.lng;
           await reverseGeocode(latlng.lat, latlng.lng, 'reg-address-input', 'reg');
         });
+
+        registerMap.on('click', async function(e) {
+          registerMarker.setLatLng(e.latlng);
+          state.regData.latitude = e.latlng.lat;
+          state.regData.longitude = e.latlng.lng;
+          await reverseGeocode(e.latlng.lat, e.latlng.lng, 'reg-address-input', 'reg');
+        });
       }
 
       addressInput.onkeypress = function(ev) {
@@ -3825,6 +3850,13 @@
           document.getElementById('modal-lat').value = latlng.lat;
           document.getElementById('modal-lng').value = latlng.lng;
           await reverseGeocode(latlng.lat, latlng.lng, 'modal-address-input', 'modal');
+        });
+
+        modalMap.on('click', async function(e) {
+          modalMarker.setLatLng(e.latlng);
+          document.getElementById('modal-lat').value = e.latlng.lat;
+          document.getElementById('modal-lng').value = e.latlng.lng;
+          await reverseGeocode(e.latlng.lat, e.latlng.lng, 'modal-address-input', 'modal');
         });
       }
 
@@ -3925,6 +3957,93 @@
       searchAddress(q, 'modal-address-input', 'modal-address-suggestions', 'modal');
     };
 
+    window.maskCEP = function(input) {
+      let v = input.value.replace(/\D/g, "");
+      if (v.length > 5) {
+        v = v.substring(0, 5) + "-" + v.substring(5, 8);
+      }
+      input.value = v;
+    };
+
+    window.searchCEPReg = function() {
+      const cep = document.getElementById('reg-cep-input').value;
+      searchCEP(cep, 'reg-address-input', 'reg');
+    };
+
+    window.searchCEPModal = function() {
+      const cep = document.getElementById('modal-cep-input').value;
+      searchCEP(cep, 'modal-address-input', 'modal');
+    };
+
+    async function searchCEP(cep, inputAddressId, mapType) {
+      const cleanCep = cep.replace(/\D/g, "");
+      if (cleanCep.length !== 8) {
+        alert("Digite um CEP válido com 8 dígitos.");
+        return;
+      }
+      
+      const addressInput = document.getElementById(inputAddressId);
+      const originalPlaceholder = addressInput.placeholder;
+      addressInput.placeholder = "Buscando endereço pelo CEP...";
+      
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        const data = await res.json();
+        
+        if (data.erro) {
+          alert("CEP não encontrado.");
+          return;
+        }
+        
+        const parts = [
+          data.logradouro,
+          data.bairro,
+          data.localidade,
+          data.uf
+        ].filter(Boolean);
+        
+        const fullAddress = parts.join(", ");
+        addressInput.value = fullAddress;
+        
+        const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1&countrycodes=br`;
+        const geoRes = await fetch(geocodeUrl, {
+          headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+        });
+        const geoData = await geoRes.json();
+        
+        if (geoData && geoData.length > 0) {
+          const lat = parseFloat(geoData[0].lat);
+          const lon = parseFloat(geoData[0].lon);
+          
+          if (mapType === 'reg') {
+            state.regData.endereco = fullAddress;
+            state.regData.latitude = lat;
+            state.regData.longitude = lon;
+            if (registerMarker && registerMap) {
+              registerMarker.setLatLng([lat, lon]);
+              registerMap.setView([lat, lon], 16);
+            }
+          } else if (mapType === 'modal') {
+            document.getElementById('modal-lat').value = lat;
+            document.getElementById('modal-lng').value = lon;
+            if (modalMarker && modalMap) {
+              modalMarker.setLatLng([lat, lon]);
+              modalMap.setView([lat, lon], 16);
+            }
+          }
+        } else {
+          if (mapType === 'reg') {
+            state.regData.endereco = fullAddress;
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao buscar CEP.");
+      } finally {
+        addressInput.placeholder = originalPlaceholder;
+      }
+    }
+
     async function reverseGeocode(lat, lng, inputId, mapType) {
       try {
         const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
@@ -3962,6 +4081,9 @@
       document.getElementById('slot-modal-title').textContent = 'Agendar Nova Aula';
       document.getElementById('btn-save-slot').textContent = 'Confirmar Agendamento';
       document.getElementById('admin-fields').style.display = 'none';
+
+      const cepInput = document.getElementById('modal-cep-input');
+      if (cepInput) cepInput.value = '';
 
       // Popula cidades
       const citySelect = document.getElementById('slot-city');
@@ -4007,6 +4129,9 @@
       state.modalEditingLessonId = aulaId;
       const aula = state.board.find(a => a.aula_id === aulaId);
       if (!aula) return;
+
+      const cepInput = document.getElementById('modal-cep-input');
+      if (cepInput) cepInput.value = '';
 
       document.getElementById('slot-modal-title').textContent = 'Editar Aula';
       document.getElementById('btn-save-slot').textContent = 'Salvar Alterações';
