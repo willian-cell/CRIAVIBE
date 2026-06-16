@@ -3880,12 +3880,97 @@
       suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</div>';
       suggestionsContainer.style.display = 'block';
 
+      // Função interna para fazer o fetch no Nominatim
+      async function fetchNominatim(q) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&countrycodes=br`;
+        try {
+          const res = await fetch(url, {
+            headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+          });
+          return await res.json();
+        } catch (e) {
+          console.error("Erro na busca Nominatim para query:", q, e);
+          return [];
+        }
+      }
+
+      // Função auxiliar para limpar resíduos de pontuação e espaços
+      function cleanString(str) {
+        return str
+          .replace(/,(\s*,)+/g, ',') // Remove múltiplas vírgulas
+          .replace(/^\s*,\s*/, '')   // Remove vírgula no início
+          .replace(/\s*,\s*$/, '')   // Remove vírgula no fim
+          .replace(/\s+/g, ' ')      // Remove múltiplos espaços
+          .trim();
+      }
+
       try {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=br`;
-        const res = await fetch(url, {
-          headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
-        });
-        const data = await res.json();
+        let currentQuery = query;
+        let data = await fetchNominatim(currentQuery);
+        let fallbackUsed = false;
+
+        // Se a busca inicial falhar, tentamos remover referências a Lote/Lt
+        if (!data || data.length === 0) {
+          let q1 = currentQuery
+            .replace(/\b(lote|lt\.?)\s*\w*\d+\w*\b/gi, '') // Remove "Lote 08", "Lt 8", "Lote B8"
+            .replace(/\b(lote|lt\.?)\b/gi, '');            // Remove palavra "lote" solta
+          q1 = cleanString(q1);
+          
+          if (q1 && q1 !== currentQuery) {
+            currentQuery = q1;
+            data = await fetchNominatim(currentQuery);
+            fallbackUsed = true;
+          }
+        }
+
+        // Se falhar de novo, tentamos remover referências a Quadra/Qd também
+        if (!data || data.length === 0) {
+          let q2 = currentQuery
+            .replace(/\b(quadra|qd\.?)\s*\w*\d+\w*\b/gi, '') // Remove "Quadra 71", "Qd 71"
+            .replace(/\b(quadra|qd\.?)\b/gi, '');            // Remove palavra "quadra" solta
+          q2 = cleanString(q2);
+
+          if (q2 && q2 !== currentQuery) {
+            currentQuery = q2;
+            data = await fetchNominatim(currentQuery);
+            fallbackUsed = true;
+          }
+        }
+
+        // Se falhar de novo, tentamos pegar as últimas partes (Bairro, Cidade, Estado)
+        if (!data || data.length === 0) {
+          const parts = query.split(',').map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 3) {
+            const q3 = parts.slice(-3).join(', ');
+            if (q3 !== query) {
+              currentQuery = q3;
+              data = await fetchNominatim(currentQuery);
+              fallbackUsed = true;
+            }
+          }
+        }
+
+        // Se falhar de novo, tentamos pegar as últimas 2 partes (Cidade, Estado)
+        if (!data || data.length === 0) {
+          const parts = query.split(',').map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 2) {
+            const q4 = parts.slice(-2).join(', ');
+            if (q4 !== query) {
+              currentQuery = q4;
+              data = await fetchNominatim(currentQuery);
+              fallbackUsed = true;
+            }
+          }
+        }
+
+        // Se falhar de novo e a busca contiver termos da cidade, tenta focar na cidade
+        if (!data || data.length === 0) {
+          if (query.toLowerCase().includes("santo antônio") || query.toLowerCase().includes("descoberto")) {
+            currentQuery = "Santo Antônio do Descoberto, GO";
+            data = await fetchNominatim(currentQuery);
+            fallbackUsed = true;
+          }
+        }
 
         if (!data || data.length === 0) {
           suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--text-muted);">Nenhum endereço encontrado. Tente digitar o nome da rua e cidade.</div>';
@@ -3893,6 +3978,18 @@
         }
 
         suggestionsContainer.innerHTML = '';
+
+        if (fallbackUsed) {
+          const infoDiv = document.createElement('div');
+          infoDiv.style.padding = '8px 12px';
+          infoDiv.style.fontSize = '0.72rem';
+          infoDiv.style.color = 'var(--text-muted)';
+          infoDiv.style.background = 'var(--surface-sub)';
+          infoDiv.style.borderBottom = '1px solid var(--border)';
+          infoDiv.innerHTML = '<i class="fa-solid fa-circle-info" style="color: var(--primary); margin-right: 6px;"></i> Local exato não indexado. Exibindo região aproximada:';
+          suggestionsContainer.appendChild(infoDiv);
+        }
+
         data.forEach(item => {
           const name = item.display_name;
           const lat = parseFloat(item.lat);
@@ -3910,7 +4007,7 @@
           div.onmouseout = () => { div.style.background = 'transparent'; };
           
           div.onclick = () => {
-            selectSuggestion(name, lat, lon, inputId, suggestionsId, mapType);
+            selectSuggestion(query, lat, lon, inputId, suggestionsId, mapType);
           };
           
           div.innerHTML = `
@@ -3923,7 +4020,6 @@
         console.error(err);
         suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--danger);">Erro ao buscar endereço.</div>';
       }
-    }
 
     window.selectSuggestion = function(name, lat, lon, inputId, suggestionsId, mapType) {
       document.getElementById(inputId).value = name;
@@ -4005,11 +4101,34 @@
         const fullAddress = parts.join(", ");
         addressInput.value = fullAddress;
         
-        const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1&countrycodes=br`;
-        const geoRes = await fetch(geocodeUrl, {
-          headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
-        });
-        const geoData = await geoRes.json();
+        // Função interna para geocodificar usando Nominatim
+        async function geocode(q) {
+          const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=br`;
+          try {
+            const geoRes = await fetch(geocodeUrl, {
+              headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+            });
+            return await geoRes.json();
+          } catch (e) {
+            console.error("Erro no geocode Nominatim para CEP:", q, e);
+            return [];
+          }
+        }
+        
+        // Tentativa 1: Endereço completo retornado pelo ViaCEP
+        let geoData = await geocode(fullAddress);
+        
+        // Tentativa 2: Bairro + Cidade + Estado (se tiver bairro)
+        if ((!geoData || geoData.length === 0) && data.bairro) {
+          const q2 = [data.bairro, data.localidade, data.uf].filter(Boolean).join(", ");
+          geoData = await geocode(q2);
+        }
+        
+        // Tentativa 3: Cidade + Estado
+        if (!geoData || geoData.length === 0) {
+          const q3 = [data.localidade, data.uf].filter(Boolean).join(", ");
+          geoData = await geocode(q3);
+        }
         
         if (geoData && geoData.length > 0) {
           const lat = parseFloat(geoData[0].lat);

@@ -83,24 +83,13 @@ session_start();
 function db(): PDO {
     static $pdo = null;
     if (!$pdo) {
-        try {
-            $pdo = new PDO(
-                "mysql:host=".DB_HOST.";port=".DB_PORT.";dbname=".DB_NAME.";charset=utf8mb4",
-                DB_USER, DB_PASS,
-                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                 PDO::ATTR_TIMEOUT => 2]
-            );
-        } catch (Throwable $e) {
-            $sqlitePath = __DIR__ . '/criavibe_local.db';
-            $pdo = new PDO(
-                "sqlite:" . $sqlitePath,
-                null, null,
-                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
-            );
-            $pdo->exec("PRAGMA foreign_keys = ON;");
-        }
+        $pdo = new PDO(
+            "mysql:host=".DB_HOST.";port=".DB_PORT.";dbname=".DB_NAME.";charset=utf8mb4",
+            DB_USER, DB_PASS,
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+             PDO::ATTR_TIMEOUT => 5]
+        );
     }
     return $pdo;
 }
