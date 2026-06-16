@@ -4060,6 +4060,7 @@
         console.error(err);
         suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--danger);">Erro ao buscar endereço.</div>';
       }
+    }
 
     window.selectSuggestion = function(name, lat, lon, inputId, suggestionsId, mapType) {
       document.getElementById(inputId).value = name;
