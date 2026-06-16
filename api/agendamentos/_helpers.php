@@ -3,6 +3,7 @@
 const AGENDAMENTO_ADMIN_EMAILS = [
     'willianb.o.1993@gmail.com',
     'dododouglas04@outlook.com',
+    'dougdouglas04@outlook.com',
 ];
 
 const AGENDAMENTO_DIAS = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'];
