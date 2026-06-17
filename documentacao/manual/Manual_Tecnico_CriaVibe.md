@@ -5,7 +5,7 @@
 > **Projeto:** CriaVibe
 > **Responsavel tecnico:** Willian Batista Oliveira
 > **Registrador:** agente-willianbo
-> **Gerado em:** 16/06/2026 23:17:14
+> **Gerado em:** 16/06/2026 23:36:21
 > **Origem:** `C:\Users\willi\Documents\criavibe_site`
 
 ---
@@ -39,9 +39,9 @@ Arquivos sensiveis e artefatos pesados sao omitidos de proposito: `.env`, `.git/
 ## 3. Sumario Executivo
 
 - Total de arquivos textuais documentados: **100**
-- Total de linhas de codigo/documentacao: **24629**
-- Tamanho textual documentado: **864.4 KB**
-- Imagens inventariadas: **19**
+- Total de linhas de codigo/documentacao: **24991**
+- Tamanho textual documentado: **878.0 KB**
+- Imagens inventariadas: **20**
 - Registros de trabalho consolidados: **11**
 
 ---
@@ -87,7 +87,8 @@ criavibe_site/
 |-- api/
 |   |-- agendamentos/
 |   |   |-- img/
-|   |   |   `-- camera.png
+|   |   |   |-- camera.png
+|   |   |   `-- nikon.png
 |   |   |-- _helpers.php
 |   |   |-- admin_login.php
 |   |   |-- admin_logout.php
@@ -248,7 +249,7 @@ criavibe_site/
 | Arquivo | Linhas | Tamanho |
 |---|---:|---:|
 | `.gitignore` | 19 | 286 B |
-| `agendamento_aulas.html` | 4805 | 162.7 KB |
+| `agendamento_aulas.html` | 5156 | 174.2 KB |
 | `agente-willianbo/references/ciclo_de_vida_documentacao.md` | 70 | 3.3 KB |
 | `agente-willianbo/scripts/gerar_manual.py` | 599 | 18.1 KB |
 | `agente-willianbo/SKILL.md` | 48 | 1.9 KB |
@@ -325,7 +326,7 @@ criavibe_site/
 | `documentacao/trabalho/trabalho_14_05_2026.md` | 251 | 9.8 KB |
 | `documentacao/trabalho/trabalho_14_06_2026.md` | 263 | 14.6 KB |
 | `documentacao/trabalho/trabalho_15_05_2026.md` | 301 | 13.2 KB |
-| `documentacao/trabalho/trabalho_16_06_2026.md` | 148 | 9.3 KB |
+| `documentacao/trabalho/trabalho_16_06_2026.md` | 159 | 11.4 KB |
 | `documentacao/trabalho/trabalho_22_05_2026.md` | 217 | 13.8 KB |
 | `documentacao/trabalho/trabalho_23_05_2026.md` | 677 | 39.5 KB |
 | `documentacao/trabalho/trabalho_24_05_2026.md` | 137 | 8.0 KB |
@@ -354,7 +355,8 @@ criavibe_site/
 
 | Imagem | Tamanho | Preview |
 |---|---:|---|
-| `api/agendamentos/img/camera.png` | 1.6 MB | ![](../../api/agendamentos/img/camera.png) |
+| `api/agendamentos/img/camera.png` | 330.4 KB | ![](../../api/agendamentos/img/camera.png) |
+| `api/agendamentos/img/nikon.png` | 1.6 MB | ![](../../api/agendamentos/img/nikon.png) |
 | `assets/images/instagram/casal.png` | 460.3 KB | ![](../../assets/images/instagram/casal.png) |
 | `assets/images/instagram/cavalo.png` | 640.1 KB | ![](../../assets/images/instagram/cavalo.png) |
 | `assets/images/instagram/menina.png` | 330.1 KB | ![](../../assets/images/instagram/menina.png) |
@@ -3049,6 +3051,7 @@ Fonte: `documentacao/trabalho/trabalho_16_06_2026.md`
 | 9 | Implementar selecao de novo horario clicando nos chips no modal Editar | Frontend | Alta | Curta | [x] |
 | 10| Garantir que aluno pode editar no painel sem resetar horas/obs | Regra/Frontend | Alta | Curta | [x] |
 | 11| Melhorar formato de hora/inicio e duracao no painel do fotografo | Frontend | Alta | Curta | [x] |
+| 12| Aprimorar geolocalização integrando BrasilAPI v2 com fallbacks inteligentes | Geolocalização | Alta | Curta | [x] |
 
 ---
 
@@ -3144,6 +3147,16 @@ Fonte: `documentacao/trabalho/trabalho_16_06_2026.md`
 8. **`agendamento_aulas.html` (Melhoria Visual do Painel do Fotógrafo):**
    - Alterou-se a exibição da célula de Data/Hora no painel para mostrar a data, início da aula formatado (`inicio as HH:MM`) e duração (`Xh de aula`) em linhas separadas para clareza visual completa.
    - Limpou-se uma declaração duplicada inativa da função `renderTeacherAulasPanel` para manter a integridade do código.
+9. **`agendamento_aulas.html` (Precisão do Pin no Mapa & Busca de CEP/Endereço):**
+   - Integrou-se o endpoint `BrasilAPI v2` (`https://brasilapi.com.br/api/cep/v2/`) na busca por CEP para recuperar diretamente as coordenadas precisas de latitude e longitude do CEP digitado antes de tentar Nominatim (com fallback automático para `ViaCEP`).
+   - Adicionou-se detecção automática de CEP em buscas de endereço de texto completo, de modo a geolocalizar as coordenadas precisas do CEP caso o logradouro textual não seja encontrado no OpenStreetMap.
+   - Refinou-se a limpeza de strings de busca no Nominatim removendo números residenciais/específicos para que o logradouro/rua seja localizado ao invés de falhar inteiramente.
+   - Corrigiu-se bug na seleção de sugestões do autocomplete (`selectSuggestion`) onde o input era preenchido com a query digitada pelo usuário ao invés do endereço formatado e retornado pelo geocodificador.
+10. **`agendamento_aulas.html` (Autocomplete Dinâmico e Geocodificação Automática):**
+    - Implementou-se as funções `geocodeAddressDirectly` e `ensureGeocodedAddress` para gerenciar a geocodificação sob demanda e sincronizar automaticamente coordenadas que estejam defasadas em relação ao texto digitado pelo usuário.
+    - Integrou-se o `ensureGeocodedAddress` nas funções de envio/salvamento do modal (`saveLessonFromModal`) e do cadastro do aluno (`submitRegistration`) para evitar salvar endereços manuais com coordenadas incorretas ou antigas.
+    - Habilitou-se autocomplete em tempo real nos inputs de endereço do cadastro e do modal (`initAutocompleteInputs`) utilizando um debounce de 600ms e suportando fechamento das sugestões com a tecla Escape.
+    - Refatorou-se a busca de CEP (`searchCEP`) para utilizar o mecanismo centralizado `geocodeAddressDirectly`, otimizando fallbacks de CEPs não indexados.
 
 ---
 
@@ -3168,7 +3181,7 @@ Fonte: `documentacao/trabalho/trabalho_16_06_2026.md`
 
 ## 8. Sincronizacao
 
-**Resumo do dia:** Ativacao do registrador tecnico para log de 16/06/2026. Implementados múltiplos horários com chips, trava de limite diário de 3 horas por aluno, tratamento inteligente de endereços com termos não indexados no Nominatim/CEP, remoção do SQLite de fallback e correções gerais de sintaxe. Resolvida quebra de CSS de chips no desktop, melhorada a selecao de horario no modal de edicao, adicionada seguranca a edicao feita pelos alunos (preservando status, observacoes e duracoes prévias) e aprimorado o formato visual da data/hora e duracao de aulas no painel do fotografo.
+**Resumo do dia:** Ativacao do registrador tecnico para log de 16/06/2026. Implementados múltiplos horários com chips, trava de limite diário de 3 horas por aluno, tratamento inteligente de endereços com termos não indexados no Nominatim/CEP, remoção do SQLite de fallback e correções gerais de sintaxe. Resolvida quebra de CSS de chips no desktop, melhorada a selecao de horario no modal de edicao, adicionada seguranca a edicao feita pelos alunos (preservando status, observacoes e duracoes prévias), aprimorado o formato visual da data/hora e duracao de aulas no painel do fotografo e implementado sistema inteligente de alta precisao para geolocalizacao de enderecos e CEPs usando BrasilAPI v2 e fallbacks robustos.
 
 **Status Final:** Concluido.
 
@@ -3208,8 +3221,8 @@ deploy_ftp.ps1
 
 ### `agendamento_aulas.html`
 
-- Linhas: 4805
-- Tamanho: 162.7 KB
+- Linhas: 5156
+- Tamanho: 174.2 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\agendamento_aulas.html`
 
 ```html
@@ -4602,7 +4615,7 @@ deploy_ftp.ps1
       overflow: hidden;
     }
 
-    .modal-box > form {
+    .modal-box>form {
       overflow-y: auto;
       flex-grow: 1;
       padding-right: 6px;
@@ -4633,6 +4646,7 @@ deploy_ftp.ps1
       box-shadow: var(--shadow);
       margin-top: 4px;
     }
+
     .address-suggestion-item {
       padding: 10px 14px;
       font-size: 0.8rem;
@@ -4642,9 +4656,11 @@ deploy_ftp.ps1
       transition: background 0.2s ease;
       text-align: left;
     }
+
     .address-suggestion-item:hover {
       background: var(--surface-sub);
     }
+
     .address-suggestion-item:last-child {
       border-bottom: none;
     }
@@ -4788,7 +4804,7 @@ deploy_ftp.ps1
         align-items: flex-start;
       }
 
-      .student-profile-card > .inline-action-btn {
+      .student-profile-card>.inline-action-btn {
         grid-column: 1 / -1;
         width: 100%;
       }
@@ -4838,6 +4854,7 @@ deploy_ftp.ps1
       gap: 10px;
       margin-top: 8px;
     }
+
     .time-chip {
       padding: 10px 16px;
       background: var(--surface-sub);
@@ -4854,18 +4871,21 @@ deploy_ftp.ps1
       justify-content: center;
       min-width: 80px;
     }
+
     .time-chip:hover:not(.disabled) {
       border-color: var(--primary);
       background: var(--surface);
       transform: translateY(-2px);
       box-shadow: var(--shadow-sm);
     }
+
     .time-chip.selected {
       background: var(--primary);
       border-color: var(--primary);
       color: white;
       box-shadow: 0 4px 12px rgba(119, 122, 67, 0.2);
     }
+
     .time-chip.disabled {
       opacity: 0.4;
       background: var(--border);
@@ -4890,7 +4910,8 @@ deploy_ftp.ps1
 
         <div class="hero-welcome-texts">
           <h2 id="hero-step-title">Bem-vindo!</h2>
-          <p>Acesse sua conta e agende sua próxima aula.</p>
+          <p>Acesse sua conta </p>
+          <p>e agende sua próxima aula.</p>
         </div>
       </div>
 
@@ -5256,7 +5277,9 @@ deploy_ftp.ps1
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <label style="font-size: 0.8rem; font-weight: 700; margin: 0;">Escolha a data</label>
-          <a href="#" id="btn-back-to-months" style="display: none; font-size: 0.75rem; color: var(--primary); font-weight: 700; text-decoration: none;" onclick="backToMonths(event)">
+          <a href="#" id="btn-back-to-months"
+            style="display: none; font-size: 0.75rem; color: var(--primary); font-weight: 700; text-decoration: none;"
+            onclick="backToMonths(event)">
             <i class="fa-solid fa-arrow-left"></i> Mudar mês
           </a>
         </div>
@@ -5275,24 +5298,34 @@ deploy_ftp.ps1
           <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 8px;">
             <i class="fa-solid fa-map-location-dot"></i> Local exato da aula
           </label>
-          <div class="form-group" id="reg-address-section" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+          <div class="form-group" id="reg-address-section"
+            style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
             <!-- Linha 1: CEP -->
             <div style="display: flex; gap: 8px;">
               <div class="input-wrapper" style="flex: 1; min-width: 120px; max-width: 180px;">
                 <i class="fa-solid fa-map-pin input-icon"></i>
-                <input type="text" id="reg-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;" oninput="maskCEP(this)" maxlength="9">
+                <input type="text" id="reg-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;"
+                  oninput="maskCEP(this)" maxlength="9">
               </div>
-              <button type="button" class="btn btn-secondary" style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;" onclick="searchCEPReg()">Buscar CEP</button>
+              <button type="button" class="btn btn-secondary"
+                style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;"
+                onclick="searchCEPReg()">Buscar CEP</button>
             </div>
             <!-- Linha 2: Endereço -->
             <div class="input-wrapper" style="display: flex;">
               <i class="fa-solid fa-magnifying-glass input-icon"></i>
-              <input type="text" id="reg-address-input" placeholder="Ou digite o endereço completo..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off">
-              <button type="button" class="btn" style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 20px; font-weight: 700; cursor: pointer;" onclick="searchAddressReg()">Buscar</button>
+              <input type="text" id="reg-address-input" placeholder="Ou digite o endereço completo..."
+                style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;"
+                autocomplete="off">
+              <button type="button" class="btn"
+                style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 20px; font-weight: 700; cursor: pointer;"
+                onclick="searchAddressReg()">Buscar</button>
             </div>
             <div id="address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
           </div>
-          <div id="reg-map-container" style="height: 220px; border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; position: relative; z-index: 10;"></div>
+          <div id="reg-map-container"
+            style="height: 220px; border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; position: relative; z-index: 10;">
+          </div>
         </div>
 
         <div class="summary-box">
@@ -5331,14 +5364,20 @@ deploy_ftp.ps1
         </div>
 
         <div class="student-profile-card" id="student-profile-card">
-          <div class="student-avatar" id="student-avatar" onclick="document.getElementById('student-avatar-input').click()" title="Clique para alterar a foto de perfil">AL</div>
-          <input type="file" id="student-avatar-input" accept="image/*" style="display: none;" onchange="uploadStudentAvatar(this)">
+          <div class="student-avatar" id="student-avatar"
+            onclick="document.getElementById('student-avatar-input').click()"
+            title="Clique para alterar a foto de perfil">AL</div>
+          <input type="file" id="student-avatar-input" accept="image/*" style="display: none;"
+            onchange="uploadStudentAvatar(this)">
           <div class="student-profile-main">
             <h3 id="student-profile-name">Aluno</h3>
             <div class="student-profile-grid">
-              <div class="student-info-chip"><i class="fa-solid fa-envelope"></i><span id="student-profile-email">email</span></div>
-              <div class="student-info-chip"><i class="fa-solid fa-phone"></i><span id="student-profile-phone">telefone</span></div>
-              <div class="student-info-chip"><i class="fa-solid fa-id-badge"></i><span id="student-profile-code">Cadastro ativo</span></div>
+              <div class="student-info-chip"><i class="fa-solid fa-envelope"></i><span
+                  id="student-profile-email">email</span></div>
+              <div class="student-info-chip"><i class="fa-solid fa-phone"></i><span
+                  id="student-profile-phone">telefone</span></div>
+              <div class="student-info-chip"><i class="fa-solid fa-id-badge"></i><span
+                  id="student-profile-code">Cadastro ativo</span></div>
             </div>
           </div>
           <button class="inline-action-btn" onclick="toggleStudentProfileEdit()" type="button">
@@ -5367,7 +5406,8 @@ deploy_ftp.ps1
               </div>
             </div>
             <div class="btn-actions-row" style="grid-column: 1 / -1; margin-top: 0;">
-              <button type="button" class="btn btn-secondary" onclick="toggleStudentProfileEdit(false)">Cancelar</button>
+              <button type="button" class="btn btn-secondary"
+                onclick="toggleStudentProfileEdit(false)">Cancelar</button>
               <button type="button" class="btn btn-primary" onclick="saveStudentProfileInline()">Salvar dados</button>
             </div>
           </div>
@@ -5377,14 +5417,20 @@ deploy_ftp.ps1
           <h3 id="panel-student-plan-name">Curso Fotografia Prática</h3>
           <p id="panel-student-plan-cidade">Local das aulas: Santo Antônio do Descoberto - GO</p>
           <div class="student-plan-grid">
-            <div class="student-plan-detail"><label>Pagamento</label><span id="panel-student-plan-pagamento">Nao informado</span></div>
-            <div class="student-plan-detail"><label>Status</label><span id="panel-student-plan-status">Ativo</span></div>
-            <div class="student-plan-detail"><label>Total contratado</label><span id="panel-student-plan-total">0 aulas</span></div>
+            <div class="student-plan-detail"><label>Pagamento</label><span id="panel-student-plan-pagamento">Nao
+                informado</span></div>
+            <div class="student-plan-detail"><label>Status</label><span id="panel-student-plan-status">Ativo</span>
+            </div>
+            <div class="student-plan-detail"><label>Total contratado</label><span id="panel-student-plan-total">0
+                aulas</span></div>
           </div>
-          <button class="inline-action-btn" style="background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.24); margin-bottom: 14px;" onclick="toggleStudentPlanEdit()" type="button">
+          <button class="inline-action-btn"
+            style="background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.24); margin-bottom: 14px;"
+            onclick="toggleStudentPlanEdit()" type="button">
             <i class="fa-solid fa-pen"></i> Editar pagamento
           </button>
-          <div class="student-inline-form" id="student-plan-form" style="border-color: rgba(255,255,255,0.22); margin-bottom: 14px;">
+          <div class="student-inline-form" id="student-plan-form"
+            style="border-color: rgba(255,255,255,0.22); margin-bottom: 14px;">
             <div class="form-group">
               <label for="student-edit-payment" style="color: white;">Forma de pagamento</label>
               <div class="input-wrapper">
@@ -5452,13 +5498,16 @@ deploy_ftp.ps1
             <div class="admin-metrics-grid">
               <div class="admin-metric-card"><span>Aulas</span><strong id="teacher-metric-aulas">0</strong></div>
               <div class="admin-metric-card"><span>Alunos</span><strong id="teacher-metric-alunos">0</strong></div>
-              <div class="admin-metric-card"><span>Pre agendadas</span><strong id="teacher-metric-pendentes">0</strong></div>
-              <div class="admin-metric-card"><span>Receita prevista</span><strong id="teacher-metric-receita">R$ 0</strong></div>
+              <div class="admin-metric-card"><span>Pre agendadas</span><strong id="teacher-metric-pendentes">0</strong>
+              </div>
+              <div class="admin-metric-card"><span>Receita prevista</span><strong id="teacher-metric-receita">R$
+                  0</strong></div>
             </div>
             <div class="admin-filter-bar">
               <div class="input-wrapper">
                 <i class="fa-solid fa-magnifying-glass input-icon"></i>
-                <input type="search" id="teacher-search-input" placeholder="Buscar aluno, e-mail, telefone, cidade ou assunto" oninput="renderTeacherAulasPanel()">
+                <input type="search" id="teacher-search-input"
+                  placeholder="Buscar aluno, e-mail, telefone, cidade ou assunto" oninput="renderTeacherAulasPanel()">
               </div>
               <div class="input-wrapper">
                 <i class="fa-solid fa-filter input-icon"></i>
@@ -5582,25 +5631,34 @@ deploy_ftp.ps1
         </div>
 
         <!-- ENDEREÇO E MAPA NO MODAL -->
-        <div class="form-group" id="modal-address-group" style="margin-bottom: 15px; position: relative; display: flex; flex-direction: column; gap: 8px;">
+        <div class="form-group" id="modal-address-group"
+          style="margin-bottom: 15px; position: relative; display: flex; flex-direction: column; gap: 8px;">
           <label for="modal-address-input" style="font-weight: 700;">Endereço Exato da Aula</label>
           <!-- Linha 1: CEP -->
           <div style="display: flex; gap: 8px;">
             <div class="input-wrapper" style="flex: 1; min-width: 120px; max-width: 180px;">
               <i class="fa-solid fa-map-pin input-icon"></i>
-              <input type="text" id="modal-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;" oninput="maskCEP(this)" maxlength="9">
+              <input type="text" id="modal-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;"
+                oninput="maskCEP(this)" maxlength="9">
             </div>
-            <button type="button" class="btn btn-secondary" style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;" onclick="searchCEPModal()">Buscar CEP</button>
+            <button type="button" class="btn btn-secondary"
+              style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;"
+              onclick="searchCEPModal()">Buscar CEP</button>
           </div>
           <!-- Linha 2: Endereço -->
           <div class="input-wrapper" style="display: flex;">
             <i class="fa-solid fa-magnifying-glass input-icon"></i>
-            <input type="text" id="modal-address-input" placeholder="Endereço, número, bairro..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off">
-            <button type="button" class="btn" style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 16px; font-weight: 700; cursor: pointer;" onclick="searchAddressModal()">Buscar</button>
+            <input type="text" id="modal-address-input" placeholder="Endereço, número, bairro..."
+              style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off">
+            <button type="button" class="btn"
+              style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 16px; font-weight: 700; cursor: pointer;"
+              onclick="searchAddressModal()">Buscar</button>
           </div>
           <div id="modal-address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
         </div>
-        <div id="modal-map-container" style="height: 180px; border-radius: 12px; border: 1.5px solid var(--border); margin-bottom: 15px; overflow: hidden; position: relative; z-index: 10;"></div>
+        <div id="modal-map-container"
+          style="height: 180px; border-radius: 12px; border: 1.5px solid var(--border); margin-bottom: 15px; overflow: hidden; position: relative; z-index: 10;">
+        </div>
         <input type="hidden" id="modal-lat">
         <input type="hidden" id="modal-lng">
 
@@ -6040,7 +6098,7 @@ deploy_ftp.ps1
       monthsToShow.forEach(m => {
         const btn = document.createElement('div');
         btn.className = 'calendar-day-btn';
-        
+
         let isSelected = false;
         if (state.regData.data_aula) {
           const [sYear, sMonth] = state.regData.data_aula.split('-').map(Number);
@@ -6048,7 +6106,7 @@ deploy_ftp.ps1
             isSelected = true;
           }
         }
-        
+
         if (isSelected) {
           btn.classList.add('selected');
         }
@@ -6077,7 +6135,7 @@ deploy_ftp.ps1
 
       const today = new Date();
       let dateCursor = new Date(year, month, 1);
-      
+
       // Se for o mês atual, os dias começam a partir de amanhã
       if (year === today.getFullYear() && month === today.getMonth()) {
         dateCursor.setDate(today.getDate() + 1);
@@ -6093,7 +6151,7 @@ deploy_ftp.ps1
           const mStr = String(dateCursor.getMonth() + 1).padStart(2, '0');
           const dStr = String(dateCursor.getDate()).padStart(2, '0');
           const formattedDate = `${y}-${mStr}-${dStr}`;
-          
+
           const dayName = DAYS_NAMES[dayOfWeek];
           const dayShort = DAYS_SHORT[dayOfWeek];
           const dayNum = dateCursor.getDate();
@@ -6110,7 +6168,7 @@ deploy_ftp.ps1
           btn.onclick = () => selectRegDate(formattedDate, dayName);
           container.appendChild(btn);
         }
-        
+
         const prevDate = dateCursor.getDate();
         dateCursor.setDate(prevDate + 1);
         if (dateCursor.getDate() === prevDate) {
@@ -6314,6 +6372,9 @@ deploy_ftp.ps1
     }
 
     async function submitRegistration() {
+      // Garante sincronização de endereço/coordenadas do cadastro se editado manualmente
+      await ensureGeocodedAddress('reg-address-input', null, null, 'reg');
+
       if (state.alunoLogado && state.token && state.regData.data_aula && state.regData.horario) {
         await submitStudentScheduleFromCalendar();
         return;
@@ -6973,10 +7034,12 @@ deploy_ftp.ps1
         state.regData.endereco = DEFAULT_STUDIO_ADDRESS;
         state.regData.latitude = STUDIO_LAT;
         state.regData.longitude = STUDIO_LNG;
+        addressInput.dataset.lastResolvedAddress = DEFAULT_STUDIO_ADDRESS;
       } else {
         addressInput.value = state.regData.endereco || '';
         addressInput.disabled = false;
         addressSection.style.opacity = '1';
+        addressInput.dataset.lastResolvedAddress = state.regData.endereco || '';
       }
 
       const initialLat = state.regData.latitude || STUDIO_LAT;
@@ -6995,14 +7058,14 @@ deploy_ftp.ps1
       registerMarker = L.marker([initialLat, initialLng], markerOptions).addTo(registerMap);
 
       if (!isLocal) {
-        registerMarker.on('dragend', async function(e) {
+        registerMarker.on('dragend', async function (e) {
           const latlng = registerMarker.getLatLng();
           state.regData.latitude = latlng.lat;
           state.regData.longitude = latlng.lng;
           await reverseGeocode(latlng.lat, latlng.lng, 'reg-address-input', 'reg');
         });
 
-        registerMap.on('click', async function(e) {
+        registerMap.on('click', async function (e) {
           registerMarker.setLatLng(e.latlng);
           state.regData.latitude = e.latlng.lat;
           state.regData.longitude = e.latlng.lng;
@@ -7010,7 +7073,7 @@ deploy_ftp.ps1
         });
       }
 
-      addressInput.onkeypress = function(ev) {
+      addressInput.onkeypress = function (ev) {
         if (ev.key === 'Enter') {
           ev.preventDefault();
           window.searchAddressReg();
@@ -7033,7 +7096,7 @@ deploy_ftp.ps1
 
       const city = document.getElementById('slot-city').value;
       const isLocal = city.includes('Santo Antônio');
-      
+
       const addressInput = document.getElementById('modal-address-input');
       const addressGroup = document.getElementById('modal-address-group');
 
@@ -7054,6 +7117,7 @@ deploy_ftp.ps1
       document.getElementById('modal-lat').value = initialLat;
       document.getElementById('modal-lng').value = initialLng;
       addressInput.value = initialAddress;
+      addressInput.dataset.lastResolvedAddress = initialAddress;
 
       if (isLocal) {
         addressInput.disabled = true;
@@ -7076,14 +7140,14 @@ deploy_ftp.ps1
       modalMarker = L.marker([initialLat, initialLng], markerOptions).addTo(modalMap);
 
       if (!isLocal) {
-        modalMarker.on('dragend', async function(e) {
+        modalMarker.on('dragend', async function (e) {
           const latlng = modalMarker.getLatLng();
           document.getElementById('modal-lat').value = latlng.lat;
           document.getElementById('modal-lng').value = latlng.lng;
           await reverseGeocode(latlng.lat, latlng.lng, 'modal-address-input', 'modal');
         });
 
-        modalMap.on('click', async function(e) {
+        modalMap.on('click', async function (e) {
           modalMarker.setLatLng(e.latlng);
           document.getElementById('modal-lat').value = e.latlng.lat;
           document.getElementById('modal-lng').value = e.latlng.lng;
@@ -7091,7 +7155,7 @@ deploy_ftp.ps1
         });
       }
 
-      addressInput.onkeypress = function(ev) {
+      addressInput.onkeypress = function (ev) {
         if (ev.key === 'Enter') {
           ev.preventDefault();
           window.searchAddressModal();
@@ -7105,11 +7169,210 @@ deploy_ftp.ps1
       }, 300);
     }
 
+    async function geocodeAddressDirectly(query) {
+      if (!query || query.trim().length < 3) return null;
+
+      // 1. Tenta extrair CEP
+      const cepMatch = query.match(/\b\d{5}-?\d{3}\b/);
+      if (cepMatch) {
+        const extractedCep = cepMatch[0].replace(/\D/g, "");
+        try {
+          const cepRes = await fetch(`https://brasilapi.com.br/api/cep/v2/${extractedCep}`);
+          if (cepRes.ok) {
+            const cepData = await cepRes.json();
+            if (cepData && cepData.location && cepData.location.coordinates) {
+              const parts = [
+                cepData.street,
+                cepData.neighborhood,
+                cepData.city,
+                cepData.state
+              ].filter(Boolean);
+              const fullAddress = parts.join(", ");
+              return {
+                lat: parseFloat(cepData.location.coordinates.latitude),
+                lon: parseFloat(cepData.location.coordinates.longitude),
+                display_name: query.includes(fullAddress) ? query : `${fullAddress} (CEP: ${extractedCep})`
+              };
+            }
+          }
+        } catch (e) {
+          console.error("Erro no geocode por CEP direto:", e);
+        }
+      }
+
+      // 2. Nominatim search com fallbacks sequenciais de limpeza
+      async function fetchNominatim(q) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=br`;
+        try {
+          const res = await fetch(url, {
+            headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+          });
+          const data = await res.json();
+          return data && data.length > 0 ? data[0] : null;
+        } catch (e) {
+          console.error("Erro no fetchNominatim direto:", e);
+          return null;
+        }
+      }
+
+      function cleanString(str) {
+        return str
+          .replace(/,(\s*,)+/g, ',')
+          .replace(/^\s*,\s*/, '')
+          .replace(/\s*,\s*$/, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      let currentQuery = query;
+      let match = await fetchNominatim(currentQuery);
+
+      // Fallbacks sequenciais
+      if (!match) {
+        let q1 = currentQuery.replace(/\b(lote|lt\.?)\s*\w*\d+\w*\b/gi, '').replace(/\b(lote|lt\.?)\b/gi, '');
+        q1 = cleanString(q1);
+        if (q1 && q1 !== currentQuery) {
+          currentQuery = q1;
+          match = await fetchNominatim(currentQuery);
+        }
+      }
+      if (!match) {
+        let q2 = currentQuery.replace(/\b(quadra|qd\.?)\s*\w*\d+\w*\b/gi, '').replace(/\b(quadra|qd\.?)\b/gi, '');
+        q2 = cleanString(q2);
+        if (q2 && q2 !== currentQuery) {
+          currentQuery = q2;
+          match = await fetchNominatim(currentQuery);
+        }
+      }
+      if (!match) {
+        let qNum = currentQuery.replace(/,\s*\d+\s*$/g, '').replace(/\s+\d+\s*$/g, '').replace(/\b(nº|num\.?)\s*\d+/gi, '');
+        qNum = cleanString(qNum);
+        if (qNum && qNum !== currentQuery) {
+          currentQuery = qNum;
+          match = await fetchNominatim(currentQuery);
+        }
+      }
+      if (!match) {
+        const parts = query.split(',').map(p => p.trim()).filter(Boolean);
+        if (parts.length >= 3) {
+          const q3 = parts.slice(-3).join(', ');
+          if (q3 !== query) {
+            currentQuery = q3;
+            match = await fetchNominatim(currentQuery);
+          }
+        }
+      }
+      if (!match) {
+        const parts = query.split(',').map(p => p.trim()).filter(Boolean);
+        if (parts.length >= 2) {
+          const q4 = parts.slice(-2).join(', ');
+          if (q4 !== query) {
+            currentQuery = q4;
+            match = await fetchNominatim(currentQuery);
+          }
+        }
+      }
+      if (!match) {
+        if (query.toLowerCase().includes("santo antônio") || query.toLowerCase().includes("descoberto")) {
+          currentQuery = "Santo Antônio do Descoberto, GO";
+          match = await fetchNominatim(currentQuery);
+        }
+      }
+
+      if (match) {
+        return {
+          lat: parseFloat(match.lat),
+          lon: parseFloat(match.lon),
+          display_name: match.display_name
+        };
+      }
+      return null;
+    }
+
+    async function ensureGeocodedAddress(inputId, latId, lngId, mapType) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const currentVal = input.value.trim();
+      const lastResolved = input.dataset.lastResolvedAddress || '';
+
+      if (!currentVal) {
+        if (latId) {
+          const latInput = document.getElementById(latId);
+          if (latInput) latInput.value = '';
+        }
+        if (lngId) {
+          const lngInput = document.getElementById(lngId);
+          if (lngInput) lngInput.value = '';
+        }
+        input.dataset.lastResolvedAddress = '';
+        if (mapType === 'reg') {
+          state.regData.endereco = '';
+          state.regData.latitude = null;
+          state.regData.longitude = null;
+        }
+        return;
+      }
+
+      if (currentVal !== lastResolved) {
+        const result = await geocodeAddressDirectly(currentVal);
+        if (result) {
+          if (latId) {
+            const latInput = document.getElementById(latId);
+            if (latInput) latInput.value = result.lat;
+          }
+          if (lngId) {
+            const lngInput = document.getElementById(lngId);
+            if (lngInput) lngInput.value = result.lon;
+          }
+          input.value = result.display_name;
+          input.dataset.lastResolvedAddress = result.display_name;
+          updateMapMarker(result.lat, result.lon, result.display_name, mapType);
+        } else {
+          if (latId) {
+            const latInput = document.getElementById(latId);
+            if (latInput) latInput.value = '';
+          }
+          if (lngId) {
+            const lngInput = document.getElementById(lngId);
+            if (lngInput) lngInput.value = '';
+          }
+          input.dataset.lastResolvedAddress = currentVal;
+          if (mapType === 'reg') {
+            state.regData.endereco = currentVal;
+            state.regData.latitude = null;
+            state.regData.longitude = null;
+          }
+        }
+      }
+    }
+
     async function searchAddress(query, inputId, suggestionsId, mapType) {
       if (!query || query.trim().length < 3) return;
       const suggestionsContainer = document.getElementById(suggestionsId);
       suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</div>';
       suggestionsContainer.style.display = 'block';
+
+      // Tenta extrair um CEP da busca (padrão: 5 dígitos, hífen opcional, 3 dígitos)
+      const cepMatch = query.match(/\b\d{5}-?\d{3}\b/);
+      let cepFallbackCoords = null;
+
+      if (cepMatch) {
+        const extractedCep = cepMatch[0].replace(/\D/g, "");
+        try {
+          const cepRes = await fetch(`https://brasilapi.com.br/api/cep/v2/${extractedCep}`);
+          if (cepRes.ok) {
+            const cepData = await cepRes.json();
+            if (cepData && cepData.location && cepData.location.coordinates) {
+              cepFallbackCoords = {
+                lat: parseFloat(cepData.location.coordinates.latitude),
+                lon: parseFloat(cepData.location.coordinates.longitude)
+              };
+            }
+          }
+        } catch (e) {
+          console.error("Erro ao buscar coordenadas de CEP na busca por endereço:", e);
+        }
+      }
 
       // Função interna para fazer o fetch no Nominatim
       async function fetchNominatim(q) {
@@ -7146,7 +7409,7 @@ deploy_ftp.ps1
             .replace(/\b(lote|lt\.?)\s*\w*\d+\w*\b/gi, '') // Remove "Lote 08", "Lt 8", "Lote B8"
             .replace(/\b(lote|lt\.?)\b/gi, '');            // Remove palavra "lote" solta
           q1 = cleanString(q1);
-          
+
           if (q1 && q1 !== currentQuery) {
             currentQuery = q1;
             data = await fetchNominatim(currentQuery);
@@ -7163,6 +7426,21 @@ deploy_ftp.ps1
 
           if (q2 && q2 !== currentQuery) {
             currentQuery = q2;
+            data = await fetchNominatim(currentQuery);
+            fallbackUsed = true;
+          }
+        }
+
+        // Se falhar de novo, tentamos remover número da rua (ex: "Rua Goiás, 150" -> "Rua Goiás")
+        if (!data || data.length === 0) {
+          let qNum = currentQuery
+            .replace(/,\s*\d+\s*$/g, '')          // Remove ", 150" no final
+            .replace(/\s+\d+\s*$/g, '')           // Remove " 150" no final
+            .replace(/\b(nº|num\.?)\s*\d+/gi, ''); // Remove "nº 150"
+          qNum = cleanString(qNum);
+
+          if (qNum && qNum !== currentQuery) {
+            currentQuery = qNum;
             data = await fetchNominatim(currentQuery);
             fallbackUsed = true;
           }
@@ -7192,6 +7470,16 @@ deploy_ftp.ps1
               fallbackUsed = true;
             }
           }
+        }
+
+        // Se falhar de novo, usamos a geolocalização do CEP se tiver sido encontrada
+        if ((!data || data.length === 0) && cepFallbackCoords) {
+          data = [{
+            display_name: query,
+            lat: String(cepFallbackCoords.lat),
+            lon: String(cepFallbackCoords.lon)
+          }];
+          fallbackUsed = true;
         }
 
         // Se falhar de novo e a busca contiver termos da cidade, tenta focar na cidade
@@ -7225,7 +7513,7 @@ deploy_ftp.ps1
           const name = item.display_name;
           const lat = parseFloat(item.lat);
           const lon = parseFloat(item.lon);
-          
+
           const div = document.createElement('div');
           div.className = 'address-suggestion-item';
           div.style.padding = '10px 12px';
@@ -7233,14 +7521,14 @@ deploy_ftp.ps1
           div.style.borderBottom = '1px solid var(--border)';
           div.style.transition = 'background 0.2s';
           div.style.textAlign = 'left';
-          
+
           div.onmouseover = () => { div.style.background = 'var(--surface-sub)'; };
           div.onmouseout = () => { div.style.background = 'transparent'; };
-          
+
           div.onclick = () => {
-            selectSuggestion(query, lat, lon, inputId, suggestionsId, mapType);
+            selectSuggestion(name, lat, lon, inputId, suggestionsId, mapType);
           };
-          
+
           div.innerHTML = `
             <i class="fa-solid fa-location-dot" style="color: var(--primary); margin-right: 8px;"></i>
             <span style="font-size: 0.75rem;">${escapeHtml(name)}</span>
@@ -7253,39 +7541,24 @@ deploy_ftp.ps1
       }
     }
 
-    window.selectSuggestion = function(name, lat, lon, inputId, suggestionsId, mapType) {
+    window.selectSuggestion = function (name, lat, lon, inputId, suggestionsId, mapType) {
       document.getElementById(inputId).value = name;
       document.getElementById(suggestionsId).style.display = 'none';
 
-      if (mapType === 'reg') {
-        state.regData.endereco = name;
-        state.regData.latitude = lat;
-        state.regData.longitude = lon;
-        if (registerMarker && registerMap) {
-          registerMarker.setLatLng([lat, lon]);
-          registerMap.setView([lat, lon], 16);
-        }
-      } else if (mapType === 'modal') {
-        document.getElementById('modal-lat').value = lat;
-        document.getElementById('modal-lng').value = lon;
-        if (modalMarker && modalMap) {
-          modalMarker.setLatLng([lat, lon]);
-          modalMap.setView([lat, lon], 16);
-        }
-      }
+      updateMapMarker(lat, lon, name, mapType);
     };
 
-    window.searchAddressReg = function() {
+    window.searchAddressReg = function () {
       const q = document.getElementById('reg-address-input').value;
       searchAddress(q, 'reg-address-input', 'address-suggestions', 'reg');
     };
 
-    window.searchAddressModal = function() {
+    window.searchAddressModal = function () {
       const q = document.getElementById('modal-address-input').value;
       searchAddress(q, 'modal-address-input', 'modal-address-suggestions', 'modal');
     };
 
-    window.maskCEP = function(input) {
+    window.maskCEP = function (input) {
       let v = input.value.replace(/\D/g, "");
       if (v.length > 5) {
         v = v.substring(0, 5) + "-" + v.substring(5, 8);
@@ -7293,12 +7566,12 @@ deploy_ftp.ps1
       input.value = v;
     };
 
-    window.searchCEPReg = function() {
+    window.searchCEPReg = function () {
       const cep = document.getElementById('reg-cep-input').value;
       searchCEP(cep, 'reg-address-input', 'reg');
     };
 
-    window.searchCEPModal = function() {
+    window.searchCEPModal = function () {
       const cep = document.getElementById('modal-cep-input').value;
       searchCEP(cep, 'modal-address-input', 'modal');
     };
@@ -7309,82 +7582,98 @@ deploy_ftp.ps1
         alert("Digite um CEP válido com 8 dígitos.");
         return;
       }
-      
+
       const addressInput = document.getElementById(inputAddressId);
       const originalPlaceholder = addressInput.placeholder;
       addressInput.placeholder = "Buscando endereço pelo CEP...";
-      
+
       try {
-        const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-        const data = await res.json();
-        
-        if (data.erro) {
-          alert("CEP não encontrado.");
-          return;
+        let fullAddress = "";
+        let lat = null;
+        let lon = null;
+        let data = null;
+        let isBrasilApiSuccess = false;
+
+        // Tenta BrasilAPI v2 primeiro para tentar obter latitude/longitude diretamente
+        try {
+          const res = await fetch(`https://brasilapi.com.br/api/cep/v2/${cleanCep}`);
+          if (res.ok) {
+            data = await res.json();
+            if (data && !data.message) {
+              const parts = [
+                data.street,
+                data.neighborhood,
+                data.city,
+                data.state
+              ].filter(Boolean);
+              fullAddress = parts.join(", ");
+              isBrasilApiSuccess = true;
+
+              if (data.location && data.location.coordinates) {
+                lat = parseFloat(data.location.coordinates.latitude);
+                lon = parseFloat(data.location.coordinates.longitude);
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Erro na busca BrasilAPI v2:", e);
         }
-        
-        const parts = [
-          data.logradouro,
-          data.bairro,
-          data.localidade,
-          data.uf
-        ].filter(Boolean);
-        
-        const fullAddress = parts.join(", ");
+
+        // Se BrasilAPI falhar ou retornar erro, faz fallback para ViaCEP
+        if (!isBrasilApiSuccess) {
+          const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+          const viaData = await res.json();
+          if (viaData.erro) {
+            alert("CEP não encontrado.");
+            return;
+          }
+          data = viaData;
+          const parts = [
+            viaData.logradouro,
+            viaData.bairro,
+            viaData.localidade,
+            viaData.uf
+          ].filter(Boolean);
+          fullAddress = parts.join(", ");
+        }
+
         addressInput.value = fullAddress;
-        
-        // Função interna para geocodificar usando Nominatim
-        async function geocode(q) {
-          const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=br`;
-          try {
-            const geoRes = await fetch(geocodeUrl, {
-              headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
-            });
-            return await geoRes.json();
-          } catch (e) {
-            console.error("Erro no geocode Nominatim para CEP:", q, e);
-            return [];
-          }
-        }
-        
-        // Tentativa 1: Endereço completo retornado pelo ViaCEP
-        let geoData = await geocode(fullAddress);
-        
-        // Tentativa 2: Bairro + Cidade + Estado (se tiver bairro)
-        if ((!geoData || geoData.length === 0) && data.bairro) {
-          const q2 = [data.bairro, data.localidade, data.uf].filter(Boolean).join(", ");
-          geoData = await geocode(q2);
-        }
-        
-        // Tentativa 3: Cidade + Estado
-        if (!geoData || geoData.length === 0) {
-          const q3 = [data.localidade, data.uf].filter(Boolean).join(", ");
-          geoData = await geocode(q3);
-        }
-        
-        if (geoData && geoData.length > 0) {
-          const lat = parseFloat(geoData[0].lat);
-          const lon = parseFloat(geoData[0].lon);
-          
-          if (mapType === 'reg') {
-            state.regData.endereco = fullAddress;
-            state.regData.latitude = lat;
-            state.regData.longitude = lon;
-            if (registerMarker && registerMap) {
-              registerMarker.setLatLng([lat, lon]);
-              registerMap.setView([lat, lon], 16);
-            }
-          } else if (mapType === 'modal') {
-            document.getElementById('modal-lat').value = lat;
-            document.getElementById('modal-lng').value = lon;
-            if (modalMarker && modalMap) {
-              modalMarker.setLatLng([lat, lon]);
-              modalMap.setView([lat, lon], 16);
-            }
-          }
+
+        // Se já temos a latitude e longitude precisas da BrasilAPI, usamos elas
+        if (lat && lon && !isNaN(lat) && !isNaN(lon)) {
+          updateMapMarker(lat, lon, fullAddress, mapType);
         } else {
-          if (mapType === 'reg') {
-            state.regData.endereco = fullAddress;
+          // Caso contrário, fazemos geocodificação baseada no endereço do CEP
+          let geoData = await geocodeAddressDirectly(fullAddress);
+
+          if (!geoData) {
+            const bairro = data.bairro || data.neighborhood;
+            const cidade = data.localidade || data.city;
+            const uf = data.uf || data.state;
+            if (bairro) {
+              const q2 = [bairro, cidade, uf].filter(Boolean).join(", ");
+              geoData = await geocodeAddressDirectly(q2);
+            }
+          }
+
+          if (!geoData) {
+            const cidade = data.localidade || data.city;
+            const uf = data.uf || data.state;
+            const q3 = [cidade, uf].filter(Boolean).join(", ");
+            geoData = await geocodeAddressDirectly(q3);
+          }
+
+          if (geoData) {
+            updateMapMarker(geoData.lat, geoData.lon, fullAddress, mapType);
+          } else {
+            if (mapType === 'reg') {
+              state.regData.endereco = fullAddress;
+              const regInput = document.getElementById('reg-address-input');
+              if (regInput) regInput.dataset.lastResolvedAddress = fullAddress;
+            } else if (mapType === 'modal') {
+              const modalInput = document.getElementById('modal-address-input');
+              if (modalInput) modalInput.dataset.lastResolvedAddress = fullAddress;
+            }
           }
         }
       } catch (err) {
@@ -7392,6 +7681,35 @@ deploy_ftp.ps1
         alert("Erro ao buscar CEP.");
       } finally {
         addressInput.placeholder = originalPlaceholder;
+      }
+    }
+
+    function updateMapMarker(lat, lon, fullAddress, mapType) {
+      if (mapType === 'reg') {
+        state.regData.endereco = fullAddress;
+        state.regData.latitude = lat;
+        state.regData.longitude = lon;
+        const regInput = document.getElementById('reg-address-input');
+        if (regInput) {
+          regInput.value = fullAddress;
+          regInput.dataset.lastResolvedAddress = fullAddress;
+        }
+        if (registerMarker && registerMap) {
+          registerMarker.setLatLng([lat, lon]);
+          registerMap.setView([lat, lon], 16);
+        }
+      } else if (mapType === 'modal') {
+        document.getElementById('modal-lat').value = lat;
+        document.getElementById('modal-lng').value = lon;
+        const modalInput = document.getElementById('modal-address-input');
+        if (modalInput) {
+          modalInput.value = fullAddress;
+          modalInput.dataset.lastResolvedAddress = fullAddress;
+        }
+        if (modalMarker && modalMap) {
+          modalMarker.setLatLng([lat, lon]);
+          modalMap.setView([lat, lon], 16);
+        }
       }
     }
 
@@ -7404,9 +7722,18 @@ deploy_ftp.ps1
         const data = await res.json();
         if (data && data.display_name) {
           const name = data.display_name;
-          document.getElementById(inputId).value = name;
+          const input = document.getElementById(inputId);
+          if (input) {
+            input.value = name;
+            input.dataset.lastResolvedAddress = name;
+          }
           if (mapType === 'reg') {
             state.regData.endereco = name;
+            state.regData.latitude = lat;
+            state.regData.longitude = lng;
+          } else if (mapType === 'modal') {
+            document.getElementById('modal-lat').value = lat;
+            document.getElementById('modal-lng').value = lng;
           }
         }
       } catch (err) {
@@ -7415,7 +7742,7 @@ deploy_ftp.ps1
     }
 
     // Fecha sugestões ao clicar fora
-    document.addEventListener('click', function(ev) {
+    document.addEventListener('click', function (ev) {
       const regSuggestions = document.getElementById('address-suggestions');
       if (regSuggestions && !regSuggestions.contains(ev.target) && ev.target.id !== 'reg-address-input') {
         regSuggestions.style.display = 'none';
@@ -7425,6 +7752,37 @@ deploy_ftp.ps1
         modalSuggestions.style.display = 'none';
       }
     });
+
+    function initAutocompleteInputs() {
+      let debounceTimer = null;
+
+      const setupInput = (inputId, suggestionsId, mapType) => {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        input.addEventListener('input', function () {
+          clearTimeout(debounceTimer);
+          const query = input.value.trim();
+          if (query.length < 3) {
+            document.getElementById(suggestionsId).style.display = 'none';
+            return;
+          }
+          debounceTimer = setTimeout(() => {
+            searchAddress(query, inputId, suggestionsId, mapType);
+          }, 600);
+        });
+
+        // Se pressionar ESC, fecha as sugestões
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            document.getElementById(suggestionsId).style.display = 'none';
+          }
+        });
+      };
+
+      setupInput('reg-address-input', 'address-suggestions', 'reg');
+      setupInput('modal-address-input', 'modal-address-suggestions', 'modal');
+    }
 
     /* ── MODAL: AGENDAR / EDITAR AULAS ── */
     function openNewLessonModal() {
@@ -7572,10 +7930,10 @@ deploy_ftp.ps1
 
     function handleModalCityChange() {
       updateModalCalculatedValue();
-      
+
       const city = document.getElementById('slot-city').value;
       const isLocal = city.includes('Santo Antônio');
-      
+
       const addressInput = document.getElementById('modal-address-input');
       const addressGroup = document.getElementById('modal-address-group');
 
@@ -7585,7 +7943,7 @@ deploy_ftp.ps1
         addressGroup.style.opacity = '0.7';
         document.getElementById('modal-lat').value = STUDIO_LAT;
         document.getElementById('modal-lng').value = STUDIO_LNG;
-        
+
         if (modalMarker && modalMap) {
           modalMarker.setLatLng([STUDIO_LAT, STUDIO_LNG]);
           modalMarker.dragging.disable();
@@ -7599,7 +7957,7 @@ deploy_ftp.ps1
         }
         addressInput.disabled = false;
         addressGroup.style.opacity = '1';
-        
+
         if (modalMarker) {
           modalMarker.dragging.enable();
         }
@@ -7618,8 +7976,8 @@ deploy_ftp.ps1
     function updateModalCalculatedValue() {
       const city = document.getElementById('slot-city').value;
       const isEditing = state.modalEditingLessonId !== null;
-      const hours = isEditing 
-        ? Number(document.getElementById('slot-hours').value || 1) 
+      const hours = isEditing
+        ? Number(document.getElementById('slot-hours').value || 1)
         : Math.max(1, state.modalSelectedTimes.length);
       const rate = city.includes('Santo Antônio') ? 100 : 150;
 
@@ -7641,7 +7999,7 @@ deploy_ftp.ps1
       container.innerHTML = state.horarios.map(h => {
         const isOccupied = occupied.has(h);
         const isSelected = state.modalSelectedTimes.includes(h);
-        
+
         return `
           <div class="time-chip ${isOccupied ? 'disabled' : ''} ${isSelected ? 'selected' : ''}" 
                data-time="${h}" 
@@ -7654,7 +8012,7 @@ deploy_ftp.ps1
       document.getElementById('slot-time').value = state.modalSelectedTimes[0] || '';
     }
 
-    window.toggleTimeChip = function(time, isOccupied) {
+    window.toggleTimeChip = function (time, isOccupied) {
       if (isOccupied) return;
 
       const isEditing = state.modalEditingLessonId !== null;
@@ -7671,7 +8029,7 @@ deploy_ftp.ps1
             const dateVal = document.getElementById('slot-date').value;
             const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dateVal);
             const horasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
-            
+
             if (horasExistentes + state.modalSelectedTimes.length >= 3) {
               alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${horasExistentes}h agendadas para este dia.`);
               return;
@@ -7692,6 +8050,9 @@ deploy_ftp.ps1
     };
 
     async function saveLessonFromModal() {
+      // Garante sincronização de endereço/coordenadas se editado manualmente
+      await ensureGeocodedAddress('modal-address-input', 'modal-lat', 'modal-lng', 'modal');
+
       const dataVal = document.getElementById('slot-date').value;
       const cidade = document.getElementById('slot-city').value;
       const moduloId = Number(document.getElementById('slot-module').value || 0) || null;
@@ -7759,7 +8120,7 @@ deploy_ftp.ps1
         }
       } else {
         const hoursCount = Number(document.getElementById('slot-hours').value || 1);
-        
+
         // Regra de limite diário para o aluno
         if (state.alunoLogado) {
           if (hoursCount > 3) {
@@ -7970,6 +8331,9 @@ deploy_ftp.ps1
     /* ── INICIALIZAÇÃO SPA ── */
     async function init() {
       try {
+        // Inicializa listeners de autocomplete
+        initAutocompleteInputs();
+
         // Carrega dados iniciais da API geral
         const listData = await request('/list.php');
         state.board = listData.aulas || [];
@@ -21230,8 +21594,8 @@ O uso de `clamp()` garante que o título escale perfeitamente entre dispositivos
 
 ### `documentacao/trabalho/trabalho_16_06_2026.md`
 
-- Linhas: 148
-- Tamanho: 9.3 KB
+- Linhas: 159
+- Tamanho: 11.4 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\documentacao\trabalho\trabalho_16_06_2026.md`
 
 ```markdown
@@ -21261,6 +21625,7 @@ O uso de `clamp()` garante que o título escale perfeitamente entre dispositivos
 | 9 | Implementar selecao de novo horario clicando nos chips no modal Editar | Frontend | Alta | Curta | [x] |
 | 10| Garantir que aluno pode editar no painel sem resetar horas/obs | Regra/Frontend | Alta | Curta | [x] |
 | 11| Melhorar formato de hora/inicio e duracao no painel do fotografo | Frontend | Alta | Curta | [x] |
+| 12| Aprimorar geolocalização integrando BrasilAPI v2 com fallbacks inteligentes | Geolocalização | Alta | Curta | [x] |
 
 ---
 
@@ -21356,6 +21721,16 @@ O uso de `clamp()` garante que o título escale perfeitamente entre dispositivos
 8. **`agendamento_aulas.html` (Melhoria Visual do Painel do Fotógrafo):**
    - Alterou-se a exibição da célula de Data/Hora no painel para mostrar a data, início da aula formatado (`inicio as HH:MM`) e duração (`Xh de aula`) em linhas separadas para clareza visual completa.
    - Limpou-se uma declaração duplicada inativa da função `renderTeacherAulasPanel` para manter a integridade do código.
+9. **`agendamento_aulas.html` (Precisão do Pin no Mapa & Busca de CEP/Endereço):**
+   - Integrou-se o endpoint `BrasilAPI v2` (`https://brasilapi.com.br/api/cep/v2/`) na busca por CEP para recuperar diretamente as coordenadas precisas de latitude e longitude do CEP digitado antes de tentar Nominatim (com fallback automático para `ViaCEP`).
+   - Adicionou-se detecção automática de CEP em buscas de endereço de texto completo, de modo a geolocalizar as coordenadas precisas do CEP caso o logradouro textual não seja encontrado no OpenStreetMap.
+   - Refinou-se a limpeza de strings de busca no Nominatim removendo números residenciais/específicos para que o logradouro/rua seja localizado ao invés de falhar inteiramente.
+   - Corrigiu-se bug na seleção de sugestões do autocomplete (`selectSuggestion`) onde o input era preenchido com a query digitada pelo usuário ao invés do endereço formatado e retornado pelo geocodificador.
+10. **`agendamento_aulas.html` (Autocomplete Dinâmico e Geocodificação Automática):**
+    - Implementou-se as funções `geocodeAddressDirectly` e `ensureGeocodedAddress` para gerenciar a geocodificação sob demanda e sincronizar automaticamente coordenadas que estejam defasadas em relação ao texto digitado pelo usuário.
+    - Integrou-se o `ensureGeocodedAddress` nas funções de envio/salvamento do modal (`saveLessonFromModal`) e do cadastro do aluno (`submitRegistration`) para evitar salvar endereços manuais com coordenadas incorretas ou antigas.
+    - Habilitou-se autocomplete em tempo real nos inputs de endereço do cadastro e do modal (`initAutocompleteInputs`) utilizando um debounce de 600ms e suportando fechamento das sugestões com a tecla Escape.
+    - Refatorou-se a busca de CEP (`searchCEP`) para utilizar o mecanismo centralizado `geocodeAddressDirectly`, otimizando fallbacks de CEPs não indexados.
 
 ---
 
@@ -21380,7 +21755,7 @@ O uso de `clamp()` garante que o título escale perfeitamente entre dispositivos
 
 ## 8. Sincronizacao
 
-**Resumo do dia:** Ativacao do registrador tecnico para log de 16/06/2026. Implementados múltiplos horários com chips, trava de limite diário de 3 horas por aluno, tratamento inteligente de endereços com termos não indexados no Nominatim/CEP, remoção do SQLite de fallback e correções gerais de sintaxe. Resolvida quebra de CSS de chips no desktop, melhorada a selecao de horario no modal de edicao, adicionada seguranca a edicao feita pelos alunos (preservando status, observacoes e duracoes prévias) e aprimorado o formato visual da data/hora e duracao de aulas no painel do fotografo.
+**Resumo do dia:** Ativacao do registrador tecnico para log de 16/06/2026. Implementados múltiplos horários com chips, trava de limite diário de 3 horas por aluno, tratamento inteligente de endereços com termos não indexados no Nominatim/CEP, remoção do SQLite de fallback e correções gerais de sintaxe. Resolvida quebra de CSS de chips no desktop, melhorada a selecao de horario no modal de edicao, adicionada seguranca a edicao feita pelos alunos (preservando status, observacoes e duracoes prévias), aprimorado o formato visual da data/hora e duracao de aulas no painel do fotografo e implementado sistema inteligente de alta precisao para geolocalizacao de enderecos e CEPs usando BrasilAPI v2 e fallbacks robustos.
 
 **Status Final:** Concluido.
 ```
