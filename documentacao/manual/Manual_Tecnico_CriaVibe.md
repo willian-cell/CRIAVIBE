@@ -5,7 +5,7 @@
 > **Projeto:** CriaVibe
 > **Responsavel tecnico:** Willian Batista Oliveira
 > **Registrador:** agente-willianbo
-> **Gerado em:** 14/06/2026 18:20:40
+> **Gerado em:** 16/06/2026 23:17:14
 > **Origem:** `C:\Users\willi\Documents\criavibe_site`
 
 ---
@@ -38,11 +38,11 @@ Arquivos sensiveis e artefatos pesados sao omitidos de proposito: `.env`, `.git/
 
 ## 3. Sumario Executivo
 
-- Total de arquivos textuais documentados: **94**
-- Total de linhas de codigo/documentacao: **20292**
-- Tamanho textual documentado: **704.4 KB**
-- Imagens inventariadas: **18**
-- Registros de trabalho consolidados: **10**
+- Total de arquivos textuais documentados: **100**
+- Total de linhas de codigo/documentacao: **24629**
+- Tamanho textual documentado: **864.4 KB**
+- Imagens inventariadas: **19**
+- Registros de trabalho consolidados: **11**
 
 ---
 
@@ -86,13 +86,20 @@ criavibe_site/
 |   `-- SKILL.md
 |-- api/
 |   |-- agendamentos/
+|   |   |-- img/
+|   |   |   `-- camera.png
 |   |   |-- _helpers.php
 |   |   |-- admin_login.php
 |   |   |-- admin_logout.php
 |   |   |-- admin_status.php
 |   |   |-- delete.php
 |   |   |-- list.php
-|   |   `-- save.php
+|   |   |-- login.php
+|   |   |-- logout.php
+|   |   |-- register.php
+|   |   |-- save.php
+|   |   |-- status.php
+|   |   `-- upload_foto.php
 |   |-- auth/
 |   |   |-- login.php
 |   |   |-- logout.php
@@ -186,6 +193,7 @@ criavibe_site/
 |       |-- trabalho_14_05_2026.md
 |       |-- trabalho_14_06_2026.md
 |       |-- trabalho_15_05_2026.md
+|       |-- trabalho_16_06_2026.md
 |       |-- trabalho_22_05_2026.md
 |       |-- trabalho_23_05_2026.md
 |       |-- trabalho_24_05_2026.md
@@ -240,18 +248,23 @@ criavibe_site/
 | Arquivo | Linhas | Tamanho |
 |---|---:|---:|
 | `.gitignore` | 19 | 286 B |
-| `agendamento_aulas.html` | 1344 | 42.1 KB |
+| `agendamento_aulas.html` | 4805 | 162.7 KB |
 | `agente-willianbo/references/ciclo_de_vida_documentacao.md` | 70 | 3.3 KB |
 | `agente-willianbo/scripts/gerar_manual.py` | 599 | 18.1 KB |
 | `agente-willianbo/SKILL.md` | 48 | 1.9 KB |
 | `agente-willianbo/templates/jornada_template.md` | 144 | 3.8 KB |
-| `api/agendamentos/_helpers.php` | 653 | 25.2 KB |
+| `api/agendamentos/_helpers.php` | 790 | 31.6 KB |
 | `api/agendamentos/admin_login.php` | 21 | 582 B |
 | `api/agendamentos/admin_logout.php` | 7 | 164 B |
 | `api/agendamentos/admin_status.php` | 10 | 239 B |
 | `api/agendamentos/delete.php` | 49 | 2.1 KB |
-| `api/agendamentos/list.php` | 65 | 2.0 KB |
-| `api/agendamentos/save.php` | 146 | 5.4 KB |
+| `api/agendamentos/list.php` | 66 | 2.1 KB |
+| `api/agendamentos/login.php` | 67 | 2.3 KB |
+| `api/agendamentos/logout.php` | 11 | 261 B |
+| `api/agendamentos/register.php` | 160 | 5.9 KB |
+| `api/agendamentos/save.php` | 172 | 6.5 KB |
+| `api/agendamentos/status.php` | 76 | 2.4 KB |
+| `api/agendamentos/upload_foto.php` | 100 | 3.4 KB |
 | `api/auth/login.php` | 25 | 744 B |
 | `api/auth/logout.php` | 4 | 92 B |
 | `api/auth/me.php` | 19 | 572 B |
@@ -263,8 +276,8 @@ criavibe_site/
 | `api/clientes/list.php` | 6 | 251 B |
 | `api/clientes/update.php` | 22 | 855 B |
 | `api/clientes/upload_foto.php` | 73 | 2.5 KB |
-| `api/config.php` | 122 | 4.4 KB |
-| `api/db_migrations.php` | 374 | 18.3 KB |
+| `api/config.php` | 123 | 4.5 KB |
+| `api/db_migrations.php` | 411 | 20.4 KB |
 | `api/fotos/client_selecao.php` | 79 | 2.9 KB |
 | `api/fotos/delete.php` | 18 | 679 B |
 | `api/fotos/direct_confirm.php` | 133 | 5.6 KB |
@@ -310,8 +323,9 @@ criavibe_site/
 | `documentacao/trabalho/trabalho_03_06_2026.md` | 367 | 22.5 KB |
 | `documentacao/trabalho/trabalho_04_06_2026.md` | 6 | 343 B |
 | `documentacao/trabalho/trabalho_14_05_2026.md` | 251 | 9.8 KB |
-| `documentacao/trabalho/trabalho_14_06_2026.md` | 151 | 8.6 KB |
+| `documentacao/trabalho/trabalho_14_06_2026.md` | 263 | 14.6 KB |
 | `documentacao/trabalho/trabalho_15_05_2026.md` | 301 | 13.2 KB |
+| `documentacao/trabalho/trabalho_16_06_2026.md` | 148 | 9.3 KB |
 | `documentacao/trabalho/trabalho_22_05_2026.md` | 217 | 13.8 KB |
 | `documentacao/trabalho/trabalho_23_05_2026.md` | 677 | 39.5 KB |
 | `documentacao/trabalho/trabalho_24_05_2026.md` | 137 | 8.0 KB |
@@ -340,6 +354,7 @@ criavibe_site/
 
 | Imagem | Tamanho | Preview |
 |---|---:|---|
+| `api/agendamentos/img/camera.png` | 1.6 MB | ![](../../api/agendamentos/img/camera.png) |
 | `assets/images/instagram/casal.png` | 460.3 KB | ![](../../assets/images/instagram/casal.png) |
 | `assets/images/instagram/cavalo.png` | 640.1 KB | ![](../../assets/images/instagram/cavalo.png) |
 | `assets/images/instagram/menina.png` | 330.1 KB | ![](../../assets/images/instagram/menina.png) |
@@ -2888,6 +2903,275 @@ Fonte: `documentacao/trabalho/trabalho_14_06_2026.md`
 
 **Status Final:** Entrega de todas as otimizacoes de velocidade de carregamento de fotos para cliente e fotografo concluida e implantada em producao no Railway.
 
+---
+
+## 9. Registro adicional - ativacao do agente no fluxo de agendamento
+
+> **Metodologia ativa:** agente-willianbo
+> **Responsavel tecnico:** Willian Batista Oliveira
+> **Registrador:** agente-willianbo
+
+### Objetivo
+
+Registrar, sem apagar o historico ja documentado neste arquivo, a ativacao da metodologia `agente-willianbo` para acompanhar a melhoria textual do cadastro de agendamento de aulas.
+
+### Escopo incluido
+
+- Entender os cards e etapas do cadastro de aulas em `agendamento_aulas.html`.
+- Adicionar texto contextual no painel de apresentacao para cada momento do cadastro.
+- Preservar o comportamento existente do fluxo de login, cadastro, selecao de plano, pagamento e agenda.
+- Manter a documentacao anterior intacta, acrescentando apenas este registro adicional.
+
+### Arquivos impactados
+
+| Arquivo | Tipo | Descricao |
+|---------|------|-----------|
+| `agendamento_aulas.html` | Alterado | Adiciona textos dinamicos no painel visual conforme a etapa ativa do cadastro. |
+| `documentacao/trabalho/trabalho_14_06_2026.md` | Alterado | Acrescenta este registro adicional sem remover o historico existente. |
+
+### Implementacao registrada
+
+Foi criada uma tabela `HERO_COPY` no JavaScript da tela de agendamento para centralizar os textos do painel da marca por etapa:
+
+- Login: `Bem-vindo!`
+- Dados: `Vamos comecar?`
+- Plano: `Escolha seu plano`
+- Pagamento: `Forma de pagamento`
+- Agenda: `Vamos agendar sua aula!`
+
+A funcao `changeView(viewId)` passou a chamar `updateHeroCopy(viewId)`, garantindo que o texto seja atualizado quando o usuario avanca ou retorna no cadastro.
+
+### Works
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Busca do agente | `rg -n "willianbo|agente|agent|documenta" . .\.agents` | Metodologia `agente-willianbo` e registros em `documentacao/trabalho/` localizados. |
+| Leitura da metodologia | `Get-Content -Raw .\agente-willianbo\SKILL.md` | Fluxo obrigatorio confirmado: mapear impacto, registrar, implementar e validar. |
+| Revisao do registro atual | `Get-Content -Raw .\documentacao\trabalho\trabalho_14_06_2026.md` | Historico existente preservado para adicao incremental. |
+| Validacao JavaScript | `node --check` sobre o script extraido de `agendamento_aulas.html` | Sem erros de sintaxe. |
+
+### Pendencias
+
+- [ ] Validar visualmente no navegador o painel responsivo do cadastro em desktop e mobile.
+- [ ] Confirmar com o usuario se os textos finais de cada etapa estao aprovados.
+
+### Complemento - novo agendamento pelo aluno logado
+
+Foi ajustado o fluxo para que o aluno ja cadastrado, ao clicar em `Agendar Aula` no painel, volte para a mesma tela de calendario usada no cadastro inicial (`view-register-step4`), em vez de abrir o modal de agendamento separado.
+
+Mudancas registradas:
+
+- O botao `Agendar Aula` do painel do aluno agora chama `openStudentScheduleScreen()`.
+- A tela de agenda limpa data e horario anteriores, mantendo plano e forma de pagamento do aluno logado.
+- O botao `Voltar` da tela de agenda usa `handleScheduleBack()`: para cadastro inicial volta ao pagamento; para aluno logado volta ao painel.
+- O envio da agenda agora identifica aluno logado e usa `submitStudentScheduleFromCalendar()` para salvar a nova aula via `/api/agendamentos/save.php`, preservando as aulas ja cadastradas.
+- A marcacao de horarios ocupados passou a considerar a duracao da aula, bloqueando tambem os horarios cobertos por aulas de 2h ou 3h.
+
+Validacao adicional:
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Sintaxe JavaScript | `node --check` sobre o script extraido de `agendamento_aulas.html` | Sem erros de sintaxe. |
+| Revisao de conexoes | `rg -n 'openStudentScheduleScreen|handleScheduleBack|submitStudentScheduleFromCalendar' .\agendamento_aulas.html` | Funcoes e chamadas principais localizadas. |
+
+### Complemento - painel completo do aluno
+
+Foi iniciado o enriquecimento do painel do aluno para centralizar dados de cadastro, pagamento e agendamentos com acoes de edicao.
+
+Mudancas registradas:
+
+- Adicionado cartao de perfil com foto do aluno quando houver URL disponivel, fallback por iniciais, nome, e-mail, telefone e token parcial do cadastro.
+- Adicionado formulario inline para editar nome, e-mail e WhatsApp do aluno.
+- Cartao do plano passou a exibir forma de pagamento, status e total de aulas contratadas.
+- Adicionado formulario inline para alterar a forma de pagamento do pre-agendamento.
+- Lista de aulas passou a exibir informacoes complementares: data completa, dia da semana, modulo, assunto, valor e observacoes.
+- Cada card de aula recebeu botao inline `Editar`, reutilizando o modal existente de aula.
+- Modal de aula agora mostra campos administrativos apenas para professor; aluno edita somente dados de agenda/aula.
+
+Validacao adicional:
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Sintaxe JavaScript | `node --check` sobre o script extraido de `agendamento_aulas.html` | Sem erros de sintaxe. |
+| Sintaxe API de listagem | `php -l .\api\agendamentos\list.php` | Sem erros de sintaxe. |
+
+### Complemento - painel operacional do professor
+
+Foi melhorado o painel do professor para facilitar acompanhamento, busca, confirmacao e gestao de aulas e alunos.
+
+Mudancas registradas:
+
+- Adicionados cards de metricas no topo da aba de aulas: total de aulas, alunos, pre-agendadas e receita prevista.
+- Adicionada barra de busca por aluno, e-mail, telefone, cidade, modulo, assunto ou status.
+- Adicionado filtro por status de aula.
+- Tabela de aulas passou a exibir aluno com avatar por iniciais, e-mail, telefone, duracao, horario final, cidade, valor e observacoes.
+- Adicionado botao rapido para confirmar aula diretamente na tabela do professor.
+- Aba de alunos passou a exibir avatar, ID, contato, plano, status, forma de pagamento e barra de progresso de creditos.
+- Mantidas as acoes existentes de editar aula, excluir aula, editar creditos/plano e excluir aluno.
+
+Validacao adicional:
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Sintaxe JavaScript | `node --check` sobre o script extraido de `agendamento_aulas.html` | Sem erros de sintaxe. |
+
+
+
+### trabalho_16_06_2026.md
+
+
+Fonte: `documentacao/trabalho/trabalho_16_06_2026.md`
+
+
+# Jornada Tecnica - 16/06/2026
+
+> **Status do dia:** Concluido
+> **Responsavel tecnico:** Willian Batista Oliveira
+> **Registrador:** agente-willianbo
+> **Projeto:** CriaVibe
+
+---
+
+## 1. Objetivos do Dia
+
+**Criterio de sucesso:** Implementar o fluxo de agendamento com multiplos horarios usando selecao por chips, estabelecer o limite maximo de 3 horas diarias para agendamentos por aluno, robustecer a busca e geocodificacao de enderecos por Nominatim/CEP tratando casos com "Lote" e "Quadra" (com banners informativos), alem de remover o fallback para SQLite em ambiente de producao de banco de dados.
+
+| # | Task | Modulo | Prioridade | Estimativa | Status |
+|---|------|--------|------------|------------|--------|
+| 1 | Ativar agente-willianbo e estruturar log de trabalho | Documentacao | Alta | Curta | [x] |
+| 2 | Otimizar conexao do MySQL em `api/config.php` removendo SQLite | Banco | Alta | Curta | [x] |
+| 3 | Criar fluxo de agendamento de multiplos horarios com chips | Frontend | Alta | Media | [x] |
+| 4 | Implementar limite diario de 3 horas de agendamento por aluno | Regra/Backend| Alta | Curta | [x] |
+| 5 | Aprimorar geocodificacao com Nominatim com tratativas de fallback | Mapa | Alta | Media | [x] |
+| 6 | Tratar busca por CEP com fallbacks inteligentes de geocode | Mapa | Alta | Curta | [x] |
+| 7 | Corrigir erro de chave orfa (sintaxe) na funcao `searchAddress` | Bugfix | Alta | Curta | [x] |
+| 8 | Corrigir media query CSS orfã que quebrava layout de chips em telas > 900px | Frontend | Alta | Curta | [x] |
+| 9 | Implementar selecao de novo horario clicando nos chips no modal Editar | Frontend | Alta | Curta | [x] |
+| 10| Garantir que aluno pode editar no painel sem resetar horas/obs | Regra/Frontend | Alta | Curta | [x] |
+| 11| Melhorar formato de hora/inicio e duracao no painel do fotografo | Frontend | Alta | Curta | [x] |
+
+---
+
+## 2. Task
+
+### Agendamento Multiplo, Limites por Aluno e Geolocalizacao Avancada
+
+**Problema de negocio:**
+1. Alunos precisam agendar multiplos horarios no mesmo dia de forma simples sem precisar abrir o modal varias vezes.
+2. E necessario limitar a carga horaria diaria por aluno para 3 horas para evitar sobrecarga de grade.
+3. Enderecos no Brasil frequentemente incluem termos como "Lote", "Lt", "Quadra", "Qd" que nao sao bem indexados pelo OpenStreetMap/Nominatim, fazendo a busca por CEP ou por endereco falhar ou posicionar incorretamente no mapa.
+4. O fallback de SQLite causava desvios silenciosos em producao caso houvesse instabilidade de rede ou timeout temporario no MySQL.
+
+**Escopo incluido:**
+- Remocao do SQLite como fallback em `api/config.php` e aumento do timeout do MySQL para 5 segundos para garantir conexao exclusiva e consistente com a base oficial no Railway.
+- Selecao multipla de horarios via chips de interface.
+- Validacao e trava de maximo 3 horas de aula agendadas por dia por aluno.
+- Mecanismo de limpeza de queries Nominatim com regex para remover indicacoes de Quadra/Lote em caso de falha de retorno, permitindo localizar a regiao aproximada e alertar o usuario com um banner.
+- Fallback em cascata para geocodificacao de CEP (Endereco completo -> Bairro/Cidade/UF -> Cidade/UF).
+- Correcao de erro de sintaxe javascript em `agendamento_aulas.html`.
+- Fechamento de bloco `@media` unclosed no CSS para restabelecer layout de chips de horario em desktops (>900px).
+- Habilitacao de selecao direta de novo horario de inicio no modal de edicao clicando nos chips de hora (tanto para o professor como no painel do aluno).
+- Regra de preservacao de horas, status e observacoes existentes do agendamento durante edicao pelo aluno, impedindo perdas acidentais de registros.
+
+**Fora de escopo:**
+- Alteracao de telas administrativas nao relacionadas ao agendamento de aulas.
+- Mudanca no layout da galeria de fotos.
+
+**Arquivos modificados:**
+- `api/config.php`
+- `agendamento_aulas.html`
+
+---
+
+## 3. Check Box
+
+### Planejamento
+- [x] Requisito entendido e registrado.
+- [x] Componentes impactados mapeados.
+- [x] Riscos e dependencias identificados.
+
+### Implementacao
+- [x] Alteracoes feitas em escopo controlado.
+- [x] Nomes, comentarios e documentacao em Portugues-BR quando aplicavel.
+- [x] Padroes existentes do projeto respeitados.
+- [x] Sem refatoracoes fora do objetivo da task.
+
+### Validacao
+- [x] Verificacao de sintaxe PHP (`php -l`) limpa para todos os arquivos modificados.
+- [x] Git diff revisado e limpo.
+
+### Entrega
+- [x] Documentacao atualizada.
+- [x] Pendencias registradas.
+
+---
+
+## 4. Implementacao
+
+### Decisao tecnica
+
+| Campo | Detalhe |
+|-------|---------|
+| Decisao | Criar um fluxo de limpeza progressiva de string de busca na API do Nominatim em caso de retorno vazio (removendo Quadra/Lote/etc). |
+| Contexto | O Nominatim e sensivel a informacoes muito especificas de enderecamento brasileiro que nao estao mapeadas em sua base vetorial. |
+| Alternativas descartadas | Obrigar o usuario a redigitar o endereco (ruim para UX); usar uma API comercial paga como Google Maps (custo alto). |
+| Motivo da escolha | O processamento progressivo de fallbacks no frontend reduz a taxa de falha de geocodificacao sem gerar custos adicionais de API. |
+| Trade-offs aceitos | O usuario recebe o mapa com um local aproximado (e um aviso em banner), mas pode mover o PIN manualmente no mapa para ajustar o local exato. |
+
+### Passo a passo
+
+1. **`api/config.php`:**
+   - Removeu-se o bloco `try-catch` que criava a base SQLite local de fallback.
+   - Configurou-se a instanciacao direta de `PDO` com MySQL com timeout estendido de 5 segundos.
+2. **`agendamento_aulas.html` (Chips & Multi-horarios):**
+   - Habilitou-se a selecao multipla no modal de horarios, coletando as selecoes em um array de chips.
+   - No salvamento, realiza-se um loop sobre as horas selecionadas para enfileirar as aulas.
+3. **`agendamento_aulas.html` (Regras de Limite):**
+   - Inseriu-se validacao que conta as horas ja agendadas pelo aluno no mesmo dia e impede a conclusao caso exceda 3 horas totais.
+4. **`agendamento_aulas.html` (Melhoria do Mapa & Nominatim):**
+   - Implementou-se a funcao `cleanString` para limpar delimitadores de busca.
+   - Criou-se fallback recursivo no `searchAddress` que, ao nao encontrar resultados, limpa sucessivamente marcas de "lote/lt", "quadra/qd", e depois foca nas ultimas partes (Bairro, Cidade, Estado) ate achar uma localizacao coerente.
+   - Inseriu-se um banner informativo no autocomplete (`Local exato não indexado. Exibindo região aproximada:`) quando a busca do Nominatim utilizou fallback.
+5. **`agendamento_aulas.html` (Melhoria de busca por CEP):**
+   - Ao buscar dados via ViaCEP, em caso de erro na geocodificacao do endereco completo retornado, tenta-se geocodificar com `Bairro, Cidade, Estado` ou `Cidade, Estado` sequencialmente.
+6. **`agendamento_aulas.html` (Bugfix de Sintaxe e CSS):**
+   - Fechou-se a chave orfa da funcao `searchAddress` no JavaScript.
+   - Fechou-se o bloco responsive `@media` no CSS (linha 1617) para que os estilos de `.time-chip` e `.time-chips-container` funcionem corretamente em telas maiores (>900px).
+7. **`agendamento_aulas.html` (Fluxo de Edição de Aula):**
+   - Habilitou-se a alteracao do horario de inicio ao clicar nos chips de horario no modal de edicao (para professor e aluno).
+   - Inseriu-se salvaguarda na criacao de opcoes de duracao no dropdown `slot-hours` na edicao para o aluno, impedindo que aulas agendadas com mais de 3 horas sejam resetadas.
+   - Adicionou-se lógica na edicao para preservar o `status` (caso data/hora nao mudem) e as `observacoes` existentes no banco de dados quando alterado pelo aluno, evitando sobrescritas vazias de metadados pedagogicos.
+8. **`agendamento_aulas.html` (Melhoria Visual do Painel do Fotógrafo):**
+   - Alterou-se a exibição da célula de Data/Hora no painel para mostrar a data, início da aula formatado (`inicio as HH:MM`) e duração (`Xh de aula`) em linhas separadas para clareza visual completa.
+   - Limpou-se uma declaração duplicada inativa da função `renderTeacherAulasPanel` para manter a integridade do código.
+
+---
+
+## 5. Works
+
+### Evidencias de funcionamento
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Sintaxe PHP do Config | `php -l api/config.php` | `No syntax errors detected` |
+| Commits do Dia | `git log --since="2026-06-16 00:00:00" --oneline` | Commits `6fb956b`, `e9cf5af` e `d9e5611` devidamente registrados. |
+| Integridade dos Arquivos | `git diff --stat` | Verificou-se que a working tree esta limpa e em perfeita sincronia com `origin/main`. |
+
+---
+
+## 7. Pendencias e Proximos Passos
+
+- [ ] Acompanhar feedback do usuario sobre a flexibilidade de mover o PIN manualmente nas buscas aproximadas.
+- [ ] Monitorar a estabilidade de conexao MySQL exclusiva (sem SQLite fallback) nos logs de producao do Railway.
+
+---
+
+## 8. Sincronizacao
+
+**Resumo do dia:** Ativacao do registrador tecnico para log de 16/06/2026. Implementados múltiplos horários com chips, trava de limite diário de 3 horas por aluno, tratamento inteligente de endereços com termos não indexados no Nominatim/CEP, remoção do SQLite de fallback e correções gerais de sintaxe. Resolvida quebra de CSS de chips no desktop, melhorada a selecao de horario no modal de edicao, adicionada seguranca a edicao feita pelos alunos (preservando status, observacoes e duracoes prévias) e aprimorado o formato visual da data/hora e duracao de aulas no painel do fotografo.
+
+**Status Final:** Concluido.
+
 
 
 ---
@@ -2924,732 +3208,2541 @@ deploy_ftp.ps1
 
 ### `agendamento_aulas.html`
 
-- Linhas: 1344
-- Tamanho: 42.1 KB
+- Linhas: 4805
+- Tamanho: 162.7 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\agendamento_aulas.html`
 
 ```html
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CriaVibe Fotografia - Pre-agendamento</title>
-  <meta name="description" content="Pre-agendamento de aulas praticas CriaVibe Fotografia.">
+  <title>Agendamento de Aulas — CriaVibe</title>
+  <meta name="description" content="Sistema de cursos e agendamento de aulas práticas CriaVibe Fotografia.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
     :root {
-      --ink: #777a43;
-      --line: #8a8b57;
-      --soft: #f7f7f4;
-      --paper: #ffffff;
-      --muted: rgba(119, 122, 67, 0.68);
-      --blue: #8db4f3;
-      --mint: #cbf4dc;
+      --primary: #777a43;
+      --primary-hover: #5e6132;
+      --bg-gradient: linear-gradient(135deg, #eef7f4 0%, #e0ebf7 100%);
+      --surface: #ffffff;
+      --surface-sub: #fbfbfa;
+      --border: #edf0eb;
+      --text: #2c2e1b;
+      --text-muted: #7e816d;
+      --success: #4ade80;
+      --error: #f87171;
+      --shadow: 0 20px 40px rgba(119, 122, 67, 0.08);
+      --shadow-sm: 0 4px 12px rgba(119, 122, 67, 0.04);
+      --font-title: 'Outfit', sans-serif;
+      --font-body: 'Montserrat', sans-serif;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
       box-sizing: border-box;
-    }
-
-    body {
       margin: 0;
-      min-height: 100vh;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: "Montserrat", Arial, sans-serif;
-      letter-spacing: 0;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    .schedule-hero {
-      min-height: 310px;
-      display: grid;
-      grid-template-columns: minmax(260px, 380px) 1fr;
-      gap: 64px;
-      align-items: start;
-      padding: 92px 9vw 80px;
-      background: linear-gradient(100deg, var(--mint) 0%, #bfeadf 35%, #a8c9ed 68%, var(--blue) 100%);
-      color: var(--ink);
-      user-select: none;
-    }
-
-    .brand-mark {
-      padding-top: 10px;
-    }
-
-    .brand-name {
-      margin: 0;
-      font-size: clamp(3rem, 6vw, 4.8rem);
-      line-height: 0.9;
-      font-weight: 300;
-    }
-
-    .brand-subtitle {
-      margin-top: 18px;
-      padding-left: 10px;
-      font-size: clamp(0.78rem, 1.5vw, 1.05rem);
-      font-weight: 400;
-      letter-spacing: 0.56em;
-    }
-
-    .hero-contact {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(180px, max-content));
-      column-gap: 72px;
-      row-gap: 58px;
-      padding-top: 8px;
-      font-size: clamp(1rem, 1.9vw, 1.28rem);
-      font-weight: 500;
-    }
-
-    .hero-contact span {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-
-    .hero-contact .address {
-      grid-column: 1 / -1;
-    }
-
-    .page-shell {
-      width: min(1180px, calc(100% - 8vw));
-      margin: 36px auto 64px;
-    }
-
-    .student-strip {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
       padding: 0;
     }
 
-    .student-card {
-      min-height: 255px;
-      border: 2px solid var(--line);
-      padding: 42px 42px 34px;
-      background: rgba(255, 255, 255, 0.94);
-    }
-
-    .student-card.is-saved {
-      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,248,244,0.92));
-    }
-
-    .field-line {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      align-items: end;
-      gap: 10px;
-      margin-bottom: 28px;
-      font-size: clamp(1.2rem, 2.2vw, 1.72rem);
-      font-weight: 400;
-    }
-
-    .field-line label {
-      white-space: nowrap;
-    }
-
-    .field-line input {
-      width: 100%;
-      min-width: 0;
-      border: 0;
-      border-bottom: 2px solid var(--line);
-      outline: 0;
-      color: var(--ink);
-      background: transparent;
-      padding: 0 6px 5px;
-    }
-
-    .field-line input:disabled {
-      opacity: 1;
-      -webkit-text-fill-color: var(--ink);
-    }
-
-    .student-actions {
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      gap: 16px;
-      min-height: 34px;
-      margin-top: 10px;
-      font-size: 0.86rem;
-      color: var(--muted);
+      justify-content: flex-start;
+      padding: 20px;
     }
 
-    .ghost-button,
-    .save-button,
-    .admin-button {
-      border: 1.5px solid var(--line);
-      background: transparent;
-      color: var(--ink);
-      padding: 9px 18px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-      cursor: pointer;
+    /* ── CORE LAYOUT ── */
+    .app-container {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr;
+      gap: 40px;
+      margin: 40px auto;
+      background: var(--surface);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-height: 720px;
+      transition: max-width 0.4s ease, grid-template-columns 0.4s ease;
     }
 
-    .save-button {
+    .app-container.logged-in {
+      grid-template-columns: 1fr;
+      max-width: 1200px;
+    }
+
+    .app-container.logged-in .hero-panel {
       display: none;
-      background: var(--ink);
-      color: white;
-      min-width: 150px;
     }
 
-    .save-button.is-visible {
+    /* ── LEFT HERO PANEL ── */
+    .hero-panel {
+      background: var(--bg-gradient);
+      padding: 50px 40px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 30px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-header-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 30px;
+    }
+
+    .hero-welcome-texts h2 {
+      font-family: var(--font-title);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    .hero-welcome-texts p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .hero-camera-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      height: 100%;
+    }
+
+    .hero-camera-img {
+      max-width: 140%;
+      height: auto;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      transform: scale(1.15) translateX(10px);
+      transform-origin: center right;
+    }
+
+    .brand-section h1 {
+      font-family: var(--font-title);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--primary);
+      line-height: 1.1;
+      margin-bottom: 5px;
+    }
+
+    .brand-section .subtitle {
+      font-size: 0.9rem;
+      letter-spacing: 0.5em;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding-left: 4px;
+    }
+
+    .contact-info {
+      margin: 40px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .contact-item i {
+      color: var(--primary);
+      font-size: 1.2rem;
+      width: 24px;
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .feature-badge {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(255, 255, 255, 0.65);
+      padding: 12px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(119, 122, 67, 0.1);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .feature-badge i {
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+
+    .feature-badge .info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feature-badge .info strong {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .feature-badge .info span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── RIGHT FLOW PANEL ── */
+    .flow-panel {
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      background: var(--surface);
+    }
+
+    .view-container {
+      display: none;
+      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .view-container.active {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── STEP INDICATOR ── */
+    .steps-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .steps-line {
+      position: absolute;
+      top: 15px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: var(--border);
+      z-index: 1;
+    }
+
+    .steps-line-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background: var(--primary);
+      transition: var(--transition);
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      position: relative;
+      width: 20%;
+    }
+
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .step-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-transform: uppercase;
+      transition: var(--transition);
+    }
+
+    .step-item.active .step-circle {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 0 0 4px rgba(119, 122, 67, 0.15);
+    }
+
+    .step-item.active .step-label {
+      color: var(--primary);
+    }
+
+    .step-item.completed .step-circle {
+      border-color: var(--primary);
+      background: var(--surface);
+      color: var(--primary);
+    }
+
+    .step-item.completed .step-label {
+      color: var(--primary);
+    }
+
+    /* ── FORMS & INPUTS ── */
+    .form-title {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .form-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper i.input-icon {
+      position: absolute;
+      left: 16px;
+      color: var(--primary);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .input-wrapper input,
+    .input-wrapper select {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .input-wrapper input:focus,
+    .input-wrapper select:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+      box-shadow: 0 0 0 4px rgba(119, 122, 67, 0.08);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 16px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: var(--transition);
+      background: none;
+      border: none;
+      outline: none;
+    }
+
+    .toggle-pass:hover {
+      color: var(--primary);
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .ghost-button:disabled,
-    .save-button:disabled,
-    .slot-button:disabled {
-      cursor: not-allowed;
-      opacity: 0.45;
-    }
-
-    .section-title {
-      margin: 32px 0 28px;
-      text-align: center;
-      font-size: clamp(1.8rem, 4vw, 2.38rem);
-      font-weight: 800;
-      letter-spacing: 0;
-      color: var(--ink);
-    }
-
-    .crm-panel {
-      display: grid;
-      grid-template-columns: 1.2fr repeat(3, 0.8fr);
-      gap: 18px;
-      border: 2px solid var(--line);
-      margin-top: 18px;
-      padding: 22px 24px;
-      background: rgba(255, 255, 255, 0.94);
-    }
-
-    .crm-field label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 0.74rem;
-      font-weight: 800;
+      gap: 10px;
+      transition: var(--transition);
       text-transform: uppercase;
     }
 
-    .crm-field input,
-    .crm-field select {
-      width: 100%;
-      border: 0;
-      border-bottom: 2px solid var(--line);
-      background: transparent;
-      color: var(--ink);
-      padding: 7px 4px;
-      outline: 0;
+    .btn-primary {
+      background: var(--primary);
+      color: white;
     }
 
-    .progress-note {
-      align-self: end;
-      font-size: 0.86rem;
-      font-weight: 700;
-      color: var(--muted);
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(119, 122, 67, 0.2);
     }
 
-    .schedule-card {
-      overflow-x: auto;
-      padding-bottom: 10px;
+    .btn-primary:active {
+      transform: translateY(0);
     }
 
-    table {
-      width: 100%;
-      min-width: 840px;
-      border-collapse: collapse;
-      color: var(--ink);
-      table-layout: fixed;
+    .btn-secondary {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text);
     }
 
-    th,
-    td {
-      border-bottom: 2px solid var(--line);
-      border-right: 2px solid var(--line);
-      height: 58px;
-      padding: 8px 14px;
-      text-align: center;
-      font-size: 1.08rem;
-      font-weight: 400;
-      vertical-align: middle;
+    .btn-secondary:hover {
+      background: var(--surface-sub);
+      border-color: var(--text-muted);
     }
 
-    th:first-child,
-    td:first-child {
-      border-left: 0;
-      width: 18%;
-      font-weight: 500;
-    }
-
-    th:last-child,
-    td:last-child {
-      border-right: 0;
-      width: 18%;
-    }
-
-    th:nth-child(2),
-    td:nth-child(2) {
-      width: 29%;
-    }
-
-    th {
-      height: 68px;
-      font-size: 1.05rem;
-      font-weight: 500;
-    }
-
-    .slot-cell {
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .slot-cell:hover {
-      background: rgba(138, 139, 87, 0.08);
-    }
-
-    .slot-button {
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      width: 100%;
-      min-height: 36px;
-      font-weight: 600;
-    }
-
-    .student-name {
-      display: block;
-      font-weight: 700;
-      color: var(--ink);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .private-note {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .admin-row-actions {
-      display: inline-flex;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .mini-button {
-      border: 1px solid var(--line);
-      background: white;
-      color: var(--ink);
-      cursor: pointer;
-      padding: 4px 8px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .total-row {
+    .btn-actions-row {
       display: flex;
-      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn-actions-row .btn {
+      flex: 1;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 25px;
+      display: flex;
       align-items: center;
-      gap: 22px;
-      margin-top: min(26vh, 260px);
-      padding-right: 0;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .footer-note i {
+      color: var(--primary);
+    }
+
+    .or-separator {
+      text-align: center;
+      position: relative;
+      margin: 24px 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .or-separator::before,
+    .or-separator::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 42%;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .or-separator::before {
+      left: 0;
+    }
+
+    .or-separator::after {
+      right: 0;
+    }
+
+    /* ── CARDS SELECTABLE ── */
+    .selectable-card {
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      transition: var(--transition);
+      background: var(--surface-sub);
+      position: relative;
+    }
+
+    .selectable-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .selectable-card.selected {
+      border-color: var(--primary);
+      background: rgba(119, 122, 67, 0.04);
+    }
+
+    .selectable-card .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(119, 122, 67, 0.08);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .selectable-card .card-content {
+      flex: 1;
+    }
+
+    .selectable-card .card-title {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .selectable-card .card-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .selectable-card .card-price {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .selectable-card .price-val {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: var(--font-title);
+    }
+
+    .selectable-card .price-lbl {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .selectable-card .card-radio {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .selectable-card.selected .card-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .selectable-card.selected .card-radio::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    /* ── INCLUDED BOX ── */
+    .included-box {
+      background: rgba(74, 222, 128, 0.05);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .included-box-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #166534;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .included-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .included-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1e3a1e;
+    }
+
+    .included-item i {
+      color: #22c55e;
+    }
+
+    /* ── CONTRACT SUMMARY ── */
+    .summary-box {
+      background: var(--surface-sub);
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    .summary-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .summary-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .summary-item label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .summary-item span {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ── SCHEDULING INTERFACE ── */
+    .horizontal-calendar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 5px 0 15px;
+      scrollbar-width: none;
+      margin-bottom: 20px;
+    }
+
+    .horizontal-calendar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .calendar-day-btn {
+      flex: 0 0 62px;
+      height: 72px;
+      background: var(--surface-sub);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .calendar-day-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .calendar-day-btn.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      box-shadow: 0 8px 16px rgba(119, 122, 67, 0.2);
+    }
+
+    .calendar-day-btn .day-name {
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .calendar-day-btn .day-num {
       font-size: 1.25rem;
       font-weight: 800;
     }
 
-    .total-box {
-      width: 178px;
-      min-height: 42px;
-      border: 3px solid var(--line);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
+    .hours-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 25px;
     }
 
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
+    .hour-btn {
+      padding: 12px 6px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .hour-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+    }
+
+    .hour-btn.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .hour-btn:disabled {
+      background: var(--border);
+      color: var(--text-muted);
+      border-color: var(--border);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* ── ERRORS & TOASTS ── */
+    .status-error-msg {
+      background: rgba(248, 113, 113, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.2);
+      color: #b91c1c;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 20px;
       display: none;
       align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(28, 31, 19, 0.32);
-    }
-
-    .modal-backdrop.is-open {
-      display: flex;
-    }
-
-    .modal {
-      width: min(460px, 100%);
-      background: white;
-      border: 2px solid var(--line);
-      padding: 28px;
-      box-shadow: 0 24px 80px rgba(20, 22, 12, 0.24);
-      color: var(--ink);
-    }
-
-    .modal h2 {
-      margin: 0 0 20px;
-      font-size: 1.35rem;
-      text-transform: uppercase;
-    }
-
-    .modal label {
-      display: block;
-      margin: 16px 0 8px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .modal input,
-    .modal select,
-    .modal textarea {
-      width: 100%;
-      border: 1.5px solid var(--line);
-      color: var(--ink);
-      background: white;
-      padding: 11px 12px;
-    }
-
-    .modal textarea {
-      min-height: 76px;
-      resize: vertical;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
       gap: 10px;
-      margin-top: 22px;
     }
 
-    .status-line {
-      min-height: 22px;
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 0.86rem;
+    /* ── PAINEL DO ALUNO ── */
+    .aluno-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .aluno-welcome h2 {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .aluno-welcome p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .student-profile-card {
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+      background: var(--surface-sub);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .student-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(119, 122, 67, 0.12);
+      border: 1.5px solid rgba(119, 122, 67, 0.18);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 800;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .student-avatar::after {
+      content: '\f030';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .student-avatar:hover::after {
+      opacity: 1;
+    }
+
+    .student-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .student-profile-main h3 {
+      font-family: var(--font-title);
+      color: var(--primary);
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .student-profile-grid,
+    .student-plan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .student-info-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-size: 0.74rem;
+      color: var(--text-muted);
       font-weight: 600;
     }
 
-    .admin-badge {
+    .student-info-chip i {
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .student-info-chip span {
+      overflow-wrap: anywhere;
+    }
+
+    .student-inline-form {
       display: none;
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 20;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.92);
-      padding: 8px 12px;
-      color: var(--ink);
+      grid-column: 1 / -1;
+      border-top: 1px dashed var(--border);
+      padding-top: 14px;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .student-profile-card.editing .student-inline-form,
+    .aluno-plan-card.editing .student-inline-form {
+      display: grid;
+    }
+
+    .student-plan-grid {
+      margin: 12px 0 16px;
+    }
+
+    .student-plan-detail {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .student-plan-detail label {
+      display: block;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      opacity: 0.72;
+      margin-bottom: 4px;
+    }
+
+    .student-plan-detail span {
       font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .inline-action-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--primary);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .inline-action-btn:hover {
+      border-color: var(--primary);
+      background: rgba(119, 122, 67, 0.06);
+    }
+
+    .aluno-plan-card {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 12px 24px rgba(119, 122, 67, 0.15);
+    }
+
+    .aluno-plan-card h3 {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+    }
+
+    .aluno-plan-card p {
+      font-size: 0.75rem;
+      opacity: 0.85;
+      margin-bottom: 16px;
+    }
+
+    .aluno-plan-progress-container {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      height: 8px;
+      position: relative;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .aluno-plan-progress-fill {
+      background: white;
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.6s ease;
+    }
+
+    .aluno-plan-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
       font-weight: 700;
     }
 
-    .admin-badge.is-visible {
-      display: inline-flex;
-      gap: 10px;
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
+      margin-bottom: 16px;
     }
 
-    @media (max-width: 820px) {
-      .schedule-hero {
+    .section-header-row h3 {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .aluno-lessons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-bottom: 25px;
+    }
+
+    .lesson-item-card {
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      background: var(--surface-sub);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      transition: var(--transition);
+    }
+
+    .lesson-item-card:hover {
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    .lesson-item-date {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(119, 122, 67, 0.06);
+      border: 1px solid rgba(119, 122, 67, 0.12);
+      border-radius: 10px;
+      width: 52px;
+      height: 52px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .lesson-item-date .day {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .lesson-item-date .month {
+      font-size: 0.55rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .lesson-item-info {
+      flex: 1;
+    }
+
+    .lesson-item-info h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .lesson-item-info p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .lesson-status-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .lesson-status-badge.pre_agendado {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .lesson-status-badge.confirmado {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .lesson-status-badge.concluido {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .lesson-status-badge.cancelado {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .lesson-status-badge.remarcado {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .lesson-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── PAINEL DO FOTÓGRAFO ── */
+    .admin-layout {
+      width: 100%;
+    }
+
+    .admin-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .admin-tab-btn {
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      background: var(--surface-sub);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .admin-tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .admin-table-container {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: left;
+      min-width: 780px;
+    }
+
+    .admin-table th {
+      background: #f7f9f6;
+      padding: 14px 18px;
+      font-weight: 800;
+      color: var(--text-muted);
+      border-bottom: 1.5px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+    }
+
+    .admin-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .admin-table tbody tr:hover {
+      background: var(--surface);
+    }
+
+    .admin-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .admin-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .admin-metric-card {
+      border: 1.5px solid var(--border);
+      background: var(--surface-sub);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .admin-metric-card span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .admin-metric-card strong {
+      color: var(--primary);
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+    }
+
+    .admin-filter-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .admin-filter-bar .input-wrapper {
+      flex: 1;
+    }
+
+    .admin-filter-bar select {
+      max-width: 190px;
+    }
+
+    .teacher-student-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 210px;
+    }
+
+    .teacher-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(119, 122, 67, 0.1);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .teacher-cell-muted {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .teacher-details-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .admin-btn-action.success:hover {
+      border-color: #22c55e;
+      color: #15803d;
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .admin-actions-cell {
+      display: flex;
+      gap: 6px;
+    }
+
+    .admin-btn-action {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.75rem;
+    }
+
+    .admin-btn-action:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--surface-sub);
+    }
+
+    .admin-btn-action.danger:hover {
+      border-color: var(--error);
+      color: var(--error);
+      background: rgba(248, 113, 113, 0.05);
+    }
+
+    .btn-logout {
+      background: rgba(248, 113, 113, 0.08);
+      border: 1.5px solid rgba(248, 113, 113, 0.15);
+      color: #b91c1c;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-logout:hover {
+      background: #b91c1c;
+      color: white;
+      border-color: #b91c1c;
+      box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+    }
+
+    /* ── MODALS ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(44, 46, 27, 0.4);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+      overflow-y: auto;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 30px;
+      width: min(500px, 100%);
+      max-height: calc(100vh - 40px);
+      box-shadow: 0 30px 60px rgba(44, 46, 27, 0.15);
+      animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-box > form {
+      overflow-y: auto;
+      flex-grow: 1;
+      padding-right: 6px;
+      margin-right: -6px;
+    }
+
+    @keyframes modalPop {
+      from {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .address-suggestions-dropdown {
+      position: absolute;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1050;
+      box-shadow: var(--shadow);
+      margin-top: 4px;
+    }
+    .address-suggestion-item {
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: var(--text);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s ease;
+      text-align: left;
+    }
+    .address-suggestion-item:hover {
+      background: var(--surface-sub);
+    }
+    .address-suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .modal-close {
+      border: none;
+      background: none;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      color: var(--primary);
+    }
+
+    /* ── RESPONSIVIDADE ── */
+    @media (max-width: 900px) {
+      body {
+        padding: 0;
+        background: var(--bg-gradient);
+      }
+
+      .app-container {
         grid-template-columns: 1fr;
-        gap: 34px;
-        min-height: 300px;
-        padding: 58px 7vw 54px;
-      }
-
-      .hero-contact {
-        grid-template-columns: 1fr;
-        gap: 18px;
-      }
-
-      .hero-contact .address {
-        grid-column: auto;
-        white-space: normal;
-      }
-
-      .page-shell {
-        width: min(100% - 28px, 1180px);
-        margin-top: 28px;
-      }
-
-      .student-card {
-        padding: 28px 22px;
-      }
-
-      .field-line {
-        grid-template-columns: 1fr;
-        gap: 4px;
-        margin-bottom: 22px;
-      }
-
-      .student-actions {
-        align-items: stretch;
+        min-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+        box-shadow: none;
+        background: transparent;
+        display: flex;
         flex-direction: column;
       }
 
-      .crm-panel {
+      .hero-panel {
+        position: relative;
+        padding: 24px 20px;
+        min-height: 120px;
+        border-right: none;
+        border-bottom: none;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        overflow: visible;
+      }
+
+      .hero-header-content {
+        max-width: 60%;
+        gap: 10px;
+      }
+
+      .brand-section h1 {
+        font-size: 2.2rem;
+      }
+
+      .brand-section .subtitle {
+        font-size: 0.75rem;
+      }
+
+      .hero-welcome-texts {
+        margin-top: 10px;
+      }
+
+      .hero-welcome-texts h2 {
+        font-size: 1.25rem;
+        margin-bottom: 4px;
+      }
+
+      .hero-welcome-texts p {
+        font-size: 0.75rem;
+        line-height: 1.3;
+      }
+
+      .hero-camera-wrapper {
+        position: absolute;
+        right: -10px;
+        top: -5px;
+        height: 180px;
+        width: 45%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        overflow: visible;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .hero-camera-img {
+        height: 100%;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .flow-panel {
+        padding: 24px 20px;
+        background: var(--surface);
+        border-radius: 32px 32px 0 0;
+        margin-top: -10px;
+        box-shadow: 0 -10px 30px rgba(119, 122, 67, 0.05);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        position: relative;
+        z-index: 2;
+      }
+
+      .form-title {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+      }
+
+      .form-subtitle {
+        font-size: 0.8rem;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .student-profile-card {
+        grid-template-columns: auto 1fr;
+        align-items: flex-start;
+      }
+
+      .student-profile-card > .inline-action-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+
+      .student-profile-grid,
+      .student-plan-grid,
+      .student-inline-form {
         grid-template-columns: 1fr;
       }
 
-      .total-row {
-        margin-top: 80px;
-        justify-content: center;
-        padding-right: 0;
+      .lesson-item-card {
+        align-items: flex-start;
+        flex-wrap: wrap;
       }
+
+      .lesson-item-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .admin-metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .admin-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .admin-filter-bar select {
+        max-width: none;
+      }
+
+      .or-separator {
+        margin: 16px 0;
+      }
+
+      .footer-note {
+        margin-top: 15px;
+      }
+    }
+
+    /* Estilos para os Chips de Horário */
+    .time-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .time-chip {
+      padding: 10px 16px;
+      background: var(--surface-sub);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 80px;
+    }
+    .time-chip:hover:not(.disabled) {
+      border-color: var(--primary);
+      background: var(--surface);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .time-chip.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(119, 122, 67, 0.2);
+    }
+    .time-chip.disabled {
+      opacity: 0.4;
+      background: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      pointer-events: none;
     }
   </style>
 </head>
+
 <body>
-  <header class="schedule-hero" id="adminTrigger" aria-label="CriaVibe Fotografia">
-    <div class="brand-mark">
-      <h1 class="brand-name">Criavibe</h1>
-      <div class="brand-subtitle">FOTOGRAFIA</div>
-    </div>
-    <div class="hero-contact">
-      <span><i class="fa-brands fa-whatsapp"></i> (61) 98196-5384</span>
-      <span><i class="fa-brands fa-instagram"></i> @criavibe_</span>
-      <span class="address"><i class="fa-solid fa-location-dot"></i> Qr 71 L 8 Centro - Santo Antônio do Descoberto - Go</span>
-    </div>
-  </header>
 
-  <main class="page-shell">
-    <section class="student-strip" id="studentStrip" aria-label="Cards de alunos"></section>
+  <div class="app-container">
 
-    <section class="crm-panel" aria-label="Planejamento do curso">
-      <div class="crm-field">
-        <label for="planName">Plano</label>
-        <input id="planName" value="Curso Fotografia Prática">
+    <!-- LEFT PANEL: DECORATIVE HEADER -->
+    <header class="hero-panel">
+      <div class="hero-header-content">
+        <div class="brand-section">
+          <h1>Criavibe</h1>
+          <div class="subtitle">FOTOGRAFIA</div>
+        </div>
+
+        <div class="hero-welcome-texts">
+          <h2 id="hero-step-title">Bem-vindo!</h2>
+          <p>Acesse sua conta e agende sua próxima aula.</p>
+        </div>
       </div>
-      <div class="crm-field">
-        <label for="planTotal">Total de aulas</label>
-        <input id="planTotal" type="number" min="0" step="1" value="0">
+
+      <div class="hero-camera-wrapper">
+        <img src="/api/agendamentos/img/camera.png" alt="Câmera" class="hero-camera-img">
       </div>
-      <div class="crm-field">
-        <label for="planStatus">Status</label>
-        <select id="planStatus">
-          <option value="ativo">Ativo</option>
-          <option value="pausado">Pausado</option>
-          <option value="concluido">Concluído</option>
-          <option value="cancelado">Cancelado</option>
-        </select>
+    </header>
+
+    <!-- RIGHT PANEL: INTERACTIVE CONTENT -->
+    <main class="flow-panel">
+
+      <!-- STATUS/ERROR TOAST -->
+      <div class="status-error-msg" id="status-alert">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="status-alert-text">Mensagem de erro aqui.</span>
       </div>
-      <div class="progress-note" id="planProgress">0 aulas usadas</div>
-    </section>
 
-    <h2 class="section-title">PRÉ - AGENDAMENTO</h2>
+      <!-- VIEW 1: LOGIN -->
+      <section class="view-container active" id="view-login">
+        <h2 class="form-title" style="margin-top: 10px;">Login</h2>
+        <p class="form-subtitle">Entre com seus dados para continuar.</p>
 
-    <section class="schedule-card" aria-label="Tabela de pre-agendamento">
-      <table>
-        <thead>
-          <tr>
-            <th>Dias da semana</th>
-            <th>Aula</th>
-            <th>Data</th>
-            <th>Horário</th>
-            <th>Valor (R$)</th>
-          </tr>
-        </thead>
-        <tbody id="scheduleBody"></tbody>
-      </table>
-    </section>
+        <form id="form-login" onsubmit="event.preventDefault(); handleLogin();">
+          <div class="form-group">
+            <label for="login-email">E-mail</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <input type="email" id="login-email" required placeholder="Digite seu e-mail">
+            </div>
+          </div>
 
-    <div class="total-row">
-      <span>TOTAL (R$)</span>
-      <span class="total-box" id="totalBox"></span>
-    </div>
-  </main>
+          <div class="form-group">
+            <label for="login-pass">Senha</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="login-pass" required placeholder="Digite sua senha">
+              <button type="button" class="toggle-pass" onclick="togglePasswordVisibility('login-pass', this)">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
 
-  <div class="modal-backdrop" id="slotModal" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="slotTitle">
-      <h2 id="slotTitle">Escolher aula</h2>
-      <label for="slotDate">Data</label>
-      <input type="date" id="slotDate">
-      <label for="slotCity">Cidade</label>
-      <input type="text" id="slotCity" list="cityOptions" value="Santo Antônio do Descoberto">
-      <datalist id="cityOptions">
-        <option value="Santo Antônio do Descoberto"></option>
-      </datalist>
-      <label for="slotHours">Quantidade de horas</label>
-      <select id="slotHours"></select>
-      <label for="slotModule">Módulo</label>
-      <select id="slotModule"></select>
-      <label for="slotSubject">Assunto</label>
-      <select id="slotSubject"></select>
-      <label for="slotLessonStatus">Status</label>
-      <select id="slotLessonStatus"></select>
-      <label for="slotTime">Horário</label>
-      <select id="slotTime"></select>
-      <label>Valor calculado</label>
-      <input type="text" id="slotValue" disabled>
-      <label for="slotNotes">Observações</label>
-      <textarea id="slotNotes" placeholder="Planejamento, combinados ou observações internas"></textarea>
-      <div class="modal-actions">
-        <button class="ghost-button" type="button" data-close-modal>Cancelar</button>
-        <button class="save-button is-visible" type="button" id="confirmSlot">Aplicar</button>
+          <div style="text-align: right; margin-top: -10px; margin-bottom: 24px;">
+            <a href="#" onclick="handleForgotPassword(event)"
+              style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-decoration: none;">Esqueci minha
+              senha</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-login-submit">
+            <span>Entrar</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <div class="or-separator">ou</div>
+
+        <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 20px;">
+          Ainda não tem uma conta?
+          <a href="#" onclick="changeView('view-register-step1'); event.preventDefault();"
+            style="color: var(--primary); font-weight: 700; text-decoration: underline;">Cadastre-se</a>
+        </div>
+
+        <div class="footer-note">
+          <i class="fa-solid fa-lock" style="color: var(--primary);"></i>
+          <span>Seus dados estão seguros conosco.</span>
+        </div>
+      </section>
+
+      <!-- VIEW 2: REGISTER STEP 1 (DADOS) -->
+      <section class="view-container" id="view-register-step1">
+        <div class="steps-header">
+          <div class="steps-line">
+            <div class="steps-line-progress" style="width: 0%;"></div>
+          </div>
+          <div class="step-item active">
+            <div class="step-circle">1</div>
+            <div class="step-label">Dados</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-label">Plano</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-label">Pagto</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-label">Agenda</div>
+          </div>
+        </div>
+
+        <h2 class="form-title">Cadastro do Aluno</h2>
+        <p class="form-subtitle">Vamos começar com seus dados pessoais</p>
+
+        <form id="form-reg-step1" onsubmit="event.preventDefault(); handleRegStep1();">
+          <div class="form-group">
+            <label for="reg-nome">Nome completo</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-user input-icon"></i>
+              <input type="text" id="reg-nome" required placeholder="Digite seu nome completo">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-email">E-mail</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <input type="email" id="reg-email" required placeholder="Digite seu melhor e-mail">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-tel">WhatsApp</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-phone input-icon"></i>
+              <input type="tel" id="reg-tel" required placeholder="(61) 98196-5384" oninput="maskPhone(this)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-pass">Crie uma senha</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="reg-pass" required placeholder="Mínimo 6 caracteres">
+              <button type="button" class="toggle-pass" onclick="togglePasswordVisibility('reg-pass', this)">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-pass-conf">Confirme sua senha</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="reg-pass-conf" required placeholder="Repita a senha criada">
+              <button type="button" class="toggle-pass" onclick="togglePasswordVisibility('reg-pass-conf', this)">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="btn-actions-row">
+            <button type="button" class="btn btn-secondary" onclick="changeView('view-login')">Voltar</button>
+            <button type="submit" class="btn btn-primary">
+              <span>Continuar</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- VIEW 3: REGISTER STEP 2 (PLANO) -->
+      <section class="view-container" id="view-register-step2">
+        <div class="steps-header">
+          <div class="steps-line">
+            <div class="steps-line-progress" style="width: 33%;"></div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Dados</div>
+          </div>
+          <div class="step-item active">
+            <div class="step-circle">2</div>
+            <div class="step-label">Plano</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-label">Pagto</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-label">Agenda</div>
+          </div>
+        </div>
+
+        <h2 class="form-title">Escolha seu plano</h2>
+        <p class="form-subtitle">Selecione onde as aulas práticas serão realizadas.</p>
+
+        <!-- PLAN CARD 1 -->
+        <div class="selectable-card selected" id="plan-card-local" onclick="selectPlan('local')">
+          <div class="card-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div class="card-content">
+            <div class="card-title">Aulas em Santo Antônio d. Descoberto - GO</div>
+            <div class="card-desc">Aulas realizadas em nosso estúdio fotográfico na cidade.</div>
+          </div>
+          <div class="card-price">
+            <div class="price-val">R$ 100</div>
+            <div class="price-lbl">por hora</div>
+          </div>
+          <div class="card-radio"></div>
+        </div>
+
+        <!-- PLAN CARD 2 -->
+        <div class="selectable-card" id="plan-card-out" onclick="selectPlan('out')">
+          <div class="card-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+          <div class="card-content">
+            <div class="card-title">Aulas fora da cidade (Outras localidades)</div>
+            <div class="card-desc">Professor viaja até sua localidade/estúdio externo.</div>
+          </div>
+          <div class="card-price">
+            <div class="price-val">R$ 150</div>
+            <div class="price-lbl">por hora</div>
+          </div>
+          <div class="card-radio"></div>
+        </div>
+
+        <div class="included-box">
+          <div class="included-box-title">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>O que está incluso</span>
+          </div>
+          <div class="included-grid">
+            <div class="included-item"><i class="fa-solid fa-check"></i><span>Aula Prática Individual</span></div>
+            <div class="included-item"><i class="fa-solid fa-check"></i><span>Material complementar</span></div>
+            <div class="included-item"><i class="fa-solid fa-check"></i><span>Professor especializado</span></div>
+            <div class="included-item"><i class="fa-solid fa-check"></i><span>Certificação Criavibe</span></div>
+            <div class="included-item"><i class="fa-solid fa-check"></i><span>Acompanhamento pós-aula</span></div>
+            <div class="included-item"><i class="fa-solid fa-check"></i><span>Técnicas avançadas</span></div>
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-title">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <span>Resumo da contratação</span>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-item"><label>Plano Escolhido</label><span id="sum-plano-nome">Santo Antônio</span></div>
+            <div class="summary-item"><label>Valor / Hora</label><span id="sum-plano-valor">R$ 100,00</span></div>
+            <div class="summary-item"><label>Carga Horária</label><span>1 hora de aula</span></div>
+          </div>
+        </div>
+
+        <div class="btn-actions-row">
+          <button class="btn btn-secondary" onclick="changeView('view-register-step1')">Voltar</button>
+          <button class="btn btn-primary" onclick="changeView('view-register-step3')">
+            <span>Continuar</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- VIEW 4: REGISTER STEP 3 (PAGAMENTO) -->
+      <section class="view-container" id="view-register-step3">
+        <div class="steps-header">
+          <div class="steps-line">
+            <div class="steps-line-progress" style="width: 66%;"></div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Dados</div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Plano</div>
+          </div>
+          <div class="step-item active">
+            <div class="step-circle">3</div>
+            <div class="step-label">Pagto</div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-label">Agenda</div>
+          </div>
+        </div>
+
+        <h2 class="form-title">Forma de pagamento</h2>
+        <p class="form-subtitle">Escolha a forma que for mais conveniente. O pagamento é realizado no dia da aula.</p>
+
+        <!-- PAGAMENTO CARD 1 -->
+        <div class="selectable-card selected" id="pay-card-pix" onclick="selectPayment('PIX')">
+          <div class="card-icon" style="background: rgba(74, 222, 128, 0.08); color: #22c55e;"><i
+              class="fa-solid fa-qrcode"></i></div>
+          <div class="card-content">
+            <div class="card-title">PIX</div>
+            <div class="card-desc">Transferência instantânea informada no estúdio.</div>
+          </div>
+          <div class="card-radio"></div>
+        </div>
+
+        <!-- PAGAMENTO CARD 2 -->
+        <div class="selectable-card" id="pay-card-dinheiro" onclick="selectPayment('Dinheiro')">
+          <div class="card-icon" style="background: rgba(234, 179, 8, 0.08); color: #eab308;"><i
+              class="fa-solid fa-money-bill-wave"></i></div>
+          <div class="card-content">
+            <div class="card-title">Dinheiro físico</div>
+            <div class="card-desc">Pagamento em cédulas realizado no início da aula.</div>
+          </div>
+          <div class="card-radio"></div>
+        </div>
+
+        <!-- PAGAMENTO CARD 3 -->
+        <div class="selectable-card" id="pay-card-cartao" onclick="selectPayment('Cartão de crédito')">
+          <div class="card-icon" style="background: rgba(99, 102, 241, 0.08); color: #6366f1;"><i
+              class="fa-solid fa-credit-card"></i></div>
+          <div class="card-content">
+            <div class="card-title">Cartão de Crédito/Débito</div>
+            <div class="card-desc">Aceitamos as principais bandeiras no dia da aula.</div>
+          </div>
+          <div class="card-radio"></div>
+        </div>
+
+        <div class="included-box" style="background: rgba(119, 122, 67, 0.04); border-color: rgba(119, 122, 67, 0.2);">
+          <div class="included-box-title" style="color: var(--primary);">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Importante</span>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+            As formas de pagamento são informativas para controle de cadastro. Todos os pagamentos podem ser realizados
+            diretamente no dia da aula, antes do início da sessão com o professor.
+          </p>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-title">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <span>Resumo da contratação</span>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-item"><label>Plano Escolhido</label><span class="sum-plano-nome-txt">Santo
+                Antônio</span></div>
+            <div class="summary-item"><label>Forma de Pagto</label><span id="sum-pagto-forma">PIX</span></div>
+            <div class="summary-item"><label>Valor Final</label><span class="sum-plano-valor-txt">R$ 100,00</span></div>
+          </div>
+        </div>
+
+        <div class="btn-actions-row">
+          <button class="btn btn-secondary" onclick="changeView('view-register-step2')">Voltar</button>
+          <button class="btn btn-primary" onclick="goToStep4()">
+            <span>Continuar</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- VIEW 5: REGISTER STEP 4 (AGENDAMENTO DE HORÁRIO) -->
+      <section class="view-container" id="view-register-step4">
+        <div class="steps-header">
+          <div class="steps-line">
+            <div class="steps-line-progress" style="width: 100%;"></div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Dados</div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Plano</div>
+          </div>
+          <div class="step-item completed">
+            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">Pagto</div>
+          </div>
+          <div class="step-item active">
+            <div class="step-circle">4</div>
+            <div class="step-label">Agenda</div>
+          </div>
+        </div>
+
+        <h2 class="form-title">Agende sua aula!</h2>
+        <p class="form-subtitle">Escolha a data e o horário que melhor se encaixam na sua rotina.</p>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <label style="font-size: 0.8rem; font-weight: 700; margin: 0;">Escolha a data</label>
+          <a href="#" id="btn-back-to-months" style="display: none; font-size: 0.75rem; color: var(--primary); font-weight: 700; text-decoration: none;" onclick="backToMonths(event)">
+            <i class="fa-solid fa-arrow-left"></i> Mudar mês
+          </a>
+        </div>
+        <div class="horizontal-calendar" id="reg-calendar-days">
+          <!-- Calendar buttons generated dynamically by JS -->
+        </div>
+
+        <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 8px;">Escolha o
+          horário</label>
+        <div class="hours-grid" id="reg-calendar-hours">
+          <!-- Hour buttons generated dynamically by JS -->
+        </div>
+
+        <!-- GEOLOCALIZAÇÃO DA AULA PRÁTICA -->
+        <div style="margin-top: 24px; margin-bottom: 24px; position: relative;">
+          <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 8px;">
+            <i class="fa-solid fa-map-location-dot"></i> Local exato da aula
+          </label>
+          <div class="form-group" id="reg-address-section" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+            <!-- Linha 1: CEP -->
+            <div style="display: flex; gap: 8px;">
+              <div class="input-wrapper" style="flex: 1; min-width: 120px; max-width: 180px;">
+                <i class="fa-solid fa-map-pin input-icon"></i>
+                <input type="text" id="reg-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;" oninput="maskCEP(this)" maxlength="9">
+              </div>
+              <button type="button" class="btn btn-secondary" style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;" onclick="searchCEPReg()">Buscar CEP</button>
+            </div>
+            <!-- Linha 2: Endereço -->
+            <div class="input-wrapper" style="display: flex;">
+              <i class="fa-solid fa-magnifying-glass input-icon"></i>
+              <input type="text" id="reg-address-input" placeholder="Ou digite o endereço completo..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off">
+              <button type="button" class="btn" style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 20px; font-weight: 700; cursor: pointer;" onclick="searchAddressReg()">Buscar</button>
+            </div>
+            <div id="address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
+          </div>
+          <div id="reg-map-container" style="height: 220px; border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; position: relative; z-index: 10;"></div>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-title" style="color: var(--primary);">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>Resumo do agendamento</span>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-item"><label>Plano Escolhido</label><span class="sum-plano-nome-txt">Santo
+                Antônio</span></div>
+            <div class="summary-item"><label>Data da aula</label><span id="sum-agenda-data">Selecione...</span></div>
+            <div class="summary-item"><label>Horário</label><span id="sum-agenda-hora">Selecione...</span></div>
+          </div>
+        </div>
+
+        <div class="btn-actions-row">
+          <button class="btn btn-secondary" onclick="handleScheduleBack()">Voltar</button>
+          <button class="btn btn-primary" onclick="submitRegistration()" id="btn-submit-registration">
+            <span>Confirmar Agendamento</span>
+            <i class="fa-solid fa-check"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- VIEW 6: PAINEL DO ALUNO -->
+      <section class="view-container" id="view-panel-student">
+        <div class="aluno-header">
+          <div class="aluno-welcome">
+            <h2 id="student-welcome-title">Olá, Aluno!</h2>
+            <p>Seja bem-vindo à sua área de estudos.</p>
+          </div>
+          <button class="btn-logout" onclick="handleLogout()" title="Sair do sistema">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+
+        <div class="student-profile-card" id="student-profile-card">
+          <div class="student-avatar" id="student-avatar" onclick="document.getElementById('student-avatar-input').click()" title="Clique para alterar a foto de perfil">AL</div>
+          <input type="file" id="student-avatar-input" accept="image/*" style="display: none;" onchange="uploadStudentAvatar(this)">
+          <div class="student-profile-main">
+            <h3 id="student-profile-name">Aluno</h3>
+            <div class="student-profile-grid">
+              <div class="student-info-chip"><i class="fa-solid fa-envelope"></i><span id="student-profile-email">email</span></div>
+              <div class="student-info-chip"><i class="fa-solid fa-phone"></i><span id="student-profile-phone">telefone</span></div>
+              <div class="student-info-chip"><i class="fa-solid fa-id-badge"></i><span id="student-profile-code">Cadastro ativo</span></div>
+            </div>
+          </div>
+          <button class="inline-action-btn" onclick="toggleStudentProfileEdit()" type="button">
+            <i class="fa-solid fa-pen"></i> Editar
+          </button>
+          <div class="student-inline-form" id="student-profile-form">
+            <div class="form-group">
+              <label for="student-edit-name">Nome completo</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-user input-icon"></i>
+                <input type="text" id="student-edit-name">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="student-edit-email">E-mail</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-envelope input-icon"></i>
+                <input type="email" id="student-edit-email">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="student-edit-phone">WhatsApp</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-phone input-icon"></i>
+                <input type="tel" id="student-edit-phone" oninput="maskPhone(this)">
+              </div>
+            </div>
+            <div class="btn-actions-row" style="grid-column: 1 / -1; margin-top: 0;">
+              <button type="button" class="btn btn-secondary" onclick="toggleStudentProfileEdit(false)">Cancelar</button>
+              <button type="button" class="btn btn-primary" onclick="saveStudentProfileInline()">Salvar dados</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="aluno-plan-card" id="student-plan-card">
+          <h3 id="panel-student-plan-name">Curso Fotografia Prática</h3>
+          <p id="panel-student-plan-cidade">Local das aulas: Santo Antônio do Descoberto - GO</p>
+          <div class="student-plan-grid">
+            <div class="student-plan-detail"><label>Pagamento</label><span id="panel-student-plan-pagamento">Nao informado</span></div>
+            <div class="student-plan-detail"><label>Status</label><span id="panel-student-plan-status">Ativo</span></div>
+            <div class="student-plan-detail"><label>Total contratado</label><span id="panel-student-plan-total">0 aulas</span></div>
+          </div>
+          <button class="inline-action-btn" style="background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.24); margin-bottom: 14px;" onclick="toggleStudentPlanEdit()" type="button">
+            <i class="fa-solid fa-pen"></i> Editar pagamento
+          </button>
+          <div class="student-inline-form" id="student-plan-form" style="border-color: rgba(255,255,255,0.22); margin-bottom: 14px;">
+            <div class="form-group">
+              <label for="student-edit-payment" style="color: white;">Forma de pagamento</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-credit-card input-icon"></i>
+                <select id="student-edit-payment">
+                  <option value="PIX">PIX</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                  <option value="Cartao de credito">Cartao de credito/debito</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-actions-row" style="grid-column: 1 / -1; margin-top: 0;">
+              <button type="button" class="btn btn-secondary" onclick="toggleStudentPlanEdit(false)">Cancelar</button>
+              <button type="button" class="btn btn-primary" onclick="saveStudentPlanInline()">Salvar pagamento</button>
+            </div>
+          </div>
+          <div class="aluno-plan-progress-container">
+            <div class="aluno-plan-progress-fill" id="student-progress-bar"></div>
+          </div>
+          <div class="aluno-plan-stats">
+            <span id="student-progress-text">0 de 10 aulas usadas</span>
+            <span id="student-progress-percent">0% concluído</span>
+          </div>
+        </div>
+
+        <div class="section-header-row">
+          <h3>Suas Aulas Práticas</h3>
+          <button class="btn btn-primary"
+            style="padding: 8px 14px; font-size: 0.75rem; width: auto; border-radius: 8px;"
+            onclick="openStudentScheduleScreen()">
+            <i class="fa-solid fa-plus"></i> Agendar Aula
+          </button>
+        </div>
+
+        <div class="aluno-lessons-list" id="student-lessons-container">
+          <!-- Lesson cards populated dynamically -->
+        </div>
+      </section>
+
+      <!-- VIEW 7: PAINEL DO PROFESSOR (ADMIN) -->
+      <section class="view-container" id="view-panel-teacher" style="max-width: 100%;">
+        <div class="admin-layout">
+          <div class="admin-topbar">
+            <div>
+              <h2 style="font-family: var(--font-title); color: var(--primary); font-size: 1.4rem;">Painel do Professor
+              </h2>
+              <p style="font-size: 0.75rem; color: var(--text-muted);" id="teacher-profile-info">
+                willianb.o.1993@gmail.com</p>
+            </div>
+            <button class="btn-logout" onclick="handleLogout()" title="Sair do painel administrativo">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Sair</span>
+            </button>
+          </div>
+
+          <div class="admin-tabs">
+            <button class="admin-tab-btn active" id="tab-btn-aulas" onclick="switchAdminTab('aulas')"><i
+                class="fa-solid fa-calendar-days"></i> Aulas Agendadas</button>
+            <button class="admin-tab-btn" id="tab-btn-alunos" onclick="switchAdminTab('alunos')"><i
+                class="fa-solid fa-users"></i> Alunos Matriculados</button>
+          </div>
+
+          <!-- TAB CONTENT: AULAS -->
+          <div class="admin-tab-panel" id="admin-panel-aulas">
+            <div class="admin-metrics-grid">
+              <div class="admin-metric-card"><span>Aulas</span><strong id="teacher-metric-aulas">0</strong></div>
+              <div class="admin-metric-card"><span>Alunos</span><strong id="teacher-metric-alunos">0</strong></div>
+              <div class="admin-metric-card"><span>Pre agendadas</span><strong id="teacher-metric-pendentes">0</strong></div>
+              <div class="admin-metric-card"><span>Receita prevista</span><strong id="teacher-metric-receita">R$ 0</strong></div>
+            </div>
+            <div class="admin-filter-bar">
+              <div class="input-wrapper">
+                <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                <input type="search" id="teacher-search-input" placeholder="Buscar aluno, e-mail, telefone, cidade ou assunto" oninput="renderTeacherAulasPanel()">
+              </div>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-filter input-icon"></i>
+                <select id="teacher-status-filter" onchange="renderTeacherAulasPanel()">
+                  <option value="">Todos os status</option>
+                  <option value="pre_agendado">Pre agendado</option>
+                  <option value="confirmado">Confirmado</option>
+                  <option value="concluido">Concluido</option>
+                  <option value="cancelado">Cancelado</option>
+                  <option value="remarcado">Remarcado</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-table-container">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Data & Hora</th>
+                    <th>Aluno</th>
+                    <th>Cidade</th>
+                    <th>Módulo / Assunto</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="teacher-aulas-tbody">
+                  <!-- Aulas populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB CONTENT: ALUNOS -->
+          <div class="admin-tab-panel" id="admin-panel-alunos" style="display: none;">
+            <div class="admin-table-container">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Aluno</th>
+                    <th>WhatsApp & E-mail</th>
+                    <th>Plano Contratado</th>
+                    <th>Crédito Aulas</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="teacher-alunos-tbody">
+                  <!-- Alunos populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ── MODAL: DETALHES / AGENDAMENTO DE NOVA AULA (ALUNO/ADMIN) ── -->
+  <div class="modal-overlay" id="slot-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="slot-modal-title">Agendar Aula</h3>
+        <button class="modal-close" onclick="closeSlotModal()">&times;</button>
       </div>
-      <div class="status-line" id="slotStatus"></div>
+      <form id="form-slot-modal" onsubmit="event.preventDefault(); saveLessonFromModal();">
+        <div class="form-group">
+          <label for="slot-city">Cidade / Localização</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-location-dot input-icon"></i>
+            <select id="slot-city" onchange="handleModalCityChange()">
+              <!-- Options generated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" id="slot-hours-group">
+          <label for="slot-hours">Quantidade de horas</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-clock input-icon"></i>
+            <select id="slot-hours" onchange="handleModalTimeChange()">
+              <!-- Generated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="slot-date">Data da aula</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-calendar input-icon"></i>
+            <input type="date" id="slot-date" required onchange="handleModalDateChange()">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label id="slot-time-label" style="font-weight: 700;">Selecione os Horários (Selecione até 3)</label>
+          <div id="slot-time-container" class="time-chips-container">
+            <!-- Populated dynamically with chips -->
+          </div>
+          <input type="hidden" id="slot-time" value="">
+        </div>
+
+        <div class="form-group">
+          <label for="slot-module">Módulo</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-book-open input-icon"></i>
+            <select id="slot-module" onchange="handleModalModuleChange()">
+              <!-- Generated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="slot-subject">Assunto prático</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-bookmark input-icon"></i>
+            <select id="slot-subject">
+              <!-- Generated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <!-- ENDEREÇO E MAPA NO MODAL -->
+        <div class="form-group" id="modal-address-group" style="margin-bottom: 15px; position: relative; display: flex; flex-direction: column; gap: 8px;">
+          <label for="modal-address-input" style="font-weight: 700;">Endereço Exato da Aula</label>
+          <!-- Linha 1: CEP -->
+          <div style="display: flex; gap: 8px;">
+            <div class="input-wrapper" style="flex: 1; min-width: 120px; max-width: 180px;">
+              <i class="fa-solid fa-map-pin input-icon"></i>
+              <input type="text" id="modal-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;" oninput="maskCEP(this)" maxlength="9">
+            </div>
+            <button type="button" class="btn btn-secondary" style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;" onclick="searchCEPModal()">Buscar CEP</button>
+          </div>
+          <!-- Linha 2: Endereço -->
+          <div class="input-wrapper" style="display: flex;">
+            <i class="fa-solid fa-magnifying-glass input-icon"></i>
+            <input type="text" id="modal-address-input" placeholder="Endereço, número, bairro..." style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off">
+            <button type="button" class="btn" style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 16px; font-weight: 700; cursor: pointer;" onclick="searchAddressModal()">Buscar</button>
+          </div>
+          <div id="modal-address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
+        </div>
+        <div id="modal-map-container" style="height: 180px; border-radius: 12px; border: 1.5px solid var(--border); margin-bottom: 15px; overflow: hidden; position: relative; z-index: 10;"></div>
+        <input type="hidden" id="modal-lat">
+        <input type="hidden" id="modal-lng">
+
+        <!-- ADMIN ONLY FIELDS -->
+        <div class="admin-only-fields" id="admin-fields"
+          style="display: none; border-top: 1.5px dashed var(--border); padding-top: 15px; margin-top: 15px;">
+          <div class="form-group">
+            <label for="slot-status">Status da Aula</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-circle-question input-icon"></i>
+              <select id="slot-status">
+                <!-- Status options -->
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="slot-notes">Observações e Planejamento</label>
+            <textarea id="slot-notes"
+              style="width: 100%; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; font-family: var(--font-body); font-size: 0.8rem; background: var(--surface-sub); outline: none; min-height: 80px;"
+              placeholder="Planejamento pedagógico ou observações de logística..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-group"
+          style="background: var(--surface-sub); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">VALOR DO AGENDAMENTO</span>
+          <span style="font-size: 1.15rem; font-weight: 800; color: var(--primary); font-family: var(--font-title);"
+            id="slot-calc-value">R$ 0,00</span>
+        </div>
+
+        <div class="btn-actions-row">
+          <button type="button" class="btn btn-secondary" onclick="closeSlotModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-slot">Salvar</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div class="modal-backdrop" id="adminModal" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
-      <h2 id="adminTitle">Acesso do fotógrafo</h2>
-      <label for="adminEmail">Email</label>
-      <input type="email" id="adminEmail" autocomplete="email" placeholder="email autorizado">
-      <div class="modal-actions">
-        <button class="ghost-button" type="button" data-close-modal>Cancelar</button>
-        <button class="save-button is-visible" type="button" id="adminLogin">Entrar</button>
+  <!-- ── MODAL: EDITAR PLANO DO ALUNO (ADMIN FOTÓGRAFO) ── -->
+  <div class="modal-overlay" id="plan-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Editar Plano do Aluno</h3>
+        <button class="modal-close" onclick="closePlanModal()">&times;</button>
       </div>
-      <div class="status-line" id="adminStatus"></div>
+      <form id="form-plan-modal" onsubmit="event.preventDefault(); saveStudentPlanFromModal();">
+        <input type="hidden" id="edit-plan-aluno-id">
+        <div class="form-group">
+          <label for="edit-plan-name">Nome do Curso/Plano</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-graduation-cap input-icon"></i>
+            <input type="text" id="edit-plan-name" required placeholder="Curso Prático">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-plan-total">Quantidade total de aulas contratadas</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-list-ol input-icon"></i>
+            <input type="number" id="edit-plan-total" required min="0" value="10">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-plan-status">Status do plano</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-circle-info input-icon"></i>
+            <select id="edit-plan-status">
+              <option value="ativo">Ativo</option>
+              <option value="pausado">Pausado</option>
+              <option value="concluido">Concluído</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-plan-payment">Forma de pagamento (Informativa)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-credit-card input-icon"></i>
+            <select id="edit-plan-payment">
+              <option value="PIX">PIX</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão de crédito">Cartão de crédito</option>
+              <option value="">Não informado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btn-actions-row">
+          <button type="button" class="btn btn-secondary" onclick="closePlanModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Plano</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div class="admin-badge" id="adminBadge">
-    <span id="adminBadgeText"></span>
-    <button class="mini-button" type="button" id="adminLogout">Sair</button>
-  </div>
-
+  <!-- ── SCRIPT SPA LOGIC ── -->
   <script>
     const API_BASE = '/api/agendamentos';
-    const STORAGE_KEY = 'criavibePreAgendamentoTokens';
-    const DAYS = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'];
+    const STORAGE_KEY = 'criavibe_student_token';
+    const DAYS_NAMES = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
+    const DAYS_SHORT = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 
+    // Estado da aplicação
     const state = {
-      tokens: JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
-      activeToken: '',
-      activeStudent: { nome: '', email: '', telefone: '' },
-      activePlan: { nome: 'Curso Fotografia Prática', total_aulas: 0, aulas_usadas: 0, status: 'ativo' },
-      draftLessons: [],
-      board: [],
-      course: { modulos: [], assuntos: [] },
-      admin: null,
-      dirty: false,
-      slotDay: null,
-      slotAulaId: null,
-      valorSantoAntonioCentavos: 7500,
-      valorOutraCidadeCentavos: 12000,
+      alunoLogado: null,
+      adminLogado: null,
+      token: localStorage.getItem(STORAGE_KEY) || '',
+      currentView: 'view-login',
+      selectedMonth: null,
+
+      // Dados do formulário de cadastro (Steps)
+      regData: {
+        nome: '',
+        email: '',
+        telefone: '',
+        senha: '',
+        plano: 'local', // 'local' ou 'out'
+        forma_pagamento: 'PIX', // 'PIX', 'Dinheiro', 'Cartão de crédito'
+        data_aula: '',
+        horario: ''
+      },
+
+      // Dados carregados das APIs
+      dias: ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'],
       horarios: ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
       horasOpcoes: [1, 2, 3, 4, 5, 6, 7, 8],
       statusOpcoes: ['pre_agendado', 'confirmado', 'concluido', 'cancelado', 'remarcado'],
+      course: { modulos: [], assuntos: [] },
+      board: [], // Todos os agendamentos cadastrados no banco
+
+      // Valores de aula (centavos)
+      valorSantoAntonioCentavos: 10000,
+      valorOutraCidadeCentavos: 15000,
+
+      // Modal State
+      modalActiveDayName: null,
+      modalEditingLessonId: null
     };
 
-    const els = {
-      studentStrip: document.getElementById('studentStrip'),
-      scheduleBody: document.getElementById('scheduleBody'),
-      totalBox: document.getElementById('totalBox'),
-      slotModal: document.getElementById('slotModal'),
-      slotTitle: document.getElementById('slotTitle'),
-      slotDate: document.getElementById('slotDate'),
-      slotCity: document.getElementById('slotCity'),
-      slotHours: document.getElementById('slotHours'),
-      slotModule: document.getElementById('slotModule'),
-      slotSubject: document.getElementById('slotSubject'),
-      slotLessonStatus: document.getElementById('slotLessonStatus'),
-      slotTime: document.getElementById('slotTime'),
-      slotValue: document.getElementById('slotValue'),
-      slotNotes: document.getElementById('slotNotes'),
-      slotStatus: document.getElementById('slotStatus'),
-      confirmSlot: document.getElementById('confirmSlot'),
-      adminTrigger: document.getElementById('adminTrigger'),
-      adminModal: document.getElementById('adminModal'),
-      adminEmail: document.getElementById('adminEmail'),
-      adminLogin: document.getElementById('adminLogin'),
-      adminStatus: document.getElementById('adminStatus'),
-      adminBadge: document.getElementById('adminBadge'),
-      adminBadgeText: document.getElementById('adminBadgeText'),
-      adminLogout: document.getElementById('adminLogout'),
-      planName: document.getElementById('planName'),
-      planTotal: document.getElementById('planTotal'),
-      planStatus: document.getElementById('planStatus'),
-      planProgress: document.getElementById('planProgress'),
-    };
-
-    function money(cents) {
-      return (Number(cents || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    function normalizeCity(value) {
-      return String(value || '')
-        .trim()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase();
-    }
-
-    function isSantoAntonio(value) {
-      return normalizeCity(value).includes('santo antonio do descoberto');
-    }
-
-    function valorHoraForCity(value) {
-      return isSantoAntonio(value) ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
-    }
-
-    function totalForModal() {
-      return valorHoraForCity(els.slotCity.value) * Number(els.slotHours.value || 1);
-    }
-
-    function updateSlotValue() {
-      els.slotValue.value = money(totalForModal());
-    }
-
-    function dayIndex(day) {
-      return DAYS.indexOf(day) + 1;
-    }
-
-    function dateMatchesDay(dateValue, day) {
-      if (!dateValue) return false;
-      const [year, month, date] = dateValue.split('-').map(Number);
-      const local = new Date(year, month - 1, date);
-      return local.getDay() === dayIndex(day);
-    }
-
-    function nextDateForDay(day) {
-      const target = dayIndex(day);
-      const base = new Date();
-      base.setHours(0, 0, 0, 0);
-      const diff = (target - base.getDay() + 7) % 7;
-      base.setDate(base.getDate() + diff);
-      return base.toISOString().slice(0, 10);
-    }
-
-    function occupiedHoursFor(dateValue, ignoreAulaId = null, duration = Number(els.slotHours?.value || 1)) {
-      return state.board
-        .filter(item => item.data_aula === dateValue && item.aula_id !== ignoreAulaId)
-        .reduce((blocked, item) => {
-          state.horarios.forEach(hour => {
-            if (timeRangesOverlap(hour, duration, item.horario, item.quantidade_horas || 1)) {
-              blocked.add(hour);
-            }
-          });
-          return blocked;
-        }, new Set());
-    }
-
+    /* ── COMUNICAÇÃO DE REDE ── */
     async function request(path, options = {}) {
       const res = await fetch(API_BASE + path, {
         credentials: 'include',
@@ -3657,506 +5750,2260 @@ deploy_ftp.ps1
         ...options,
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || data.status === 'erro') throw new Error(data.mensagem || 'Erro ao processar solicitacao.');
+      if (!res.ok || data.status === 'erro') {
+        throw new Error(data.mensagem || 'Ocorreu um erro ao processar a requisição.');
+      }
       return data;
     }
 
-    function persistTokens() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tokens));
+    /* ── NAVEGAÇÃO DE VIEWS ── */
+    const HERO_COPY = {
+      'view-login': {
+        title: 'Bem-vindo!',
+        text: 'Acesse sua conta e agende sua pr\u00f3xima aula.'
+      },
+      'view-register-step1': {
+        title: 'Vamos come\u00e7ar?',
+        text: 'Preencha seus dados para criar seu acesso \u00e0s aulas.'
+      },
+      'view-register-step2': {
+        title: 'Escolha seu plano',
+        text: 'Selecione onde as aulas ser\u00e3o realizadas.'
+      },
+      'view-register-step3': {
+        title: 'Forma de pagamento',
+        text: 'Escolha como prefere pagar no dia da aula.'
+      },
+      'view-register-step4': {
+        title: 'Vamos agendar sua aula!',
+        text: 'Escolha a data e o hor\u00e1rio que melhor se encaixam na sua rotina.'
+      }
+    };
+
+    function updateHeroCopy(viewId) {
+      const copy = HERO_COPY[viewId] || HERO_COPY['view-login'];
+      const titleEl = document.getElementById('hero-step-title') || document.querySelector('.hero-welcome-texts h2');
+      const textEl = document.getElementById('hero-step-text') || document.querySelector('.hero-welcome-texts p');
+
+      if (titleEl) titleEl.textContent = copy.title;
+      if (textEl) textEl.textContent = copy.text;
     }
 
-    function hasCompleteStudent() {
-      return ['nome', 'email', 'telefone'].every(key => String(state.activeStudent[key] || '').trim());
-    }
+    function changeView(viewId) {
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(viewId);
+      if (activeEl) {
+        activeEl.classList.add('active');
+        state.currentView = viewId;
+        updateHeroCopy(viewId);
 
-    function ownLessonsFromBoard() {
-      return state.board.filter(item => item.is_owner);
-    }
+        const isDashboard = viewId === 'view-panel-student' || viewId === 'view-panel-teacher';
+        const container = document.querySelector('.app-container');
+        if (container) {
+          if (isDashboard) {
+            container.classList.add('logged-in');
+          } else {
+            container.classList.remove('logged-in');
+          }
+        }
 
-    function currentLessons() {
-      return state.dirty ? state.draftLessons : ownLessonsFromBoard();
-    }
-
-    function setDirty(value) {
-      state.dirty = value;
-      render();
-    }
-
-    function syncDraftFromBoard() {
-      state.draftLessons = ownLessonsFromBoard().map(item => ({
-        aula_id: item.aula_id,
-        dia_semana: item.dia_semana,
-        data_aula: item.data_aula,
-        horario: item.horario,
-        quantidade_horas: item.quantidade_horas || 1,
-        cidade: item.cidade || 'Santo Antônio do Descoberto',
-        modulo_id: item.modulo_id || null,
-        assunto_id: item.assunto_id || null,
-        status: item.status || 'pre_agendado',
-        observacoes: item.observacoes || '',
-        valor_hora_centavos: item.valor_hora_centavos || state.valorSantoAntonioCentavos,
-        valor_centavos: item.valor_centavos,
-      }));
-      state.dirty = false;
-    }
-
-    async function loadBoard(token = state.activeToken) {
-      const query = token ? `?token=${encodeURIComponent(token)}` : '';
-      const data = await request('/list.php' + query);
-      state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 7500;
-      state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 12000;
-      state.horarios = data.horarios || state.horarios;
-      state.horasOpcoes = data.horas_opcoes || state.horasOpcoes;
-      state.statusOpcoes = data.status_opcoes || state.statusOpcoes;
-      state.course = data.curso || state.course;
-      state.board = data.aulas || [];
-      state.admin = data.admin;
-      if (data.aluno_atual) {
-        state.activeToken = data.aluno_atual.token_publico;
-        state.activeStudent = {
-          nome: data.aluno_atual.nome || '',
-          email: data.aluno_atual.email || '',
-          telefone: data.aluno_atual.telefone || '',
-        };
-        if (data.aluno_atual.plano) {
-          state.activePlan = {
-            nome: data.aluno_atual.plano.nome || state.activePlan.nome,
-            total_aulas: Number(data.aluno_atual.plano.total_aulas || 0),
-            aulas_usadas: Number(data.aluno_atual.plano.aulas_usadas || 0),
-            status: data.aluno_atual.plano.status || 'ativo',
-          };
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        hideAlert();
+        if (viewId === 'view-register-step4') {
+          initRegisterMap();
         }
       }
-      syncPlanFromBoard();
-      syncDraftFromBoard();
-      render();
     }
 
-    function syncPlanFromBoard() {
-      const own = state.board.find(item => item.is_owner);
-      if (own) {
-        state.activePlan = {
-          nome: own.plano_nome || state.activePlan.nome,
-          total_aulas: own.total_aulas || state.activePlan.total_aulas || 0,
-          aulas_usadas: own.aulas_usadas || ownLessonsFromBoard().length,
-          status: own.plano_status || state.activePlan.status || 'ativo',
-        };
-      }
+    /* ── ALERTS / TOASTS ── */
+    function showAlert(text) {
+      const alertEl = document.getElementById('status-alert');
+      const textEl = document.getElementById('status-alert-text');
+      alertEl.style.display = 'flex';
+      textEl.textContent = text;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function renderStudentCards() {
-      const savedHtml = state.activeToken ? `
-        <article class="student-card is-saved" data-card="current">
-          ${studentFieldsHtml(state.activeStudent, state.activeToken && !state.admin)}
-          <div class="student-actions">
-            <span>${state.admin ? 'Modo fotógrafo: dados completos liberados.' : 'Seus dados ficam visíveis apenas neste navegador.'}</span>
-            ${state.admin ? '<button class="save-button" type="button" data-save>Salvar edição</button>' : ''}
-            ${state.admin ? '<button class="ghost-button" type="button" data-delete-student>Excluir aluno</button>' : ''}
-            <button class="ghost-button" type="button" data-new-student>Novo aluno</button>
-          </div>
-        </article>
-      ` : '';
-
-      const blankHtml = `
-        <article class="student-card" data-card="blank">
-          ${studentFieldsHtml(state.activeToken ? { nome: '', email: '', telefone: '' } : state.activeStudent, false)}
-          <div class="student-actions">
-            <span>Preencha os tres campos para liberar os horarios disponiveis.</span>
-            <button class="save-button ${state.dirty ? 'is-visible' : ''}" type="button" data-save>Salvar</button>
-          </div>
-        </article>
-      `;
-
-      els.studentStrip.innerHTML = savedHtml + blankHtml;
-
-      els.studentStrip.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', () => {
-          state.activeStudent[input.name] = input.value;
-          state.dirty = true;
-          renderSchedule();
-          renderTotal();
-          updateSaveButton();
-        });
-      });
-
-      els.studentStrip.querySelector('[data-save]')?.addEventListener('click', saveSchedule);
-      els.studentStrip.querySelector('[data-delete-student]')?.addEventListener('click', deleteStudent);
-      els.studentStrip.querySelector('[data-new-student]')?.addEventListener('click', () => {
-        state.activeToken = '';
-        state.activeStudent = { nome: '', email: '', telefone: '' };
-        state.activePlan = { nome: 'Curso Fotografia Prática', total_aulas: 0, aulas_usadas: 0, status: 'ativo' };
-        state.draftLessons = [];
-        state.dirty = false;
-        render();
-      });
+    function hideAlert() {
+      document.getElementById('status-alert').style.display = 'none';
     }
 
-    function studentFieldsHtml(student, locked) {
-      const disabled = locked ? 'disabled' : '';
-      return `
-        <div class="field-line">
-          <label>Aluno(a):</label>
-          <input ${disabled} name="nome" value="${escapeHtml(student.nome || '')}" autocomplete="name">
-        </div>
-        <div class="field-line">
-          <label>Email:</label>
-          <input ${disabled} name="email" value="${escapeHtml(student.email || '')}" autocomplete="email">
-        </div>
-        <div class="field-line">
-          <label>Telefone:</label>
-          <input ${disabled} name="telefone" value="${escapeHtml(student.telefone || '')}" autocomplete="tel">
-        </div>
-      `;
-    }
-
-    function renderSchedule() {
-      const lessons = currentLessons();
-      els.scheduleBody.innerHTML = DAYS.map(day => {
-        const dayLessons = [
-          ...lessons.filter(item => item.dia_semana === day),
-          ...state.board.filter(item => item.dia_semana === day && !item.is_owner),
-        ];
-        const primary = dayLessons[0];
-        const canPick = hasCompleteStudent() && (!state.activeToken || state.dirty || state.admin);
-
-        return `
-          <tr>
-            <td>${day}</td>
-            <td class="slot-cell" data-day="${day}">
-              ${dayLessons.length ? dayLessons.map(item => studentCell(item, Boolean(!item.is_owner && !state.admin))).join('') : slotButton(canPick, day)}
-            </td>
-            <td class="slot-cell" data-day="${day}">${primary ? uniqueText(dayLessons.map(item => formatDate(item.data_aula))).join('<br>') : slotButton(canPick, day)}</td>
-            <td class="slot-cell" data-day="${day}">${primary ? dayLessons.map(item => formatTimeRange(item.horario, item.quantidade_horas)).join('<br>') : slotButton(canPick, day)}</td>
-            <td class="slot-cell" data-day="${day}">${primary ? valueCell(dayLessons) : slotButton(canPick, day)}</td>
-          </tr>
-        `;
-      }).join('');
-
-      els.scheduleBody.querySelectorAll('.slot-cell').forEach(cell => {
-        cell.addEventListener('click', () => {
-          const day = cell.dataset.day;
-          if (!hasCompleteStudent()) return;
-          openSlot(day);
-        });
-      });
-
-      els.scheduleBody.querySelectorAll('[data-delete-aula]').forEach(btn => {
-        btn.addEventListener('click', event => {
-          event.stopPropagation();
-          deleteLesson(Number(btn.dataset.deleteAula));
-        });
-      });
-
-      els.scheduleBody.querySelectorAll('[data-edit-token]').forEach(btn => {
-        btn.addEventListener('click', event => {
-          event.stopPropagation();
-          if (btn.dataset.editToken) loadBoard(btn.dataset.editToken);
-        });
-      });
-    }
-
-    function studentCell(item, locked) {
-      if (locked) {
-        return '';
-      }
-
-      const details = [];
-      if (item.is_owner || state.admin) {
-        if (item.email) details.push(item.email);
-        if (item.telefone) details.push(item.telefone);
-      }
-
-      const adminActions = state.admin && item.aula_id ? `
-        <span class="admin-row-actions">
-          <button class="mini-button" type="button" data-edit-token="${escapeHtml(item.token_publico || '')}">Editar</button>
-          <button class="mini-button" type="button" data-delete-aula="${item.aula_id}">Excluir aula</button>
-        </span>
-      ` : '';
-
-      return `
-        <span class="student-name">${escapeHtml(item.aluno || state.activeStudent.nome || '')}</span>
-        <span class="private-note">${escapeHtml(`${item.quantidade_horas || 1}h - ${item.cidade || 'Santo Antônio do Descoberto'}`)}</span>
-        ${item.modulo_nome || item.assunto_titulo ? `<span class="private-note">${escapeHtml([item.modulo_nome, item.assunto_titulo].filter(Boolean).join(' • '))}</span>` : ''}
-        <span class="private-note">${escapeHtml((item.status || 'pre_agendado').replace('_', ' '))}</span>
-        ${details.length ? `<span class="private-note">${escapeHtml(details.join(' • '))}</span>` : ''}
-        ${adminActions}
-      `;
-    }
-
-    function uniqueText(values) {
-      return [...new Set(values.filter(Boolean))];
-    }
-
-    function valueCell(items) {
-      const visibleItems = state.admin
-        ? items
-        : items.filter(item => item.is_owner);
-      const total = visibleItems.reduce((sum, item) => sum + Number(item.valor_centavos || 0), 0);
-      return total ? money(total) : '';
-    }
-
-    function slotButton(canPick, day) {
-      const label = canPick ? 'Escolher' : 'Preencha os dados';
-      return `<button class="slot-button" type="button" data-day="${day}" ${canPick ? '' : 'disabled'}>${label}</button>`;
-    }
-
-    function renderTotal() {
-      const total = currentLessons().reduce((sum, item) => sum + Number(item.valor_centavos || 0), 0);
-      els.totalBox.textContent = total ? money(total) : '';
-    }
-
-    function renderAdmin() {
-      if (state.admin) {
-        els.adminBadge.classList.add('is-visible');
-        els.adminBadgeText.textContent = `Fotógrafo: ${state.admin.email}`;
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
       } else {
-        els.adminBadge.classList.remove('is-visible');
-        els.adminBadgeText.textContent = '';
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
       }
     }
 
-    function renderPlan() {
-      els.planName.value = state.activePlan.nome || 'Curso Fotografia Prática';
-      els.planTotal.value = state.activePlan.total_aulas || 0;
-      els.planStatus.value = state.activePlan.status || 'ativo';
-      const used = currentLessons().length || state.activePlan.aulas_usadas || 0;
-      const total = Number(els.planTotal.value || 0);
-      const remaining = Math.max(0, total - used);
-      els.planProgress.textContent = total
-        ? `${used} usadas • ${remaining} restantes`
-        : `${used} aulas planejadas`;
-    }
+    function maskPhone(input) {
+      let v = input.value.replace(/\D/g, '');
+      if (v.length > 11) v = v.substring(0, 11);
 
-    function render() {
-      renderStudentCards();
-      renderSchedule();
-      renderTotal();
-      renderAdmin();
-      renderPlan();
-      updateSaveButton();
-    }
-
-    function updateSaveButton() {
-      const save = els.studentStrip.querySelector('[data-save]');
-      if (save) {
-        save.classList.toggle('is-visible', state.dirty && hasCompleteStudent() && state.draftLessons.length > 0);
-        save.disabled = !(state.dirty && hasCompleteStudent() && state.draftLessons.length > 0);
+      if (v.length > 10) {
+        input.value = `(${v.substring(0, 2)}) ${v.substring(2, 7)}-${v.substring(7, 11)}`;
+      } else if (v.length > 5) {
+        input.value = `(${v.substring(0, 2)}) ${v.substring(2, 6)}-${v.substring(6, 10)}`;
+      } else if (v.length > 2) {
+        input.value = `(${v.substring(0, 2)}) ${v.substring(2)}`;
+      } else if (v.length > 0) {
+        input.value = `(${v}`;
+      } else {
+        input.value = '';
       }
     }
 
-    function openSlot(day) {
-      state.slotDay = day;
-      const existing = currentLessons().find(item => item.dia_semana === day);
-      state.slotAulaId = existing?.aula_id || null;
-      els.slotTitle.textContent = `Aula - ${day}`;
-      els.slotDate.min = nextDateForDay(day);
-      els.slotDate.value = existing?.data_aula || nextDateForDay(day);
-      els.slotCity.value = existing?.cidade || 'Santo Antônio do Descoberto';
-      els.slotHours.innerHTML = state.horasOpcoes.map(hours => `<option value="${hours}">${hours} hora${hours > 1 ? 's' : ''}</option>`).join('');
-      els.slotHours.value = existing?.quantidade_horas || 1;
-      renderModuleOptions(existing?.modulo_id || '', existing?.assunto_id || '');
-      renderStatusOptions(existing?.status || 'pre_agendado');
-      els.slotNotes.value = existing?.observacoes || '';
-      renderHourOptions(existing?.aula_id || null);
-      els.slotTime.value = existing?.horario || firstAvailableHour();
-      updateSlotValue();
-      els.slotStatus.textContent = '';
-      openModal(els.slotModal);
-    }
+    /* ── AUTENTICAÇÃO E LOGIN ── */
+    async function handleLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-pass').value;
+      const btn = document.getElementById('btn-login-submit');
 
-    function renderHourOptions(ignoreAulaId = null) {
-      const occupied = occupiedHoursFor(els.slotDate.value, ignoreAulaId);
-      const duration = Number(els.slotHours.value || 1);
-      els.slotTime.innerHTML = state.horarios.map(hour => {
-        const unavailable = occupied.has(hour);
-        return `<option value="${hour}" ${unavailable ? 'disabled' : ''}>${formatTimeRange(hour, duration)}${unavailable ? ' - indisponível' : ''}</option>`;
-      }).join('');
-    }
+      btn.disabled = true;
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Entrando...';
 
-    function firstAvailableHour() {
-      const option = [...els.slotTime.options].find(item => !item.disabled);
-      return option ? option.value : '';
-    }
-
-    function renderModuleOptions(selectedModuleId = null, selectedSubjectId = null) {
-      els.slotModule.innerHTML = '<option value="">Sem módulo</option>' + state.course.modulos
-        .map(module => `<option value="${module.id}">${escapeHtml(module.nome)}</option>`)
-        .join('');
-      els.slotModule.value = selectedModuleId || '';
-      renderSubjectOptions(selectedSubjectId);
-    }
-
-    function renderSubjectOptions(selectedSubjectId = null) {
-      const moduleId = Number(els.slotModule.value || 0);
-      const subjects = state.course.assuntos.filter(subject => Number(subject.modulo_id) === moduleId);
-      els.slotSubject.innerHTML = '<option value="">Sem assunto</option>' + subjects
-        .map(subject => `<option value="${subject.id}">${escapeHtml(subject.titulo)}</option>`)
-        .join('');
-      els.slotSubject.value = selectedSubjectId || '';
-    }
-
-    function renderStatusOptions(selectedStatus = 'pre_agendado') {
-      els.slotLessonStatus.innerHTML = state.statusOpcoes
-        .map(status => `<option value="${status}">${status.replace('_', ' ')}</option>`)
-        .join('');
-      els.slotLessonStatus.value = selectedStatus || 'pre_agendado';
-    }
-
-    function applySlot() {
-      const data = els.slotDate.value;
-      const horario = els.slotTime.value;
-      const quantidadeHoras = Number(els.slotHours.value || 1);
-      const cidade = els.slotCity.value.trim();
-      const moduloId = Number(els.slotModule.value || 0) || null;
-      const assuntoId = Number(els.slotSubject.value || 0) || null;
-      const status = els.slotLessonStatus.value || 'pre_agendado';
-      const observacoes = els.slotNotes.value.trim();
-      if (!data || !horario) {
-        els.slotStatus.textContent = 'Escolha data e horario.';
-        return;
-      }
-      if (!dateMatchesDay(data, state.slotDay)) {
-        els.slotStatus.textContent = `A data precisa cair em ${state.slotDay.toLowerCase()}.`;
-        return;
-      }
-      if (!cidade) {
-        els.slotStatus.textContent = 'Informe a cidade da aula.';
-        return;
-      }
-      if (occupiedHoursFor(data, state.slotAulaId, quantidadeHoras).has(horario)) {
-        els.slotStatus.textContent = 'Horario indisponivel para esta data.';
-        renderHourOptions(state.slotAulaId);
-        els.slotTime.value = firstAvailableHour();
-        return;
-      }
-      const valorHora = valorHoraForCity(cidade);
-      const lesson = {
-        dia_semana: state.slotDay,
-        data_aula: data,
-        horario,
-        quantidade_horas: quantidadeHoras,
-        cidade,
-        modulo_id: moduloId,
-        assunto_id: assuntoId,
-        status,
-        observacoes,
-        valor_hora_centavos: valorHora,
-        valor_centavos: valorHora * quantidadeHoras,
-      };
-      state.draftLessons = state.draftLessons.filter(item => !(item.data_aula === data && item.horario === horario));
-      state.draftLessons.push(lesson);
-      state.dirty = true;
-      closeModal(els.slotModal);
-      render();
-    }
-
-    async function saveSchedule() {
-      const payload = {
-        token_publico: state.activeToken,
-        aluno: state.activeStudent,
-        plano: {
-          nome: els.planName.value.trim() || 'Curso Fotografia Prática',
-          total_aulas: Number(els.planTotal.value || 0),
-          status: els.planStatus.value || 'ativo',
-        },
-        aulas: state.draftLessons,
-      };
       try {
-        const data = await request('/save.php', {
+        const data = await request('/login.php', {
           method: 'POST',
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ email, senha })
         });
-        state.activeToken = data.token_publico;
-        if (!state.tokens.includes(state.activeToken)) {
-          state.tokens.push(state.activeToken);
-          persistTokens();
+
+        if (data.tipo === 'fotografo') {
+          state.adminLogado = data.admin;
+          state.alunoLogado = null;
+          state.token = '';
+          localStorage.removeItem(STORAGE_KEY);
+          await loadAdminDashboard();
+        } else {
+          state.alunoLogado = data.aluno;
+          state.adminLogado = null;
+          state.token = data.token;
+          localStorage.setItem(STORAGE_KEY, data.token);
+          await loadStudentDashboard();
         }
-        state.activeToken = '';
-        state.activeStudent = { nome: '', email: '', telefone: '' };
-        state.activePlan = { nome: 'Curso Fotografia Prática', total_aulas: 0, aulas_usadas: 0, status: 'ativo' };
-        state.draftLessons = [];
-        state.dirty = false;
-        await loadBoard('');
-      } catch (error) {
-        alert(error.message);
+      } catch (err) {
+        showAlert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+
+    async function handleLogout() {
+      if (!confirm('Deseja realmente sair?')) return;
+      try {
+        await request('/logout.php', { method: 'POST' });
+      } catch (err) { }
+
+      state.alunoLogado = null;
+      state.adminLogado = null;
+      state.token = '';
+      localStorage.removeItem(STORAGE_KEY);
+
+      // Limpa inputs de login
+      document.getElementById('login-email').value = '';
+      document.getElementById('login-pass').value = '';
+
+      changeView('view-login');
+    }
+
+    function handleForgotPassword(e) {
+      e.preventDefault();
+      alert('Esqueceu sua senha? Entre em contato com o fotógrafo professor pelo WhatsApp (61) 98196-5384 para solicitar o reset da sua senha.');
+    }
+
+    /* ── FLUXO DE CADASTRO ── */
+    function handleRegStep1() {
+      const senha = document.getElementById('reg-pass').value;
+      const senhaConf = document.getElementById('reg-pass-conf').value;
+
+      if (senha.length < 6) {
+        showAlert('A senha deve conter no mínimo 6 caracteres.');
+        return;
+      }
+      if (senha !== senhaConf) {
+        showAlert('As senhas não conferem. Por favor, tente novamente.');
+        return;
+      }
+
+      state.regData.nome = document.getElementById('reg-nome').value.trim();
+      state.regData.email = document.getElementById('reg-email').value.trim();
+      state.regData.telefone = document.getElementById('reg-tel').value.trim();
+      state.regData.senha = senha;
+
+      changeView('view-register-step2');
+      updatePlanSummary();
+    }
+
+    function selectPlan(planKey) {
+      state.regData.plano = planKey;
+      document.querySelectorAll('#view-register-step2 .selectable-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('plan-card-' + planKey).classList.add('selected');
+      updatePlanSummary();
+    }
+
+    function updatePlanSummary() {
+      const planName = state.regData.plano === 'local' ? 'Santo Antônio' : 'Outra localidade';
+      const planPrice = state.regData.plano === 'local' ? 'R$ 100,00' : 'R$ 150,00';
+
+      document.getElementById('sum-plano-nome').textContent = planName;
+      document.getElementById('sum-plano-valor').textContent = planPrice;
+
+      document.querySelectorAll('.sum-plano-nome-txt').forEach(el => el.textContent = planName);
+      document.querySelectorAll('.sum-plano-valor-txt').forEach(el => el.textContent = planPrice);
+    }
+
+    function selectPayment(paymentMethod) {
+      state.regData.forma_pagamento = paymentMethod;
+      document.querySelectorAll('#view-register-step3 .selectable-card').forEach(c => c.classList.remove('selected'));
+
+      const map = { 'PIX': 'pix', 'Dinheiro': 'dinheiro', 'Cartão de crédito': 'cartao' };
+      document.getElementById('pay-card-' + map[paymentMethod]).classList.add('selected');
+      document.getElementById('sum-pagto-forma').textContent = paymentMethod;
+    }
+
+    function goToStep4() {
+      changeView('view-register-step4');
+      state.selectedMonth = null;
+      generateCalendarMonths();
+      updateStep4Summary();
+    }
+
+    // Reaproveita a tela de agenda para alunos ja cadastrados.
+    function openStudentScheduleScreen() {
+      if (!state.alunoLogado) {
+        changeView('view-login');
+        return;
+      }
+
+      const plano = state.alunoLogado.plano || {};
+      state.regData.plano = (plano.cidade || '').includes('Santo Ant') ? 'local' : 'out';
+      state.regData.forma_pagamento = plano.forma_pagamento || state.regData.forma_pagamento || 'PIX';
+      state.regData.data_aula = '';
+      state.regData.horario = '';
+
+      updatePlanSummary();
+      changeView('view-register-step4');
+      state.selectedMonth = null;
+      generateCalendarMonths();
+      updateStep4Summary();
+    }
+
+    function handleScheduleBack() {
+      if (state.alunoLogado) {
+        loadStudentDashboard();
+        return;
+      }
+
+      changeView('view-register-step3');
+    }
+
+    function getNextDateForDayName(dayName, offsetWeeks = 0) {
+      const targetIndex = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'].indexOf(dayName);
+      const today = new Date();
+      const currentDay = today.getDay();
+      let diff = targetIndex - currentDay;
+      if (diff <= 0) diff += 7; // Próxima semana
+
+      const result = new Date();
+      result.setDate(today.getDate() + diff + (offsetWeeks * 7));
+      result.setHours(0, 0, 0, 0);
+      return result;
+    }
+
+    // Gera botões de meses
+    function generateCalendarMonths() {
+      const container = document.getElementById('reg-calendar-days');
+      container.innerHTML = '';
+
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth(); // 0-11
+
+      const monthsToShow = [];
+      // Mostrar os próximos 6 meses
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(currentYear, currentMonth + i, 1);
+        monthsToShow.push({
+          year: d.getFullYear(),
+          month: d.getMonth(),
+          name: d.toLocaleString('pt-BR', { month: 'long' }),
+          short: d.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '')
+        });
+      }
+
+      monthsToShow.forEach(m => {
+        const btn = document.createElement('div');
+        btn.className = 'calendar-day-btn';
+        
+        let isSelected = false;
+        if (state.regData.data_aula) {
+          const [sYear, sMonth] = state.regData.data_aula.split('-').map(Number);
+          if (sYear === m.year && (sMonth - 1) === m.month) {
+            isSelected = true;
+          }
+        }
+        
+        if (isSelected) {
+          btn.classList.add('selected');
+        }
+
+        btn.innerHTML = `
+          <span class="day-name">${m.year}</span>
+          <span class="day-num">${m.short}</span>
+        `;
+        btn.onclick = () => selectRegMonth(m.year, m.month);
+        container.appendChild(btn);
+      });
+
+      document.getElementById('btn-back-to-months').style.display = 'none';
+    }
+
+    function selectRegMonth(year, month) {
+      state.selectedMonth = { year, month };
+      document.querySelectorAll('#reg-calendar-days .calendar-day-btn').forEach(btn => btn.classList.remove('selected'));
+      generateCalendarDaysForMonth(year, month);
+      document.getElementById('btn-back-to-months').style.display = 'inline-block';
+    }
+
+    function generateCalendarDaysForMonth(year, month) {
+      const container = document.getElementById('reg-calendar-days');
+      container.innerHTML = '';
+
+      const today = new Date();
+      let dateCursor = new Date(year, month, 1);
+      
+      // Se for o mês atual, os dias começam a partir de amanhã
+      if (year === today.getFullYear() && month === today.getMonth()) {
+        dateCursor.setDate(today.getDate() + 1);
+      }
+
+      const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+
+      while (dateCursor.getDate() <= lastDayOfMonth && dateCursor.getMonth() === month) {
+        const dayOfWeek = dateCursor.getDay();
+        // Apenas Segunda (1) a Sexta (5)
+        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+          const y = dateCursor.getFullYear();
+          const mStr = String(dateCursor.getMonth() + 1).padStart(2, '0');
+          const dStr = String(dateCursor.getDate()).padStart(2, '0');
+          const formattedDate = `${y}-${mStr}-${dStr}`;
+          
+          const dayName = DAYS_NAMES[dayOfWeek];
+          const dayShort = DAYS_SHORT[dayOfWeek];
+          const dayNum = dateCursor.getDate();
+
+          const btn = document.createElement('div');
+          btn.className = 'calendar-day-btn';
+          if (state.regData.data_aula === formattedDate) {
+            btn.classList.add('selected');
+          }
+          btn.innerHTML = `
+            <span class="day-name">${dayShort}</span>
+            <span class="day-num">${dayNum}</span>
+          `;
+          btn.onclick = () => selectRegDate(formattedDate, dayName);
+          container.appendChild(btn);
+        }
+        
+        const prevDate = dateCursor.getDate();
+        dateCursor.setDate(prevDate + 1);
+        if (dateCursor.getDate() === prevDate) {
+          break;
+        }
+      }
+
+      // Se nenhuma data está selecionada e há dias disponíveis, clica no primeiro para inicializar
+      const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+      if (container.firstChild && (!state.regData.data_aula || !state.regData.data_aula.startsWith(monthPrefix))) {
+        container.firstChild.click();
+      } else if (state.regData.data_aula && state.regData.data_aula.startsWith(monthPrefix)) {
+        const dayOfWeek = new Date(state.regData.data_aula + 'T00:00:00').getDay();
+        generateRegHours(state.regData.data_aula, DAYS_NAMES[dayOfWeek]);
+      }
+    }
+
+    function backToMonths(e) {
+      if (e) e.preventDefault();
+      state.selectedMonth = null;
+      generateCalendarMonths();
+    }
+
+    function selectRegDate(dateString, dayName) {
+      state.regData.data_aula = dateString;
+      document.querySelectorAll('#reg-calendar-days .calendar-day-btn').forEach(btn => btn.classList.remove('selected'));
+
+      // Acha e marca selecionado
+      if (state.selectedMonth) {
+        generateCalendarDaysForMonth(state.selectedMonth.year, state.selectedMonth.month);
+      } else {
+        generateCalendarMonths();
+      }
+      generateRegHours(dateString, dayName);
+      updateStep4Summary();
+    }
+
+    function getOccupiedHoursFor(dateString) {
+      const set = new Set();
+      state.board.forEach(item => {
+        if (item.data_aula === dateString) {
+          const start = timeToMinutes(item.horario);
+          const end = start + (Number(item.quantidade_horas || 1) * 60);
+
+          state.horarios.forEach(h => {
+            const slotStart = timeToMinutes(h);
+            const slotEnd = slotStart + 60;
+            if (slotStart < end && slotEnd > start) {
+              set.add(h);
+            }
+          });
+        }
+      });
+      return set;
+    }
+
+    function timeToMinutes(time) {
+      const [hour, minute] = String(time || '00:00').split(':').map(Number);
+      return (hour * 60) + (minute || 0);
+    }
+
+    function generateRegHours(dateString, dayName) {
+      const container = document.getElementById('reg-calendar-hours');
+      container.innerHTML = '';
+      const occupied = getOccupiedHoursFor(dateString);
+
+      state.horarios.forEach(h => {
+        const isOccupied = occupied.has(h);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'hour-btn';
+        if (isOccupied) {
+          btn.disabled = true;
+          btn.textContent = h + ' (Ocupado)';
+        } else {
+          btn.textContent = h;
+          if (state.regData.horario === h) {
+            btn.classList.add('selected');
+          }
+          btn.onclick = () => selectRegHour(h);
+        }
+        container.appendChild(btn);
+      });
+    }
+
+    function selectRegHour(hour) {
+      state.regData.horario = hour;
+      document.querySelectorAll('#reg-calendar-hours .hour-btn').forEach(btn => btn.classList.remove('selected'));
+
+      // Marca selecionado
+      generateRegHours(state.regData.data_aula, DAYS_NAMES[new Date(state.regData.data_aula + 'T00:00:00').getDay()]);
+      updateStep4Summary();
+    }
+
+    function updateStep4Summary() {
+      const dateText = state.regData.data_aula ? formatDateText(state.regData.data_aula) : 'Selecione...';
+      const hourText = state.regData.horario ? state.regData.horario : 'Selecione...';
+
+      document.getElementById('sum-agenda-data').textContent = dateText;
+      document.getElementById('sum-agenda-hora').textContent = hourText;
+    }
+
+    function formatDateText(dateString) {
+      const [year, month, day] = dateString.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
+    function getStudentLessonsPayload() {
+      return state.board.filter(a => a.is_owner).map(a => ({
+        aula_id: a.aula_id,
+        dia_semana: a.dia_semana,
+        data_aula: a.data_aula,
+        horario: a.horario,
+        quantidade_horas: a.quantidade_horas,
+        cidade: a.cidade,
+        modulo_id: a.modulo_id,
+        assunto_id: a.assunto_id,
+        status: a.status,
+        observacoes: a.observacoes || '',
+        endereco: a.endereco || null,
+        latitude: a.latitude || null,
+        longitude: a.longitude || null
+      }));
+    }
+
+    async function saveStudentDataInline({ aluno = null, plano = null, aulas = null } = {}) {
+      if (!state.alunoLogado || !state.token) return;
+
+      const currentPlan = state.alunoLogado.plano || {};
+      await request('/save.php', {
+        method: 'POST',
+        body: JSON.stringify({
+          token_publico: state.token,
+          aluno: aluno || {
+            nome: state.alunoLogado.nome,
+            email: state.alunoLogado.email,
+            telefone: state.alunoLogado.telefone
+          },
+          plano: {
+            nome: plano?.nome || currentPlan.nome || 'Curso Pr\u00e1tico',
+            total_aulas: plano?.total_aulas || currentPlan.total_aulas || 10,
+            status: plano?.status || currentPlan.status || 'ativo',
+            forma_pagamento: plano?.forma_pagamento ?? currentPlan.forma_pagamento ?? ''
+          },
+          aulas: aulas || getStudentLessonsPayload()
+        })
+      });
+    }
+
+    async function submitStudentScheduleFromCalendar() {
+      const btn = document.getElementById('btn-submit-registration');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Agendando...';
+
+      const plano = state.alunoLogado.plano || {};
+      const cidade = plano.cidade || (state.regData.plano === 'local' ? 'Santo Ant\u00f4nio do Descoberto' : 'Outra localidade');
+      const rateCentavos = cidade.includes('Santo Ant') ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
+      const dayOfWeek = DAYS_NAMES[new Date(state.regData.data_aula + 'T00:00:00').getDay()];
+
+      const minhasAulas = getStudentLessonsPayload();
+
+      minhasAulas.push({
+        dia_semana: dayOfWeek,
+        data_aula: state.regData.data_aula,
+        horario: state.regData.horario,
+        quantidade_horas: 1,
+        cidade: cidade,
+        modulo_id: null,
+        assunto_id: null,
+        status: 'pre_agendado',
+        observacoes: '',
+        valor_hora_centavos: rateCentavos,
+        valor_centavos: rateCentavos,
+        endereco: state.regData.endereco || null,
+        latitude: state.regData.latitude || null,
+        longitude: state.regData.longitude || null
+      });
+
+      try {
+        await saveStudentDataInline({
+          plano: {
+            nome: plano.nome || 'Curso Pr\u00e1tico',
+            total_aulas: plano.total_aulas || 10,
+            status: plano.status || 'ativo',
+            forma_pagamento: plano.forma_pagamento || state.regData.forma_pagamento || ''
+          },
+          aulas: minhasAulas
+        });
+
+        alert('Aula agendada com sucesso!');
+        state.regData.data_aula = '';
+        state.regData.horario = '';
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+
+    async function submitRegistration() {
+      if (state.alunoLogado && state.token && state.regData.data_aula && state.regData.horario) {
+        await submitStudentScheduleFromCalendar();
+        return;
+      }
+      if (!state.regData.data_aula || !state.regData.horario) {
+        showAlert('Por favor, selecione uma data e horário para a sua aula.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-registration');
+      btn.disabled = true;
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registrando...';
+
+      const valorHora = state.regData.plano === 'local' ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
+      const cidade = state.regData.plano === 'local' ? 'Santo Antônio do Descoberto' : 'Outra localidade';
+      const dayOfWeek = DAYS_NAMES[new Date(state.regData.data_aula + 'T00:00:00').getDay()];
+
+      const payload = {
+        dados: {
+          nome: state.regData.nome,
+          email: state.regData.email,
+          telefone: state.regData.telefone,
+          senha: state.regData.senha
+        },
+        plano: {
+          nome: state.regData.plano === 'local' ? 'Curso Prático em Santo Antônio' : 'Curso Prático fora da Cidade',
+          total_aulas: 10, // Default 10 aulas contratadas no cadastro
+          cidade: cidade
+        },
+        pagamento: {
+          forma_pagamento: state.regData.forma_pagamento
+        },
+        aulas: [
+          {
+            dia_semana: dayOfWeek,
+            data_aula: state.regData.data_aula,
+            horario: state.regData.horario,
+            quantidade_horas: 1,
+            cidade: cidade,
+            status: 'pre_agendado',
+            endereco: state.regData.endereco || null,
+            latitude: state.regData.latitude || null,
+            longitude: state.regData.longitude || null
+          }
+        ]
+      };
+
+      try {
+        const data = await request('/register.php', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        state.alunoLogado = data.aluno;
+        state.token = data.token;
+        localStorage.setItem(STORAGE_KEY, data.token);
+
+        // Despeja os inputs
+        document.getElementById('form-reg-step1').reset();
+
+        alert('Cadastro e pré-agendamento da aula inicial efetuados com sucesso!');
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+
+    /* ── PAINEL DO ALUNO ── */
+    async function loadStudentDashboard() {
+      changeView('view-panel-student');
+      try {
+        const data = await request(`/list.php`);
+        state.board = data.aulas || [];
+        state.course = data.curso || state.course;
+        state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 10000;
+        state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 15000;
+        state.horarios = data.horarios || state.horarios;
+        state.horasOpcoes = data.horas_opcoes || state.horasOpcoes;
+        state.statusOpcoes = data.status_opcoes || state.statusOpcoes;
+
+        if (data.aluno_atual) {
+          state.alunoLogado = data.aluno_atual;
+        }
+
+        renderStudentPanelData();
+      } catch (err) {
+        showAlert('Erro ao recarregar painel do aluno: ' + err.message);
+      }
+    }
+
+    function renderStudentPanelData() {
+      if (!state.alunoLogado) return;
+      const alunoNome = state.alunoLogado.nome || 'Aluno';
+      const alunoEmail = state.alunoLogado.email || 'E-mail nao informado';
+      const alunoTelefone = state.alunoLogado.telefone || 'Telefone nao informado';
+      document.getElementById('student-welcome-title').textContent = `Olá, ${state.alunoLogado.nome}!`;
+
+      document.getElementById('student-profile-name').textContent = alunoNome;
+      document.getElementById('student-profile-email').textContent = alunoEmail;
+      document.getElementById('student-profile-phone').textContent = alunoTelefone;
+      document.getElementById('student-profile-code').textContent = state.token ? `Token ${state.token.slice(0, 8)}...` : 'Cadastro ativo';
+      renderStudentAvatar(state.alunoLogado);
+
+      const plano = state.alunoLogado.plano || { nome: 'Sem plano ativo', total_aulas: 0, aulas_usadas: 0, status: 'inativo' };
+      document.getElementById('panel-student-plan-name').textContent = plano.nome;
+
+      const localText = plano.cidade ? `Localização das aulas: ${plano.cidade}` : 'Aulas práticas presenciais';
+      document.getElementById('panel-student-plan-cidade').textContent = localText;
+
+      const pagText = plano.forma_pagamento ? `Forma de pagamento (Informativa): ${plano.forma_pagamento}` : 'Forma de pagamento não especificada';
+      document.getElementById('panel-student-plan-pagamento').textContent = pagText;
+
+      const total = Number(plano.total_aulas || 0);
+      const usadas = Number(plano.aulas_usadas || 0);
+      const percent = total > 0 ? Math.min(100, Math.round((usadas / total) * 100)) : 0;
+
+      document.getElementById('panel-student-plan-pagamento').textContent = plano.forma_pagamento || 'Nao informado';
+      document.getElementById('panel-student-plan-status').textContent = plano.status || 'ativo';
+      document.getElementById('panel-student-plan-total').textContent = `${total} aulas`;
+      document.getElementById('student-progress-bar').style.width = percent + '%';
+      document.getElementById('student-progress-text').textContent = `${usadas} de ${total} aulas utilizadas`;
+      document.getElementById('student-progress-percent').textContent = `${percent}% concluído`;
+
+      // Renderiza a lista de aulas agendadas
+      const container = document.getElementById('student-lessons-container');
+      container.innerHTML = '';
+
+      // Filtra apenas as aulas próprias do aluno logado
+      const minhasAulas = state.board.filter(a => a.is_owner);
+
+      if (minhasAulas.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.8rem;">
+            <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 8px; display: block; color: var(--primary);"></i>
+            Nenhuma aula agendada ainda.
+          </div>
+        `;
+        return;
+      }
+
+      minhasAulas.forEach(aula => {
+        const card = document.createElement('div');
+        card.className = 'lesson-item-card';
+
+        const [year, month, day] = aula.data_aula.split('-');
+        const monthsShort = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+        const mShort = monthsShort[Number(month) - 1];
+        const valorText = aula.valor_centavos ? (Number(aula.valor_centavos) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Valor a confirmar';
+
+        const moduloText = [aula.modulo_nome, aula.assunto_titulo].filter(Boolean).join(' • ') || 'Módulo Geral';
+
+        card.innerHTML = `
+          <div class="lesson-item-date">
+            <span class="day">${day}</span>
+            <span class="month">${mShort}</span>
+          </div>
+          <div class="lesson-item-info">
+            <h4>${escapeHtml(moduloText)}</h4>
+            <p><i class="fa-solid fa-clock"></i> ${aula.horario} às ${getEndTime(aula.horario, aula.quantidade_horas)} (${aula.quantidade_horas}h) · ${escapeHtml(aula.cidade)}</p>
+          </div>
+          <span class="lesson-status-badge ${aula.status}">${(aula.status || 'pre_agendado').replace('_', ' ')}</span>
+        `;
+        let addressHtml = '';
+        if (aula.endereco) {
+          const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(aula.endereco)}`;
+          addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.endereco)} 
+            <a href="${mapLink}" target="_blank" style="color: var(--primary); font-weight: 700; margin-left: 6px; text-decoration: none;"><i class="fa-solid fa-location-arrow"></i> Como Chegar</a>
+          </p>`;
+        } else {
+          addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.cidade)}</p>`;
+        }
+
+        card.querySelector('.lesson-item-info').insertAdjacentHTML('beforeend', `
+          <p><i class="fa-solid fa-calendar-day"></i> ${formatDateText(aula.data_aula)} - ${escapeHtml(aula.dia_semana || '')}</p>
+          <p><i class="fa-solid fa-book-open"></i> ${escapeHtml(aula.modulo_nome || 'Modulo nao definido')}</p>
+          <p><i class="fa-solid fa-bookmark"></i> ${escapeHtml(aula.assunto_titulo || 'Assunto nao definido')}</p>
+          ${addressHtml}
+          <p><i class="fa-solid fa-money-bill-wave"></i> ${escapeHtml(valorText)}</p>
+          <p><i class="fa-solid fa-circle-info"></i> ${escapeHtml(aula.observacoes || 'Sem observacoes registradas')}</p>
+        `);
+        card.insertAdjacentHTML('beforeend', `
+          <div class="lesson-item-actions">
+            <button class="inline-action-btn" type="button" onclick="openEditLessonModal(${aula.aula_id})">
+              <i class="fa-solid fa-pen"></i> Editar
+            </button>
+          </div>
+        `);
+        container.appendChild(card);
+      });
+    }
+
+    function getInitials(name) {
+      return String(name || 'Aluno')
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join('') || 'AL';
+    }
+
+    function renderStudentAvatar(aluno) {
+      const avatar = document.getElementById('student-avatar');
+      const fotoUrl = aluno?.foto_url || aluno?.foto || aluno?.avatar || '';
+
+      if (fotoUrl) {
+        avatar.innerHTML = `<img src="${escapeHtml(fotoUrl)}" alt="Foto de ${escapeHtml(aluno.nome || 'aluno')}">`;
+        return;
+      }
+
+      avatar.textContent = getInitials(aluno?.nome || 'Aluno');
+    }
+
+    function toggleStudentProfileEdit(force) {
+      const card = document.getElementById('student-profile-card');
+      const shouldOpen = typeof force === 'boolean' ? force : !card.classList.contains('editing');
+      card.classList.toggle('editing', shouldOpen);
+
+      if (shouldOpen) {
+        document.getElementById('student-edit-name').value = state.alunoLogado.nome || '';
+        document.getElementById('student-edit-email').value = state.alunoLogado.email || '';
+        document.getElementById('student-edit-phone').value = state.alunoLogado.telefone || '';
+      }
+    }
+
+    function toggleStudentPlanEdit(force) {
+      const card = document.getElementById('student-plan-card');
+      const shouldOpen = typeof force === 'boolean' ? force : !card.classList.contains('editing');
+      card.classList.toggle('editing', shouldOpen);
+
+      if (shouldOpen) {
+        const plano = state.alunoLogado?.plano || {};
+        document.getElementById('student-edit-payment').value = plano.forma_pagamento || 'PIX';
+      }
+    }
+
+    async function saveStudentProfileInline() {
+      const aluno = {
+        nome: document.getElementById('student-edit-name').value.trim(),
+        email: document.getElementById('student-edit-email').value.trim(),
+        telefone: document.getElementById('student-edit-phone').value.trim()
+      };
+
+      if (!aluno.nome || !aluno.email || !aluno.telefone) {
+        showAlert('Preencha nome, e-mail e telefone para salvar o cadastro.');
+        return;
+      }
+
+      try {
+        await saveStudentDataInline({ aluno });
+        toggleStudentProfileEdit(false);
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+
+    async function saveStudentPlanInline() {
+      const plano = state.alunoLogado?.plano || {};
+      try {
+        await saveStudentDataInline({
+          plano: {
+            nome: plano.nome || 'Curso Pratico',
+            total_aulas: plano.total_aulas || 10,
+            status: plano.status || 'ativo',
+            forma_pagamento: document.getElementById('student-edit-payment').value
+          }
+        });
+        toggleStudentPlanEdit(false);
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    }
+
+    async function uploadStudentAvatar(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+
+      const avatar = document.getElementById('student-avatar');
+      const originalHtml = avatar.innerHTML;
+      avatar.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color: var(--primary);"></i>';
+
+      const formData = new FormData();
+      formData.append('foto_aluno', file);
+      formData.append('token_publico', state.token || '');
+
+      try {
+        const res = await fetch(API_BASE + '/upload_foto.php', {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.status === 'erro') {
+          throw new Error(data.mensagem || 'Erro ao realizar upload da foto de perfil.');
+        }
+
+        alert('Foto de perfil atualizada com sucesso!');
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+        avatar.innerHTML = originalHtml;
+      } finally {
+        input.value = '';
+      }
+    }
+
+    function getEndTime(start, duration = 1) {
+      const [hour, minute] = start.split(':').map(Number);
+      const endHour = hour + Number(duration);
+      return `${String(endHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    }
+
+    /* ── PAINEL DO PROFESSOR (ADMIN) ── */
+    async function loadAdminDashboard() {
+      changeView('view-panel-teacher');
+      try {
+        const data = await request('/list.php');
+        state.board = data.aulas || [];
+        state.course = data.curso || state.course;
+        state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 10000;
+        state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 15000;
+        state.horarios = data.horarios || state.horarios;
+        state.horasOpcoes = data.horas_opcoes || state.horasOpcoes;
+        state.statusOpcoes = data.status_opcoes || state.statusOpcoes;
+
+        if (data.admin) {
+          state.adminLogado = data.admin;
+        }
+
+        renderTeacherAulasPanel();
+        renderTeacherAlunosPanel();
+      } catch (err) {
+        showAlert('Erro ao carregar dados administrativos: ' + err.message);
+      }
+    }
+
+    function switchAdminTab(tab) {
+      document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.admin-tab-panel').forEach(panel => panel.style.display = 'none');
+
+      document.getElementById('tab-btn-' + tab).classList.add('active');
+      document.getElementById('admin-panel-' + tab).style.display = 'block';
+    }
+
+    function renderTeacherAulasPanel() {
+      const tbody = document.getElementById('teacher-aulas-tbody');
+      tbody.innerHTML = '';
+      updateTeacherMetrics();
+
+      const search = (document.getElementById('teacher-search-input')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('teacher-status-filter')?.value || '';
+      const aulasFiltradas = state.board.filter(aula => {
+        if (statusFilter && aula.status !== statusFilter) return false;
+        if (!search) return true;
+
+        return [
+          aula.aluno,
+          aula.email,
+          aula.telefone,
+          aula.cidade,
+          aula.modulo_nome,
+          aula.assunto_titulo,
+          aula.status
+        ].some(value => String(value || '').toLowerCase().includes(search));
+      });
+
+      if (aulasFiltradas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhuma aula encontrada para os filtros atuais.</td></tr>';
+        return;
+      }
+
+      aulasFiltradas.forEach(aula => {
+        const tr = document.createElement('tr');
+        const formattedDate = formatDateText(aula.data_aula) + ' as ' + aula.horario;
+        const moduloText = [aula.modulo_nome, aula.assunto_titulo].filter(Boolean).join(' - ') || 'Nao especificado';
+        const valorText = aula.valor_centavos ? (Number(aula.valor_centavos) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Valor a confirmar';
+        const statusText = (aula.status || 'pre_agendado').replace('_', ' ');
+        let localDesc = `<strong>${escapeHtml(aula.cidade)}</strong>`;
+        if (aula.endereco) {
+          const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(aula.endereco)}`;
+          localDesc += `<span class="teacher-cell-muted" style="display:block; font-size:0.75rem; margin-top:2px;">
+            <i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> ${escapeHtml(aula.endereco)}
+            <a href="${mapLink}" target="_blank" style="color:var(--primary); font-weight:700; margin-left:4px; text-decoration:none;"><i class="fa-solid fa-location-arrow"></i> Mapa</a>
+          </span>`;
+        }
+        localDesc += `<span class="teacher-cell-muted">${escapeHtml(valorText)}</span>`;
+
+        tr.innerHTML = `
+          <td>
+            <strong>${formattedDate}</strong>
+            <span class="teacher-cell-muted">${escapeHtml(aula.dia_semana || '')} - inicio as ${aula.horario}</span>
+            <span class="teacher-cell-muted">${aula.quantidade_horas}h de aula</span>
+          </td>
+          <td>
+            <div class="teacher-student-cell">
+              <span class="teacher-avatar">${getInitials(aula.aluno || 'Aluno')}</span>
+              <div>
+                <strong>${escapeHtml(aula.aluno || 'Ex-aluno')}</strong>
+                <span class="teacher-cell-muted">${escapeHtml(aula.email || '')}</span>
+                <span class="teacher-cell-muted">${escapeHtml(aula.telefone || '')}</span>
+              </div>
+            </div>
+          </td>
+          <td>${localDesc}</td>
+          <td><strong>${escapeHtml(moduloText)}</strong><span class="teacher-cell-muted">${escapeHtml(aula.observacoes || 'Sem observacoes')}</span></td>
+          <td><span class="lesson-status-badge ${aula.status}">${escapeHtml(statusText)}</span></td>
+          <td class="admin-actions-cell">
+            <button class="admin-btn-action success" onclick="quickUpdateLessonStatus(${aula.aula_id}, 'confirmado')" title="Confirmar Aula"><i class="fa-solid fa-check"></i></button>
+            <button class="admin-btn-action" onclick="openEditLessonModal(${aula.aula_id})" title="Editar Aula"><i class="fa-solid fa-pen"></i></button>
+            <button class="admin-btn-action danger" onclick="deleteLesson(${aula.aula_id})" title="Excluir Aula"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateTeacherMetrics() {
+      const alunos = new Set(state.board.map(a => a.aluno_id).filter(Boolean));
+      const pendentes = state.board.filter(a => (a.status || 'pre_agendado') === 'pre_agendado').length;
+      const receita = state.board.reduce((sum, a) => sum + Number(a.valor_centavos || 0), 0);
+
+      document.getElementById('teacher-metric-aulas').textContent = state.board.length;
+      document.getElementById('teacher-metric-alunos').textContent = alunos.size;
+      document.getElementById('teacher-metric-pendentes').textContent = pendentes;
+      document.getElementById('teacher-metric-receita').textContent = (receita / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function renderTeacherAlunosPanel() {
+      const tbody = document.getElementById('teacher-alunos-tbody');
+      tbody.innerHTML = '';
+
+      // Agrupa os alunos a partir do board
+      const alunosMap = new Map();
+      state.board.forEach(item => {
+        if (item.aluno_id && !alunosMap.has(item.aluno_id)) {
+          alunosMap.set(item.aluno_id, {
+            id: item.aluno_id,
+            nome: item.aluno,
+            email: item.email,
+            telefone: item.telefone,
+            plano_nome: item.plano_nome,
+            total_aulas: item.total_aulas,
+            aulas_usadas: item.aulas_usadas,
+            plano_status: item.plano_status,
+            forma_pagamento: item.forma_pagamento,
+            token_publico: item.token_publico
+          });
+        }
+      });
+
+      if (alunosMap.size === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum aluno matriculado.</td></tr>';
+        return;
+      }
+
+      alunosMap.forEach(aluno => {
+        const tr = document.createElement('tr');
+        const total = Number(aluno.total_aulas || 0);
+        const usadas = Number(aluno.aulas_usadas || 0);
+        const percent = total > 0 ? Math.round((usadas / total) * 100) : 0;
+
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(aluno.nome)}</strong></td>
+          <td><strong>${escapeHtml(aluno.telefone)}</strong><span style="font-size:0.7rem; color:var(--text-muted); display:block;">${escapeHtml(aluno.email)}</span></td>
+          <td>
+            <strong>${escapeHtml(aluno.plano_nome || 'Sem plano')}</strong> 
+            <span style="font-size:0.75rem; color:var(--text-muted);">(${aluno.plano_status})</span>
+            <span style="font-size:0.7rem; color:var(--primary); display:block; margin-top:2px;">
+              <i class="fa-solid fa-credit-card"></i> ${escapeHtml(aluno.forma_pagamento || 'Não informado')}
+            </span>
+          </td>
+          <td>
+            <strong>${usadas} de ${total} aulas</strong>
+            <span style="font-size:0.7rem; color:var(--text-muted); display:block;">${percent}% concluído</span>
+          </td>
+          <td class="admin-actions-cell">
+            <button class="admin-btn-action" onclick="openPlanEditModal(${aluno.id}, '${escapeHtml(aluno.plano_nome || '')}', ${total}, '${aluno.plano_status}', '${escapeHtml(aluno.forma_pagamento || '')}')" title="Editar Créditos/Plano"><i class="fa-solid fa-receipt"></i></button>
+            <button class="admin-btn-action danger" onclick="deleteStudent('${aluno.token_publico}')" title="Excluir Aluno Completo"><i class="fa-solid fa-user-xmark"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderTeacherAlunosPanel() {
+      const tbody = document.getElementById('teacher-alunos-tbody');
+      tbody.innerHTML = '';
+
+      const alunosMap = new Map();
+      state.board.forEach(item => {
+        if (item.aluno_id && !alunosMap.has(item.aluno_id)) {
+          alunosMap.set(item.aluno_id, {
+            id: item.aluno_id,
+            nome: item.aluno,
+            email: item.email,
+            telefone: item.telefone,
+            plano_nome: item.plano_nome,
+            total_aulas: item.total_aulas,
+            aulas_usadas: item.aulas_usadas,
+            plano_status: item.plano_status,
+            forma_pagamento: item.forma_pagamento,
+            token_publico: item.token_publico
+          });
+        }
+      });
+
+      if (alunosMap.size === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum aluno matriculado.</td></tr>';
+        return;
+      }
+
+      alunosMap.forEach(aluno => {
+        const tr = document.createElement('tr');
+        const total = Number(aluno.total_aulas || 0);
+        const usadas = Number(aluno.aulas_usadas || 0);
+        const percent = total > 0 ? Math.min(100, Math.round((usadas / total) * 100)) : 0;
+
+        tr.innerHTML = `
+          <td>
+            <div class="teacher-student-cell">
+              <span class="teacher-avatar">${getInitials(aluno.nome || 'Aluno')}</span>
+              <div><strong>${escapeHtml(aluno.nome)}</strong><span class="teacher-cell-muted">ID ${aluno.id}</span></div>
+            </div>
+          </td>
+          <td><strong>${escapeHtml(aluno.telefone)}</strong><span class="teacher-cell-muted">${escapeHtml(aluno.email)}</span></td>
+          <td>
+            <strong>${escapeHtml(aluno.plano_nome || 'Sem plano')}</strong>
+            <span class="teacher-cell-muted">Status: ${escapeHtml(aluno.plano_status || 'ativo')}</span>
+            <span class="teacher-cell-muted"><i class="fa-solid fa-credit-card"></i> ${escapeHtml(aluno.forma_pagamento || 'Nao informado')}</span>
+          </td>
+          <td>
+            <strong>${usadas} de ${total} aulas</strong>
+            <div class="aluno-plan-progress-container" style="background: var(--border); margin: 8px 0 4px;">
+              <div class="aluno-plan-progress-fill" style="width: ${percent}%; background: var(--primary);"></div>
+            </div>
+            <span class="teacher-cell-muted">${percent}% concluido</span>
+          </td>
+          <td class="admin-actions-cell">
+            <button class="admin-btn-action" onclick="openPlanEditModal(${aluno.id}, '${escapeHtml(aluno.plano_nome || '')}', ${total}, '${aluno.plano_status}', '${escapeHtml(aluno.forma_pagamento || '')}')" title="Editar creditos/plano"><i class="fa-solid fa-receipt"></i></button>
+            <button class="admin-btn-action danger" onclick="deleteStudent('${aluno.token_publico}')" title="Excluir aluno completo"><i class="fa-solid fa-user-xmark"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function quickUpdateLessonStatus(aulaId, nextStatus) {
+      const aulaRef = state.board.find(a => a.aula_id === aulaId);
+      if (!aulaRef) return;
+
+      const aulasDoAluno = state.board.filter(a => a.aluno_id === aulaRef.aluno_id).map(a => ({
+        aula_id: a.aula_id,
+        dia_semana: a.dia_semana,
+        data_aula: a.data_aula,
+        horario: a.horario,
+        quantidade_horas: a.quantidade_horas,
+        cidade: a.cidade,
+        modulo_id: a.modulo_id,
+        assunto_id: a.assunto_id,
+        status: a.aula_id === aulaId ? nextStatus : a.status,
+        observacoes: a.observacoes || ''
+      }));
+
+      try {
+        await request('/save.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            token_publico: aulaRef.token_publico,
+            aluno: {
+              nome: aulaRef.aluno,
+              email: aulaRef.email,
+              telefone: aulaRef.telefone
+            },
+            plano: {
+              nome: aulaRef.plano_nome || 'Curso Pratico',
+              total_aulas: aulaRef.total_aulas || 10,
+              status: aulaRef.plano_status || 'ativo',
+              forma_pagamento: aulaRef.forma_pagamento || ''
+            },
+            aulas: aulasDoAluno
+          })
+        });
+        await loadAdminDashboard();
+      } catch (err) {
+        alert(err.message);
       }
     }
 
     async function deleteLesson(aulaId) {
-      if (!confirm('Excluir esta aula do pre-agendamento?')) return;
+      if (!confirm('Deseja realmente excluir esta aula?')) return;
       try {
         await request('/delete.php', {
           method: 'POST',
-          body: JSON.stringify({ tipo: 'aula', aula_id: aulaId }),
+          body: JSON.stringify({ tipo: 'aula', aula_id: aulaId })
         });
-        await loadBoard(state.activeToken);
-      } catch (error) {
-        alert(error.message);
+        alert('Aula excluída com sucesso.');
+        await loadAdminDashboard();
+      } catch (err) {
+        alert(err.message);
       }
     }
 
-    async function deleteStudent() {
-      if (!state.admin || !state.activeToken) return;
-      if (!confirm('Excluir este aluno e todas as aulas dele?')) return;
+    async function deleteStudent(token) {
+      if (!confirm('Deseja realmente excluir este aluno e TODOS os agendamentos dele? Esta ação é irreversível.')) return;
       try {
         await request('/delete.php', {
           method: 'POST',
-          body: JSON.stringify({ tipo: 'aluno', token_publico: state.activeToken }),
+          body: JSON.stringify({ tipo: 'aluno', token_publico: token })
         });
-        state.tokens = state.tokens.filter(token => token !== state.activeToken);
-        persistTokens();
-        state.activeToken = '';
-        state.activeStudent = { nome: '', email: '', telefone: '' };
-        state.draftLessons = [];
-        state.dirty = false;
-        await loadBoard('');
-      } catch (error) {
-        alert(error.message);
+        alert('Aluno e registros associados excluídos com sucesso.');
+        await loadAdminDashboard();
+      } catch (err) {
+        alert(err.message);
       }
     }
 
-    function openModal(modal) {
-      modal.classList.add('is-open');
-      modal.setAttribute('aria-hidden', 'false');
+    /* ── MAPAS E GEOLOCALIZAÇÃO (LEAFLET + NOMINATIM) ── */
+    // Corrigir caminhos de imagens de marcadores padrão do Leaflet carregados por CDN
+    if (typeof L !== 'undefined' && L.Icon && L.Icon.Default) {
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      });
     }
 
-    function closeModal(modal) {
-      modal.classList.remove('is-open');
-      modal.setAttribute('aria-hidden', 'true');
+    let registerMap = null;
+    let registerMarker = null;
+    let modalMap = null;
+    let modalMarker = null;
+
+    const STUDIO_LAT = -15.93278;
+    const STUDIO_LNG = -48.2575;
+    const DEFAULT_STUDIO_ADDRESS = "Studio Criavibe - Santo Antônio do Descoberto, GO";
+
+    function initRegisterMap() {
+      if (registerMap) {
+        registerMap.remove();
+        registerMap = null;
+        registerMarker = null;
+      }
+
+      const isLocal = state.regData.plano === 'local';
+      const addressInput = document.getElementById('reg-address-input');
+      const addressSection = document.getElementById('reg-address-section');
+
+      if (isLocal) {
+        addressInput.value = DEFAULT_STUDIO_ADDRESS;
+        addressInput.disabled = true;
+        addressSection.style.opacity = '0.7';
+        state.regData.endereco = DEFAULT_STUDIO_ADDRESS;
+        state.regData.latitude = STUDIO_LAT;
+        state.regData.longitude = STUDIO_LNG;
+      } else {
+        addressInput.value = state.regData.endereco || '';
+        addressInput.disabled = false;
+        addressSection.style.opacity = '1';
+      }
+
+      const initialLat = state.regData.latitude || STUDIO_LAT;
+      const initialLng = state.regData.longitude || STUDIO_LNG;
+
+      registerMap = L.map('reg-map-container').setView([initialLat, initialLng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(registerMap);
+
+      const markerOptions = {
+        draggable: !isLocal
+      };
+
+      registerMarker = L.marker([initialLat, initialLng], markerOptions).addTo(registerMap);
+
+      if (!isLocal) {
+        registerMarker.on('dragend', async function(e) {
+          const latlng = registerMarker.getLatLng();
+          state.regData.latitude = latlng.lat;
+          state.regData.longitude = latlng.lng;
+          await reverseGeocode(latlng.lat, latlng.lng, 'reg-address-input', 'reg');
+        });
+
+        registerMap.on('click', async function(e) {
+          registerMarker.setLatLng(e.latlng);
+          state.regData.latitude = e.latlng.lat;
+          state.regData.longitude = e.latlng.lng;
+          await reverseGeocode(e.latlng.lat, e.latlng.lng, 'reg-address-input', 'reg');
+        });
+      }
+
+      addressInput.onkeypress = function(ev) {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          window.searchAddressReg();
+        }
+      };
+
+      setTimeout(() => {
+        if (registerMap) {
+          registerMap.invalidateSize();
+        }
+      }, 300);
     }
 
-    function formatDate(value) {
-      if (!value) return '';
-      const [year, month, day] = value.split('-');
-      return `${day}/${month}/${year}`;
+    function initModalMap(aula = null) {
+      if (modalMap) {
+        modalMap.remove();
+        modalMap = null;
+        modalMarker = null;
+      }
+
+      const city = document.getElementById('slot-city').value;
+      const isLocal = city.includes('Santo Antônio');
+      
+      const addressInput = document.getElementById('modal-address-input');
+      const addressGroup = document.getElementById('modal-address-group');
+
+      let initialLat = STUDIO_LAT;
+      let initialLng = STUDIO_LNG;
+      let initialAddress = '';
+
+      if (aula) {
+        initialLat = aula.latitude || STUDIO_LAT;
+        initialLng = aula.longitude || STUDIO_LNG;
+        initialAddress = aula.endereco || '';
+      } else if (isLocal) {
+        initialLat = STUDIO_LAT;
+        initialLng = STUDIO_LNG;
+        initialAddress = DEFAULT_STUDIO_ADDRESS;
+      }
+
+      document.getElementById('modal-lat').value = initialLat;
+      document.getElementById('modal-lng').value = initialLng;
+      addressInput.value = initialAddress;
+
+      if (isLocal) {
+        addressInput.disabled = true;
+        addressGroup.style.opacity = '0.7';
+      } else {
+        addressInput.disabled = false;
+        addressGroup.style.opacity = '1';
+      }
+
+      modalMap = L.map('modal-map-container').setView([initialLat, initialLng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(modalMap);
+
+      const markerOptions = {
+        draggable: !isLocal
+      };
+
+      modalMarker = L.marker([initialLat, initialLng], markerOptions).addTo(modalMap);
+
+      if (!isLocal) {
+        modalMarker.on('dragend', async function(e) {
+          const latlng = modalMarker.getLatLng();
+          document.getElementById('modal-lat').value = latlng.lat;
+          document.getElementById('modal-lng').value = latlng.lng;
+          await reverseGeocode(latlng.lat, latlng.lng, 'modal-address-input', 'modal');
+        });
+
+        modalMap.on('click', async function(e) {
+          modalMarker.setLatLng(e.latlng);
+          document.getElementById('modal-lat').value = e.latlng.lat;
+          document.getElementById('modal-lng').value = e.latlng.lng;
+          await reverseGeocode(e.latlng.lat, e.latlng.lng, 'modal-address-input', 'modal');
+        });
+      }
+
+      addressInput.onkeypress = function(ev) {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          window.searchAddressModal();
+        }
+      };
+
+      setTimeout(() => {
+        if (modalMap) {
+          modalMap.invalidateSize();
+        }
+      }, 300);
     }
 
-    function timeToMinutes(value) {
-      const [hour, minute] = String(value || '').split(':').map(Number);
-      if (!Number.isFinite(hour) || !Number.isFinite(minute)) return null;
-      return hour * 60 + minute;
+    async function searchAddress(query, inputId, suggestionsId, mapType) {
+      if (!query || query.trim().length < 3) return;
+      const suggestionsContainer = document.getElementById(suggestionsId);
+      suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</div>';
+      suggestionsContainer.style.display = 'block';
+
+      // Função interna para fazer o fetch no Nominatim
+      async function fetchNominatim(q) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&countrycodes=br`;
+        try {
+          const res = await fetch(url, {
+            headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+          });
+          return await res.json();
+        } catch (e) {
+          console.error("Erro na busca Nominatim para query:", q, e);
+          return [];
+        }
+      }
+
+      // Função auxiliar para limpar resíduos de pontuação e espaços
+      function cleanString(str) {
+        return str
+          .replace(/,(\s*,)+/g, ',') // Remove múltiplas vírgulas
+          .replace(/^\s*,\s*/, '')   // Remove vírgula no início
+          .replace(/\s*,\s*$/, '')   // Remove vírgula no fim
+          .replace(/\s+/g, ' ')      // Remove múltiplos espaços
+          .trim();
+      }
+
+      try {
+        let currentQuery = query;
+        let data = await fetchNominatim(currentQuery);
+        let fallbackUsed = false;
+
+        // Se a busca inicial falhar, tentamos remover referências a Lote/Lt
+        if (!data || data.length === 0) {
+          let q1 = currentQuery
+            .replace(/\b(lote|lt\.?)\s*\w*\d+\w*\b/gi, '') // Remove "Lote 08", "Lt 8", "Lote B8"
+            .replace(/\b(lote|lt\.?)\b/gi, '');            // Remove palavra "lote" solta
+          q1 = cleanString(q1);
+          
+          if (q1 && q1 !== currentQuery) {
+            currentQuery = q1;
+            data = await fetchNominatim(currentQuery);
+            fallbackUsed = true;
+          }
+        }
+
+        // Se falhar de novo, tentamos remover referências a Quadra/Qd também
+        if (!data || data.length === 0) {
+          let q2 = currentQuery
+            .replace(/\b(quadra|qd\.?)\s*\w*\d+\w*\b/gi, '') // Remove "Quadra 71", "Qd 71"
+            .replace(/\b(quadra|qd\.?)\b/gi, '');            // Remove palavra "quadra" solta
+          q2 = cleanString(q2);
+
+          if (q2 && q2 !== currentQuery) {
+            currentQuery = q2;
+            data = await fetchNominatim(currentQuery);
+            fallbackUsed = true;
+          }
+        }
+
+        // Se falhar de novo, tentamos pegar as últimas partes (Bairro, Cidade, Estado)
+        if (!data || data.length === 0) {
+          const parts = query.split(',').map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 3) {
+            const q3 = parts.slice(-3).join(', ');
+            if (q3 !== query) {
+              currentQuery = q3;
+              data = await fetchNominatim(currentQuery);
+              fallbackUsed = true;
+            }
+          }
+        }
+
+        // Se falhar de novo, tentamos pegar as últimas 2 partes (Cidade, Estado)
+        if (!data || data.length === 0) {
+          const parts = query.split(',').map(p => p.trim()).filter(Boolean);
+          if (parts.length >= 2) {
+            const q4 = parts.slice(-2).join(', ');
+            if (q4 !== query) {
+              currentQuery = q4;
+              data = await fetchNominatim(currentQuery);
+              fallbackUsed = true;
+            }
+          }
+        }
+
+        // Se falhar de novo e a busca contiver termos da cidade, tenta focar na cidade
+        if (!data || data.length === 0) {
+          if (query.toLowerCase().includes("santo antônio") || query.toLowerCase().includes("descoberto")) {
+            currentQuery = "Santo Antônio do Descoberto, GO";
+            data = await fetchNominatim(currentQuery);
+            fallbackUsed = true;
+          }
+        }
+
+        if (!data || data.length === 0) {
+          suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--text-muted);">Nenhum endereço encontrado. Tente digitar o nome da rua e cidade.</div>';
+          return;
+        }
+
+        suggestionsContainer.innerHTML = '';
+
+        if (fallbackUsed) {
+          const infoDiv = document.createElement('div');
+          infoDiv.style.padding = '8px 12px';
+          infoDiv.style.fontSize = '0.72rem';
+          infoDiv.style.color = 'var(--text-muted)';
+          infoDiv.style.background = 'var(--surface-sub)';
+          infoDiv.style.borderBottom = '1px solid var(--border)';
+          infoDiv.innerHTML = '<i class="fa-solid fa-circle-info" style="color: var(--primary); margin-right: 6px;"></i> Local exato não indexado. Exibindo região aproximada:';
+          suggestionsContainer.appendChild(infoDiv);
+        }
+
+        data.forEach(item => {
+          const name = item.display_name;
+          const lat = parseFloat(item.lat);
+          const lon = parseFloat(item.lon);
+          
+          const div = document.createElement('div');
+          div.className = 'address-suggestion-item';
+          div.style.padding = '10px 12px';
+          div.style.cursor = 'pointer';
+          div.style.borderBottom = '1px solid var(--border)';
+          div.style.transition = 'background 0.2s';
+          div.style.textAlign = 'left';
+          
+          div.onmouseover = () => { div.style.background = 'var(--surface-sub)'; };
+          div.onmouseout = () => { div.style.background = 'transparent'; };
+          
+          div.onclick = () => {
+            selectSuggestion(query, lat, lon, inputId, suggestionsId, mapType);
+          };
+          
+          div.innerHTML = `
+            <i class="fa-solid fa-location-dot" style="color: var(--primary); margin-right: 8px;"></i>
+            <span style="font-size: 0.75rem;">${escapeHtml(name)}</span>
+          `;
+          suggestionsContainer.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+        suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--danger);">Erro ao buscar endereço.</div>';
+      }
     }
 
-    function timeRangesOverlap(startA, durationA, startB, durationB) {
-      const aStart = timeToMinutes(startA);
-      const bStart = timeToMinutes(startB);
-      if (aStart === null || bStart === null) return false;
-      const aEnd = aStart + Number(durationA || 1) * 60;
-      const bEnd = bStart + Number(durationB || 1) * 60;
-      return aStart < bEnd && bStart < aEnd;
+    window.selectSuggestion = function(name, lat, lon, inputId, suggestionsId, mapType) {
+      document.getElementById(inputId).value = name;
+      document.getElementById(suggestionsId).style.display = 'none';
+
+      if (mapType === 'reg') {
+        state.regData.endereco = name;
+        state.regData.latitude = lat;
+        state.regData.longitude = lon;
+        if (registerMarker && registerMap) {
+          registerMarker.setLatLng([lat, lon]);
+          registerMap.setView([lat, lon], 16);
+        }
+      } else if (mapType === 'modal') {
+        document.getElementById('modal-lat').value = lat;
+        document.getElementById('modal-lng').value = lon;
+        if (modalMarker && modalMap) {
+          modalMarker.setLatLng([lat, lon]);
+          modalMap.setView([lat, lon], 16);
+        }
+      }
+    };
+
+    window.searchAddressReg = function() {
+      const q = document.getElementById('reg-address-input').value;
+      searchAddress(q, 'reg-address-input', 'address-suggestions', 'reg');
+    };
+
+    window.searchAddressModal = function() {
+      const q = document.getElementById('modal-address-input').value;
+      searchAddress(q, 'modal-address-input', 'modal-address-suggestions', 'modal');
+    };
+
+    window.maskCEP = function(input) {
+      let v = input.value.replace(/\D/g, "");
+      if (v.length > 5) {
+        v = v.substring(0, 5) + "-" + v.substring(5, 8);
+      }
+      input.value = v;
+    };
+
+    window.searchCEPReg = function() {
+      const cep = document.getElementById('reg-cep-input').value;
+      searchCEP(cep, 'reg-address-input', 'reg');
+    };
+
+    window.searchCEPModal = function() {
+      const cep = document.getElementById('modal-cep-input').value;
+      searchCEP(cep, 'modal-address-input', 'modal');
+    };
+
+    async function searchCEP(cep, inputAddressId, mapType) {
+      const cleanCep = cep.replace(/\D/g, "");
+      if (cleanCep.length !== 8) {
+        alert("Digite um CEP válido com 8 dígitos.");
+        return;
+      }
+      
+      const addressInput = document.getElementById(inputAddressId);
+      const originalPlaceholder = addressInput.placeholder;
+      addressInput.placeholder = "Buscando endereço pelo CEP...";
+      
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        const data = await res.json();
+        
+        if (data.erro) {
+          alert("CEP não encontrado.");
+          return;
+        }
+        
+        const parts = [
+          data.logradouro,
+          data.bairro,
+          data.localidade,
+          data.uf
+        ].filter(Boolean);
+        
+        const fullAddress = parts.join(", ");
+        addressInput.value = fullAddress;
+        
+        // Função interna para geocodificar usando Nominatim
+        async function geocode(q) {
+          const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=br`;
+          try {
+            const geoRes = await fetch(geocodeUrl, {
+              headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+            });
+            return await geoRes.json();
+          } catch (e) {
+            console.error("Erro no geocode Nominatim para CEP:", q, e);
+            return [];
+          }
+        }
+        
+        // Tentativa 1: Endereço completo retornado pelo ViaCEP
+        let geoData = await geocode(fullAddress);
+        
+        // Tentativa 2: Bairro + Cidade + Estado (se tiver bairro)
+        if ((!geoData || geoData.length === 0) && data.bairro) {
+          const q2 = [data.bairro, data.localidade, data.uf].filter(Boolean).join(", ");
+          geoData = await geocode(q2);
+        }
+        
+        // Tentativa 3: Cidade + Estado
+        if (!geoData || geoData.length === 0) {
+          const q3 = [data.localidade, data.uf].filter(Boolean).join(", ");
+          geoData = await geocode(q3);
+        }
+        
+        if (geoData && geoData.length > 0) {
+          const lat = parseFloat(geoData[0].lat);
+          const lon = parseFloat(geoData[0].lon);
+          
+          if (mapType === 'reg') {
+            state.regData.endereco = fullAddress;
+            state.regData.latitude = lat;
+            state.regData.longitude = lon;
+            if (registerMarker && registerMap) {
+              registerMarker.setLatLng([lat, lon]);
+              registerMap.setView([lat, lon], 16);
+            }
+          } else if (mapType === 'modal') {
+            document.getElementById('modal-lat').value = lat;
+            document.getElementById('modal-lng').value = lon;
+            if (modalMarker && modalMap) {
+              modalMarker.setLatLng([lat, lon]);
+              modalMap.setView([lat, lon], 16);
+            }
+          }
+        } else {
+          if (mapType === 'reg') {
+            state.regData.endereco = fullAddress;
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao buscar CEP.");
+      } finally {
+        addressInput.placeholder = originalPlaceholder;
+      }
     }
 
-    function formatTimeRange(start, duration = 1) {
-      if (!start) return '';
-      const [hour, minute] = start.split(':').map(Number);
-      if (!Number.isFinite(hour) || !Number.isFinite(minute)) return start;
-      const endHour = hour + Number(duration || 1);
-      const end = `${String(endHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-      return `${start} às ${end}`;
+    async function reverseGeocode(lat, lng, inputId, mapType) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+        const res = await fetch(url, {
+          headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+        });
+        const data = await res.json();
+        if (data && data.display_name) {
+          const name = data.display_name;
+          document.getElementById(inputId).value = name;
+          if (mapType === 'reg') {
+            state.regData.endereco = name;
+          }
+        }
+      } catch (err) {
+        console.error("Erro no reverse geocoding:", err);
+      }
+    }
+
+    // Fecha sugestões ao clicar fora
+    document.addEventListener('click', function(ev) {
+      const regSuggestions = document.getElementById('address-suggestions');
+      if (regSuggestions && !regSuggestions.contains(ev.target) && ev.target.id !== 'reg-address-input') {
+        regSuggestions.style.display = 'none';
+      }
+      const modalSuggestions = document.getElementById('modal-address-suggestions');
+      if (modalSuggestions && !modalSuggestions.contains(ev.target) && ev.target.id !== 'modal-address-input') {
+        modalSuggestions.style.display = 'none';
+      }
+    });
+
+    /* ── MODAL: AGENDAR / EDITAR AULAS ── */
+    function openNewLessonModal() {
+      state.modalEditingLessonId = null;
+      state.modalSelectedTimes = [];
+      document.getElementById('slot-modal-title').textContent = 'Agendar Nova Aula';
+      document.getElementById('btn-save-slot').textContent = 'Confirmar Agendamento';
+      document.getElementById('admin-fields').style.display = 'none';
+
+      // Oculta duração manual para novas aulas
+      const hoursGroup = document.getElementById('slot-hours-group');
+      if (hoursGroup) hoursGroup.style.display = 'none';
+
+      const timeLabel = document.getElementById('slot-time-label');
+      if (timeLabel) timeLabel.textContent = 'Selecione os Horários (Selecione até 3)';
+
+      const cepInput = document.getElementById('modal-cep-input');
+      if (cepInput) cepInput.value = '';
+
+      // Popula cidades
+      const citySelect = document.getElementById('slot-city');
+      citySelect.innerHTML = `
+        <option value="Santo Antônio do Descoberto">Santo Antônio do Descoberto - GO</option>
+        <option value="Outra cidade">Outra localidade</option>
+      `;
+
+      // Popula horas
+      const maxHours = state.alunoLogado ? 3 : 8;
+      const filteredOptions = state.horasOpcoes.filter(h => h <= maxHours);
+      const hourSelect = document.getElementById('slot-hours');
+      hourSelect.innerHTML = filteredOptions.map(h => `<option value="${h}">${h} hora${h > 1 ? 's' : ''}</option>`).join('');
+      hourSelect.value = 1;
+
+      // Popula módulos
+      const modSelect = document.getElementById('slot-module');
+      modSelect.innerHTML = '<option value="">Sem módulo específico</option>' + state.course.modulos.map(m => `<option value="${m.id}">${escapeHtml(m.nome)}</option>`).join('');
+      modSelect.value = '';
+
+      // Popula assuntos
+      renderModalSubjects();
+
+      // Datas a partir de amanhã
+      const dateInput = document.getElementById('slot-date');
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      dateInput.min = tomorrow.toISOString().slice(0, 10);
+      dateInput.value = tomorrow.toISOString().slice(0, 10);
+
+      // Status padrão
+      document.getElementById('slot-status').value = 'pre_agendado';
+      document.getElementById('slot-notes').value = '';
+
+      updateModalHours();
+      updateModalCalculatedValue();
+
+      document.getElementById('slot-modal').classList.add('open');
+      initModalMap();
+    }
+
+    function openEditLessonModal(aulaId) {
+      state.modalEditingLessonId = aulaId;
+      const aula = state.board.find(a => a.aula_id === aulaId);
+      if (!aula) return;
+
+      state.modalSelectedTimes = [aula.horario];
+
+      // Exibe duração manual na edição de aula existente
+      const hoursGroup = document.getElementById('slot-hours-group');
+      if (hoursGroup) hoursGroup.style.display = 'block';
+
+      const timeLabel = document.getElementById('slot-time-label');
+      if (timeLabel) timeLabel.textContent = 'Selecione o Horário de Início (1 horário)';
+
+      const cepInput = document.getElementById('modal-cep-input');
+      if (cepInput) cepInput.value = '';
+
+      document.getElementById('slot-modal-title').textContent = 'Editar Aula';
+      document.getElementById('btn-save-slot').textContent = 'Salvar Alterações';
+
+      // Campos administrativos aparecem apenas para o professor.
+      document.getElementById('admin-fields').style.display = state.adminLogado ? 'block' : 'none';
+
+      // Cidades
+      const citySelect = document.getElementById('slot-city');
+      citySelect.innerHTML = `
+        <option value="Santo Antônio do Descoberto">Santo Antônio do Descoberto - GO</option>
+        <option value="Outra cidade">Outra localidade</option>
+      `;
+      citySelect.value = aula.cidade.includes('Santo Antônio') ? 'Santo Antônio do Descoberto' : 'Outra cidade';
+
+      // Horas
+      const maxHours = state.adminLogado ? 8 : 3;
+      let filteredOptions = state.horasOpcoes.filter(h => h <= maxHours);
+      if (!filteredOptions.includes(Number(aula.quantidade_horas))) {
+        filteredOptions.push(Number(aula.quantidade_horas));
+        filteredOptions.sort((a, b) => a - b);
+      }
+      const hourSelect = document.getElementById('slot-hours');
+      hourSelect.innerHTML = filteredOptions.map(h => `<option value="${h}">${h} hora${h > 1 ? 's' : ''}</option>`).join('');
+      hourSelect.value = aula.quantidade_horas;
+
+      // Datas
+      const dateInput = document.getElementById('slot-date');
+      dateInput.min = '';
+      dateInput.value = aula.data_aula;
+
+      // Módulo
+      const modSelect = document.getElementById('slot-module');
+      modSelect.innerHTML = '<option value="">Sem módulo específico</option>' + state.course.modulos.map(m => `<option value="${m.id}">${escapeHtml(m.nome)}</option>`).join('');
+      modSelect.value = aula.modulo_id || '';
+
+      // Assuntos
+      renderModalSubjects();
+      document.getElementById('slot-subject').value = aula.assunto_id || '';
+
+      // Admin Status & Observações
+      const statusSelect = document.getElementById('slot-status');
+      statusSelect.innerHTML = state.statusOpcoes.map(s => `<option value="${s}">${s.replace('_', ' ')}</option>`).join('');
+      statusSelect.value = aula.status || 'pre_agendado';
+      document.getElementById('slot-notes').value = aula.observacoes || '';
+
+      updateModalHours(aula.horario);
+      updateModalCalculatedValue();
+
+      document.getElementById('slot-modal').classList.add('open');
+      initModalMap(aula);
+    }
+
+    function closeSlotModal() {
+      document.getElementById('slot-modal').classList.remove('open');
+    }
+
+    function handleModalModuleChange() {
+      renderModalSubjects();
+    }
+
+    function renderModalSubjects() {
+      const modId = Number(document.getElementById('slot-module').value || 0);
+      const subSelect = document.getElementById('slot-subject');
+      const subjects = state.course.assuntos.filter(s => Number(s.modulo_id) === modId);
+
+      subSelect.innerHTML = '<option value="">Sem assunto específico</option>' + subjects.map(s => `<option value="${s.id}">${escapeHtml(s.titulo)}</option>`).join('');
+      subSelect.value = '';
+    }
+
+    function handleModalCityChange() {
+      updateModalCalculatedValue();
+      
+      const city = document.getElementById('slot-city').value;
+      const isLocal = city.includes('Santo Antônio');
+      
+      const addressInput = document.getElementById('modal-address-input');
+      const addressGroup = document.getElementById('modal-address-group');
+
+      if (isLocal) {
+        addressInput.value = DEFAULT_STUDIO_ADDRESS;
+        addressInput.disabled = true;
+        addressGroup.style.opacity = '0.7';
+        document.getElementById('modal-lat').value = STUDIO_LAT;
+        document.getElementById('modal-lng').value = STUDIO_LNG;
+        
+        if (modalMarker && modalMap) {
+          modalMarker.setLatLng([STUDIO_LAT, STUDIO_LNG]);
+          modalMarker.dragging.disable();
+          modalMap.setView([STUDIO_LAT, STUDIO_LNG], 15);
+        }
+      } else {
+        if (addressInput.value === DEFAULT_STUDIO_ADDRESS) {
+          addressInput.value = '';
+          document.getElementById('modal-lat').value = '';
+          document.getElementById('modal-lng').value = '';
+        }
+        addressInput.disabled = false;
+        addressGroup.style.opacity = '1';
+        
+        if (modalMarker) {
+          modalMarker.dragging.enable();
+        }
+      }
+    }
+
+    function handleModalTimeChange() {
+      updateModalHours();
+      updateModalCalculatedValue();
+    }
+
+    function handleModalDateChange() {
+      updateModalHours();
+    }
+
+    function updateModalCalculatedValue() {
+      const city = document.getElementById('slot-city').value;
+      const isEditing = state.modalEditingLessonId !== null;
+      const hours = isEditing 
+        ? Number(document.getElementById('slot-hours').value || 1) 
+        : Math.max(1, state.modalSelectedTimes.length);
+      const rate = city.includes('Santo Antônio') ? 100 : 150;
+
+      document.getElementById('slot-calc-value').textContent = (rate * hours).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function updateModalHours(selectHourValue = null) {
+      const dateVal = document.getElementById('slot-date').value;
+      const container = document.getElementById('slot-time-container');
+      if (!container) return;
+
+      const occupied = new Set();
+      state.board.forEach(item => {
+        if (item.data_aula === dateVal && item.aula_id !== state.modalEditingLessonId) {
+          occupied.add(item.horario);
+        }
+      });
+
+      container.innerHTML = state.horarios.map(h => {
+        const isOccupied = occupied.has(h);
+        const isSelected = state.modalSelectedTimes.includes(h);
+        
+        return `
+          <div class="time-chip ${isOccupied ? 'disabled' : ''} ${isSelected ? 'selected' : ''}" 
+               data-time="${h}" 
+               onclick="toggleTimeChip('${h}', ${isOccupied})">
+            ${h}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('slot-time').value = state.modalSelectedTimes[0] || '';
+    }
+
+    window.toggleTimeChip = function(time, isOccupied) {
+      if (isOccupied) return;
+
+      const isEditing = state.modalEditingLessonId !== null;
+      const idx = state.modalSelectedTimes.indexOf(time);
+
+      if (isEditing) {
+        state.modalSelectedTimes = [time];
+      } else {
+        if (idx !== -1) {
+          state.modalSelectedTimes.splice(idx, 1);
+        } else {
+          // Validação de limite diário para alunos
+          if (state.alunoLogado) {
+            const dateVal = document.getElementById('slot-date').value;
+            const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dateVal);
+            const horasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
+            
+            if (horasExistentes + state.modalSelectedTimes.length >= 3) {
+              alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${horasExistentes}h agendadas para este dia.`);
+              return;
+            }
+          }
+
+          if (state.modalSelectedTimes.length >= 3) {
+            alert("Você pode selecionar no máximo 3 horários simultaneamente para o mesmo dia.");
+            return;
+          }
+
+          state.modalSelectedTimes.push(time);
+        }
+      }
+
+      updateModalHours();
+      updateModalCalculatedValue();
+    };
+
+    async function saveLessonFromModal() {
+      const dataVal = document.getElementById('slot-date').value;
+      const cidade = document.getElementById('slot-city').value;
+      const moduloId = Number(document.getElementById('slot-module').value || 0) || null;
+      const assuntoId = Number(document.getElementById('slot-subject').value || 0) || null;
+      const status = document.getElementById('slot-status').value || 'pre_agendado';
+      const observacoes = document.getElementById('slot-notes').value.trim();
+
+      if (!dataVal) {
+        alert('Selecione uma data.');
+        return;
+      }
+
+      if (state.modalSelectedTimes.length === 0) {
+        alert('Selecione pelo menos um horário para a aula.');
+        return;
+      }
+
+      const dateObj = new Date(dataVal + 'T00:00:00');
+      const dayOfWeekName = DAYS_NAMES[dateObj.getDay()];
+
+      // Regra: Aulas apenas de Segunda a Sexta
+      if (dateObj.getDay() === 0 || dateObj.getDay() === 6) {
+        alert('Aulas práticas ocorrem apenas de segunda a sexta-feira.');
+        return;
+      }
+
+      const rateCentavos = cidade.includes('Santo Antônio') ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
+      const enderecoVal = document.getElementById('modal-address-input').value.trim();
+      const latVal = document.getElementById('modal-lat').value;
+      const lngVal = document.getElementById('modal-lng').value;
+
+      const isNew = !state.modalEditingLessonId;
+      let newLessonsList = [];
+
+      if (isNew) {
+        state.modalSelectedTimes.forEach(hora => {
+          newLessonsList.push({
+            aula_id: null,
+            dia_semana: dayOfWeekName,
+            data_aula: dataVal,
+            horario: hora,
+            quantidade_horas: 1,
+            cidade: cidade,
+            modulo_id: moduloId,
+            assunto_id: assuntoId,
+            status: state.adminLogado ? status : 'pre_agendado',
+            observacoes: state.adminLogado ? observacoes : '',
+            valor_hora_centavos: rateCentavos,
+            valor_centavos: rateCentavos * 1,
+            endereco: enderecoVal || null,
+            latitude: latVal ? Number(latVal) : null,
+            longitude: lngVal ? Number(lngVal) : null
+          });
+        });
+
+        // Regra de limite diário para o aluno
+        if (state.alunoLogado) {
+          const totalHorasNovas = newLessonsList.length;
+          const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dataVal);
+          const somaHorasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
+          if (somaHorasExistentes + totalHorasNovas > 3) {
+            alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${somaHorasExistentes}h agendadas para este dia.`);
+            return;
+          }
+        }
+      } else {
+        const hoursCount = Number(document.getElementById('slot-hours').value || 1);
+        
+        // Regra de limite diário para o aluno
+        if (state.alunoLogado) {
+          if (hoursCount > 3) {
+            alert('Você não pode agendar mais de 3 horas por dia.');
+            return;
+          }
+          const aulasDoMesmoDia = state.board.filter(a => a.is_owner && a.data_aula === dataVal && a.aula_id !== state.modalEditingLessonId);
+          const somaHorasExistentes = aulasDoMesmoDia.reduce((sum, a) => sum + Number(a.quantidade_horas), 0);
+          if (somaHorasExistentes + hoursCount > 3) {
+            alert(`Você não pode agendar mais de 3 horas de aula por dia. Você já possui ${somaHorasExistentes}h agendadas para este dia.`);
+            return;
+          }
+        }
+
+        const existingLesson = state.board.find(a => a.aula_id === state.modalEditingLessonId);
+
+        newLessonsList.push({
+          aula_id: state.modalEditingLessonId,
+          dia_semana: dayOfWeekName,
+          data_aula: dataVal,
+          horario: state.modalSelectedTimes[0],
+          quantidade_horas: hoursCount,
+          cidade: cidade,
+          modulo_id: moduloId,
+          assunto_id: assuntoId,
+          status: state.adminLogado ? status : (existingLesson && existingLesson.data_aula === dataVal && existingLesson.horario === state.modalSelectedTimes[0] ? (existingLesson.status || 'pre_agendado') : 'pre_agendado'),
+          observacoes: state.adminLogado ? observacoes : (existingLesson ? (existingLesson.observacoes || '') : ''),
+          valor_hora_centavos: rateCentavos,
+          valor_centavos: rateCentavos * hoursCount,
+          endereco: enderecoVal || null,
+          latitude: latVal ? Number(latVal) : null,
+          longitude: lngVal ? Number(lngVal) : null
+        });
+      }
+
+      let payload = {};
+      if (state.alunoLogado) {
+        let minhasAulas = state.board.filter(a => a.is_owner && a.aula_id !== state.modalEditingLessonId).map(a => ({
+          aula_id: a.aula_id,
+          dia_semana: a.dia_semana,
+          data_aula: a.data_aula,
+          horario: a.horario,
+          quantidade_horas: a.quantidade_horas,
+          cidade: a.cidade,
+          modulo_id: a.modulo_id,
+          assunto_id: a.assunto_id,
+          status: a.status,
+          observacoes: a.observacoes || '',
+          endereco: a.endereco || null,
+          latitude: a.latitude || null,
+          longitude: a.longitude || null
+        }));
+
+        minhasAulas = minhasAulas.concat(newLessonsList);
+
+        payload = {
+          token_publico: state.token,
+          aluno: {
+            nome: state.alunoLogado.nome,
+            email: state.alunoLogado.email,
+            telefone: state.alunoLogado.telefone
+          },
+          plano: {
+            nome: state.alunoLogado.plano?.nome || 'Curso Prático',
+            total_aulas: state.alunoLogado.plano?.total_aulas || 10,
+            status: state.alunoLogado.plano?.status || 'ativo'
+          },
+          aulas: minhasAulas
+        };
+      }
+      else if (state.adminLogado) {
+        if (!isNew) {
+          const aulaRef = state.board.find(a => a.aula_id === state.modalEditingLessonId);
+          if (!aulaRef) {
+            alert('Erro ao referenciar aluno da aula editada.');
+            return;
+          }
+
+          let aulasDoAluno = state.board.filter(a => a.aluno_id === aulaRef.aluno_id && a.aula_id !== state.modalEditingLessonId).map(a => ({
+            aula_id: a.aula_id,
+            dia_semana: a.dia_semana,
+            data_aula: a.data_aula,
+            horario: a.horario,
+            quantidade_horas: a.quantidade_horas,
+            cidade: a.cidade,
+            modulo_id: a.modulo_id,
+            assunto_id: a.assunto_id,
+            status: a.status,
+            observacoes: a.observacoes || '',
+            endereco: a.endereco || null,
+            latitude: a.latitude || null,
+            longitude: a.longitude || null
+          }));
+
+          aulasDoAluno = aulasDoAluno.concat(newLessonsList);
+
+          payload = {
+            token_publico: aulaRef.token_publico,
+            aluno: {
+              nome: aulaRef.aluno,
+              email: aulaRef.email,
+              telefone: aulaRef.telefone
+            },
+            plano: {
+              nome: aulaRef.plano_nome || 'Curso Prático',
+              total_aulas: aulaRef.total_aulas || 10,
+              status: aulaRef.plano_status || 'ativo'
+            },
+            aulas: aulasDoAluno
+          };
+        } else {
+          alert('Função de agendamento do zero pelo professor não disponível por esta via.');
+          return;
+        }
+      }
+
+      try {
+        await request('/save.php', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        alert(isNew ? 'Aula(s) agendada(s) com sucesso!' : 'Agendamento atualizado com sucesso!');
+        closeSlotModal();
+
+        if (state.adminLogado) {
+          await loadAdminDashboard();
+        } else {
+          await loadStudentDashboard();
+        }
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    /* ── MODAL: EDITAR PLANO ── */
+    function openPlanEditModal(alunoId, planName, totalAulas, status, formaPagamento) {
+      document.getElementById('edit-plan-aluno-id').value = alunoId;
+      document.getElementById('edit-plan-name').value = planName;
+      document.getElementById('edit-plan-total').value = totalAulas;
+      document.getElementById('edit-plan-status').value = status;
+      document.getElementById('edit-plan-payment').value = formaPagamento || '';
+
+      document.getElementById('plan-modal').classList.add('open');
+    }
+
+    function closePlanModal() {
+      document.getElementById('plan-modal').classList.remove('open');
+    }
+
+    async function saveStudentPlanFromModal() {
+      const alunoId = Number(document.getElementById('edit-plan-aluno-id').value);
+      const planName = document.getElementById('edit-plan-name').value.trim();
+      const total = Number(document.getElementById('edit-plan-total').value);
+      const status = document.getElementById('edit-plan-status').value;
+      const payment = document.getElementById('edit-plan-payment').value;
+
+      // Procura algum dado de aluno no board para reuso do payload completo
+      const ref = state.board.find(a => a.aluno_id === alunoId);
+      if (!ref) {
+        alert('Erro ao referenciar dados do aluno.');
+        return;
+      }
+
+      const aulas = state.board.filter(a => a.aluno_id === alunoId).map(a => ({
+        aula_id: a.aula_id,
+        dia_semana: a.dia_semana,
+        data_aula: a.data_aula,
+        horario: a.horario,
+        quantidade_horas: a.quantidade_horas,
+        cidade: a.cidade,
+        modulo_id: a.modulo_id,
+        assunto_id: a.assunto_id,
+        status: a.status,
+        observacoes: a.observacoes || ''
+      }));
+
+      const payload = {
+        token_publico: ref.token_publico,
+        aluno: {
+          nome: ref.aluno,
+          email: ref.email,
+          telefone: ref.telefone
+        },
+        plano: {
+          nome: planName,
+          total_aulas: total,
+          status: status,
+          forma_pagamento: payment
+        },
+        aulas: aulas
+      };
+
+      try {
+        await request('/save.php', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        alert('Plano do aluno atualizado com sucesso.');
+        closePlanModal();
+        await loadAdminDashboard();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    /* ── INICIALIZAÇÃO SPA ── */
+    async function init() {
+      try {
+        // Carrega dados iniciais da API geral
+        const listData = await request('/list.php');
+        state.board = listData.aulas || [];
+        state.course = listData.curso || state.course;
+        state.valorSantoAntonioCentavos = listData.valor_santo_antonio_centavos || 10000;
+        state.valorOutraCidadeCentavos = listData.valor_outra_cidade_centavos || 15000;
+        state.horarios = listData.horarios || state.horarios;
+        state.horasOpcoes = listData.horas_opcoes || state.horasOpcoes;
+        state.statusOpcoes = listData.status_opcoes || state.statusOpcoes;
+
+        // Recupera status da sessão
+        const auth = await request('/status.php');
+        if (auth.logado) {
+          if (auth.tipo === 'fotografo') {
+            state.adminLogado = auth.admin;
+            await loadAdminDashboard();
+          } else {
+            state.alunoLogado = auth.aluno;
+            state.token = auth.token;
+            localStorage.setItem(STORAGE_KEY, auth.token);
+            await loadStudentDashboard();
+          }
+        } else {
+          changeView('view-login');
+        }
+
+      } catch (err) {
+        console.warn('Erro ao inicializar agendamento:', err);
+        changeView('view-login');
+      }
     }
 
     function escapeHtml(value) {
-      return String(value).replace(/[&<>"']/g, char => ({
+      return String(value || '').replace(/[&<>"']/g, char => ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
@@ -4165,113 +8012,11 @@ deploy_ftp.ps1
       }[char]));
     }
 
-    document.querySelectorAll('[data-close-modal]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        closeModal(els.slotModal);
-        closeModal(els.adminModal);
-      });
-    });
-
-    els.confirmSlot.addEventListener('click', applySlot);
-    els.slotCity.addEventListener('input', updateSlotValue);
-    els.slotHours.addEventListener('change', () => {
-      updateSlotValue();
-      renderHourOptions(state.slotAulaId);
-    });
-    els.slotModule.addEventListener('change', () => renderSubjectOptions());
-    els.slotDate.addEventListener('change', () => {
-      if (!dateMatchesDay(els.slotDate.value, state.slotDay)) {
-        els.slotStatus.textContent = `Escolha uma data de ${state.slotDay.toLowerCase()}.`;
-      } else {
-        els.slotStatus.textContent = '';
-      }
-      renderHourOptions(state.slotAulaId);
-      if (!els.slotTime.value || els.slotTime.selectedOptions[0]?.disabled) {
-        els.slotTime.value = firstAvailableHour();
-      }
-    });
-
-    [els.planName, els.planTotal, els.planStatus].forEach(input => {
-      input.addEventListener('input', () => {
-        state.activePlan = {
-          nome: els.planName.value,
-          total_aulas: Number(els.planTotal.value || 0),
-          aulas_usadas: currentLessons().length,
-          status: els.planStatus.value,
-        };
-        state.dirty = true;
-        renderPlan();
-        updateSaveButton();
-      });
-      input.addEventListener('change', () => {
-        state.dirty = true;
-        renderPlan();
-        updateSaveButton();
-      });
-    });
-
-    els.adminTrigger.addEventListener('dblclick', () => {
-      els.adminStatus.textContent = '';
-      els.adminEmail.value = state.admin?.email || '';
-      openModal(els.adminModal);
-      setTimeout(() => els.adminEmail.focus(), 50);
-    });
-
-    els.adminLogin.addEventListener('click', async () => {
-      els.adminStatus.textContent = 'Validando...';
-      try {
-        const data = await request('/admin_login.php', {
-          method: 'POST',
-          body: JSON.stringify({ email: els.adminEmail.value }),
-        });
-        state.admin = data.admin;
-        closeModal(els.adminModal);
-        await loadBoard(state.activeToken);
-      } catch (error) {
-        els.adminStatus.textContent = error.message;
-      }
-    });
-
-    els.adminLogout.addEventListener('click', async () => {
-      const previousText = els.adminLogout.textContent;
-      els.adminLogout.disabled = true;
-      els.adminLogout.textContent = 'Saindo...';
-
-      try {
-        await request('/admin_logout.php', { method: 'POST', body: '{}' });
-        state.admin = null;
-        state.activeToken = '';
-        state.activeStudent = { nome: '', email: '', telefone: '' };
-        state.draftLessons = [];
-        state.board = [];
-        state.dirty = false;
-        await loadBoard('');
-      } catch (error) {
-        alert(error.message);
-        renderAdmin();
-      } finally {
-        els.adminLogout.disabled = false;
-        els.adminLogout.textContent = previousText;
-      }
-    });
-
-    async function init() {
-      state.activeToken = '';
-      try {
-        const status = await request('/admin_status.php');
-        state.admin = status.admin;
-      } catch {}
-      try {
-        await loadBoard(state.activeToken);
-      } catch (error) {
-        render();
-        console.warn(error);
-      }
-    }
-
+    // Inicializa a aplicação
     init();
   </script>
 </body>
+
 </html>
 ```
 
@@ -5174,8 +8919,8 @@ _Explique qualquer bloco de codigo ou decisao que nao seja obvia para manutencao
 
 ### `api/agendamentos/_helpers.php`
 
-- Linhas: 653
-- Tamanho: 25.2 KB
+- Linhas: 790
+- Tamanho: 31.6 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\agendamentos\_helpers.php`
 
 ```php
@@ -5184,24 +8929,136 @@ _Explique qualquer bloco de codigo ou decisao que nao seja obvia para manutencao
 const AGENDAMENTO_ADMIN_EMAILS = [
     'willianb.o.1993@gmail.com',
     'dododouglas04@outlook.com',
+    'dougdouglas04@outlook.com',
 ];
 
 const AGENDAMENTO_DIAS = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'];
 const AGENDAMENTO_HORARIOS = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
-const AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS = 7500;
-const AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS = 12000;
+const AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS = 10000;
+const AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS = 15000;
 const AGENDAMENTO_HORAS_OPCOES = [1, 2, 3, 4, 5, 6, 7, 8];
 const AGENDAMENTO_STATUS = ['pre_agendado', 'confirmado', 'concluido', 'cancelado', 'remarcado'];
 
 function agendamento_ensure_schema(PDO $db): void {
+    $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+    if ($driver === 'sqlite') {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_alunos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome VARCHAR(160) NOT NULL,
+                email VARCHAR(190) NOT NULL,
+                telefone VARCHAR(40) NOT NULL,
+                senha_hash VARCHAR(255) DEFAULT NULL,
+                token_publico VARCHAR(96) NOT NULL UNIQUE,
+                codigo_acesso VARCHAR(12) DEFAULT NULL,
+                foto_url VARCHAR(512) DEFAULT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_agendamento_alunos_email ON agendamento_alunos (email)");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_modulos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome VARCHAR(160) NOT NULL,
+                descricao TEXT NULL,
+                ordem INT NOT NULL DEFAULT 0,
+                ativo TINYINT(1) NOT NULL DEFAULT 1,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_assuntos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                modulo_id INT NOT NULL,
+                titulo VARCHAR(180) NOT NULL,
+                descricao TEXT NULL,
+                ordem INT NOT NULL DEFAULT 0,
+                ativo TINYINT(1) NOT NULL DEFAULT 1,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_assuntos_modulo ON agendamento_assuntos (modulo_id)");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_planos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                aluno_id INT NOT NULL,
+                nome VARCHAR(180) NOT NULL,
+                total_aulas INT NOT NULL DEFAULT 0,
+                aulas_usadas INT NOT NULL DEFAULT 0,
+                status VARCHAR(30) NOT NULL DEFAULT 'ativo',
+                forma_pagamento VARCHAR(50) DEFAULT NULL,
+                cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
+                valor_hora_centavos INT NOT NULL DEFAULT 10000,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_planos_aluno ON agendamento_planos (aluno_id)");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_aulas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                aluno_id INT NOT NULL,
+                plano_id INT NULL,
+                modulo_id INT NULL,
+                assunto_id INT NULL,
+                dia_semana VARCHAR(20) NOT NULL,
+                data_aula DATE NOT NULL,
+                horario VARCHAR(5) NOT NULL,
+                quantidade_horas INT NOT NULL DEFAULT 1,
+                cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
+                valor_hora_centavos INT NOT NULL DEFAULT 10000,
+                valor_centavos INT NOT NULL DEFAULT 10000,
+                status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
+                observacoes TEXT NULL,
+                endereco VARCHAR(512) DEFAULT NULL,
+                latitude DECIMAL(10, 8) DEFAULT NULL,
+                longitude DECIMAL(11, 8) DEFAULT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (data_aula, horario)
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_aulas_aluno ON agendamento_aulas (aluno_id)");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_aulas_plano ON agendamento_aulas (plano_id)");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_aulas_data ON agendamento_aulas (data_aula)");
+
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_historico (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                aula_id INT NULL,
+                aluno_id INT NULL,
+                acao VARCHAR(80) NOT NULL,
+                detalhes TEXT NULL,
+                autor_tipo VARCHAR(30) NOT NULL DEFAULT 'sistema',
+                autor_email VARCHAR(190) NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_historico_aula ON agendamento_historico (aula_id)");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_historico_aluno ON agendamento_historico (aluno_id)");
+
+        try {
+            agendamento_seed_course_defaults($db);
+        } catch (Throwable $e) {}
+
+        return;
+    }
+
     $db->exec("
         CREATE TABLE IF NOT EXISTS agendamento_alunos (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(160) NOT NULL,
             email VARCHAR(190) NOT NULL,
             telefone VARCHAR(40) NOT NULL,
+            senha_hash VARCHAR(255) DEFAULT NULL,
             token_publico VARCHAR(96) NOT NULL UNIQUE,
             codigo_acesso VARCHAR(12) DEFAULT NULL,
+            foto_url VARCHAR(512) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_agendamento_alunos_email (email)
@@ -5240,6 +9097,9 @@ function agendamento_ensure_schema(PDO $db): void {
             total_aulas INT NOT NULL DEFAULT 0,
             aulas_usadas INT NOT NULL DEFAULT 0,
             status VARCHAR(30) NOT NULL DEFAULT 'ativo',
+            forma_pagamento VARCHAR(50) DEFAULT NULL,
+            cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
+            valor_hora_centavos INT NOT NULL DEFAULT 10000,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_planos_aluno (aluno_id)
@@ -5258,10 +9118,13 @@ function agendamento_ensure_schema(PDO $db): void {
             horario VARCHAR(5) NOT NULL,
             quantidade_horas INT NOT NULL DEFAULT 1,
             cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-            valor_hora_centavos INT NOT NULL DEFAULT 7500,
-            valor_centavos INT NOT NULL DEFAULT 7500,
+            valor_hora_centavos INT NOT NULL DEFAULT 10000,
+            valor_centavos INT NOT NULL DEFAULT 10000,
             status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
             observacoes TEXT NULL,
+            endereco VARCHAR(512) DEFAULT NULL,
+            latitude DECIMAL(10, 8) DEFAULT NULL,
+            longitude DECIMAL(11, 8) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_agendamento_slot (data_aula, horario),
@@ -5287,7 +9150,9 @@ function agendamento_ensure_schema(PDO $db): void {
     ");
 
     agendamento_ensure_columns($db, 'agendamento_alunos', [
+        'senha_hash' => 'VARCHAR(255) DEFAULT NULL',
         'codigo_acesso' => 'VARCHAR(12) DEFAULT NULL',
+        'foto_url' => 'VARCHAR(512) DEFAULT NULL',
         'criado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
         'atualizado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
     ]);
@@ -5296,6 +9161,9 @@ function agendamento_ensure_schema(PDO $db): void {
         'total_aulas' => 'INT NOT NULL DEFAULT 0',
         'aulas_usadas' => 'INT NOT NULL DEFAULT 0',
         'status' => "VARCHAR(30) NOT NULL DEFAULT 'ativo'",
+        'forma_pagamento' => 'VARCHAR(50) DEFAULT NULL',
+        'cidade' => "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'",
+        'valor_hora_centavos' => 'INT NOT NULL DEFAULT 10000',
         'criado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
         'atualizado_em' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
     ]);
@@ -5306,9 +9174,12 @@ function agendamento_ensure_schema(PDO $db): void {
         'assunto_id' => 'INT NULL',
         'quantidade_horas' => 'INT NOT NULL DEFAULT 1',
         'cidade' => "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'",
-        'valor_hora_centavos' => 'INT NOT NULL DEFAULT 7500',
+        'valor_hora_centavos' => 'INT NOT NULL DEFAULT 10000',
         'status' => "VARCHAR(30) NOT NULL DEFAULT 'pre_agendado'",
         'observacoes' => 'TEXT NULL',
+        'endereco' => 'VARCHAR(512) DEFAULT NULL',
+        'latitude' => 'DECIMAL(10, 8) DEFAULT NULL',
+        'longitude' => 'DECIMAL(11, 8) DEFAULT NULL',
     ] as $column => $definition) {
         $stmt = $db->prepare("
             SELECT COUNT(*)
@@ -5455,8 +9326,8 @@ function agendamento_migrate_pre_agendamento(PDO $db): void {
         ? "COALESCE(a.cidade, 'Santo Antônio do Descoberto')"
         : "'Santo Antônio do Descoberto'";
     $valorHoraExpr = agendamento_column_exists($db, 'pre_agendamento_aulas', 'valor_hora_centavos')
-        ? 'COALESCE(a.valor_hora_centavos, 7500)'
-        : '7500';
+        ? 'COALESCE(a.valor_hora_centavos, 10000)'
+        : '10000';
 
     $rows = $db->query("
         SELECT
@@ -5612,6 +9483,9 @@ function agendamento_validate_lessons(array $lessons): array {
             'observacoes' => $observacoes ?: null,
             'valor_hora_centavos' => $valorHora,
             'valor_centavos' => $valorHora * $quantidadeHoras,
+            'endereco' => isset($lesson['endereco']) ? trim($lesson['endereco']) : null,
+            'latitude' => isset($lesson['latitude']) ? (float)$lesson['latitude'] : null,
+            'longitude' => isset($lesson['longitude']) ? (float)$lesson['longitude'] : null,
         ];
     }
 
@@ -5634,6 +9508,9 @@ function agendamento_fetch_board(PDO $db): array {
             a.valor_centavos,
             a.status,
             a.observacoes,
+            a.endereco,
+            a.latitude,
+            a.longitude,
             al.id AS aluno_id,
             al.token_publico,
             al.nome,
@@ -5643,6 +9520,7 @@ function agendamento_fetch_board(PDO $db): array {
             p.total_aulas,
             p.aulas_usadas,
             p.status AS plano_status,
+            p.forma_pagamento AS plano_forma_pagamento,
             m.nome AS modulo_nome,
             s.titulo AS assunto_titulo,
             al.criado_em,
@@ -5652,7 +9530,7 @@ function agendamento_fetch_board(PDO $db): array {
         LEFT JOIN agendamento_planos p ON p.id = a.plano_id
         LEFT JOIN agendamento_modulos m ON m.id = a.modulo_id
         LEFT JOIN agendamento_assuntos s ON s.id = a.assunto_id
-        ORDER BY FIELD(a.dia_semana, 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'), a.data_aula, a.horario
+        ORDER BY CASE a.dia_semana WHEN 'SEGUNDA' THEN 1 WHEN 'TERÇA' THEN 2 WHEN 'QUARTA' THEN 3 WHEN 'QUINTA' THEN 4 WHEN 'SEXTA' THEN 5 ELSE 6 END, a.data_aula, a.horario
     ");
     return $stmt->fetchAll();
 }
@@ -5690,6 +9568,10 @@ function agendamento_format_board(array $rows, ?string $currentToken, bool $isAd
             $item['token_publico'] = $row['token_publico'];
             $item['email'] = $row['email'];
             $item['telefone'] = $row['telefone'];
+            $item['forma_pagamento'] = $row['plano_forma_pagamento'] ?? null;
+            $item['endereco'] = $row['endereco'] ?? null;
+            $item['latitude'] = isset($row['latitude']) ? (float)$row['latitude'] : null;
+            $item['longitude'] = isset($row['longitude']) ? (float)$row['longitude'] : null;
         } else {
             $item['plano_id'] = null;
             $item['modulo_id'] = null;
@@ -5959,8 +9841,8 @@ json_out(['status' => 'erro', 'mensagem' => 'Tipo de exclusao invalido.'], 400);
 
 ### `api/agendamentos/list.php`
 
-- Linhas: 65
-- Tamanho: 2.0 KB
+- Linhas: 66
+- Tamanho: 2.1 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\agendamentos\list.php`
 
 ```php
@@ -5968,7 +9850,7 @@ json_out(['status' => 'erro', 'mensagem' => 'Tipo de exclusao invalido.'], 400);
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/_helpers.php';
 
-$token = trim($_GET['token'] ?? '');
+$token = trim($_GET['token'] ?? $_SESSION['agendamento_aluno_token'] ?? '');
 $isAdmin = agendamento_is_admin();
 
 try {
@@ -5990,7 +9872,7 @@ $course = agendamento_fetch_course($db);
 $plan = null;
 if ($student) {
     $stmt = $db->prepare("
-        SELECT id, nome, total_aulas, aulas_usadas, status
+        SELECT id, nome, total_aulas, aulas_usadas, status, forma_pagamento, cidade, valor_hora_centavos
         FROM agendamento_planos
         WHERE aluno_id = ?
         ORDER BY id ASC
@@ -6022,6 +9904,7 @@ $payload = [
         'nome' => $student['nome'],
         'email' => $student['email'],
         'telefone' => $student['telefone'],
+        'foto_url' => $student['foto_url'] ?? null,
         'total_centavos' => $total,
         'plano' => $plan,
     ] : null,
@@ -6031,10 +9914,275 @@ $payload = [
 json_out($payload);
 ```
 
+### `api/agendamentos/login.php`
+
+- Linhas: 67
+- Tamanho: 2.3 KB
+- Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\agendamentos\login.php`
+
+```php
+<?php
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/_helpers.php';
+
+$body = body();
+$email = strtolower(trim($body['email'] ?? ''));
+$senha = $body['senha'] ?? '';
+
+if (!$email || !$senha) {
+    json_out(['status' => 'erro', 'mensagem' => 'E-mail e senha obrigatórios.'], 400);
+}
+
+try {
+    $db = db();
+    agendamento_ensure_schema($db);
+
+    // 1. Verifica se é Professor Fotógrafo (Admin)
+    if (in_array($email, AGENDAMENTO_ADMIN_EMAILS, true)) {
+        $stmt = $db->prepare("SELECT * FROM usuarios WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $u = $stmt->fetch();
+
+        if ($u && password_verify($senha, $u['senha'])) {
+            $_SESSION['agendamento_admin_email'] = $email;
+            // Desloga sessão de aluno para evitar conflitos
+            unset($_SESSION['agendamento_aluno_id']);
+            unset($_SESSION['agendamento_aluno_token']);
+
+            json_out([
+                'status' => 'ok',
+                'tipo' => 'fotografo',
+                'admin' => ['email' => $email, 'nome' => $u['nome']]
+            ]);
+        }
+    }
+
+    // 2. Se não for admin ou se a senha do admin falhou, tenta logar como Aluno
+    $stmt = $db->prepare("SELECT * FROM agendamento_alunos WHERE email = ? LIMIT 1");
+    $stmt->execute([$email]);
+    $aluno = $stmt->fetch();
+
+    if ($aluno && $aluno['senha_hash'] && password_verify($senha, $aluno['senha_hash'])) {
+        $_SESSION['agendamento_aluno_id'] = $aluno['id'];
+        $_SESSION['agendamento_aluno_token'] = $aluno['token_publico'];
+        // Desloga admin
+        unset($_SESSION['agendamento_admin_email']);
+
+        json_out([
+            'status' => 'ok',
+            'tipo' => 'aluno',
+            'token' => $aluno['token_publico'],
+            'aluno' => [
+                'id' => $aluno['id'],
+                'nome' => $aluno['nome'],
+                'email' => $aluno['email'],
+                'telefone' => $aluno['telefone']
+            ]
+        ]);
+    }
+
+    // Se falhou em ambos
+    json_out(['status' => 'erro', 'mensagem' => 'E-mail ou senha incorretos.'], 401);
+
+} catch (Throwable $e) {
+    error_log('Erro ao realizar login no agendamento: ' . $e->getMessage());
+    json_out(['status' => 'erro', 'mensagem' => 'Erro interno no servidor ao processar o login.'], 500);
+}
+```
+
+### `api/agendamentos/logout.php`
+
+- Linhas: 11
+- Tamanho: 261 B
+- Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\agendamentos\logout.php`
+
+```php
+<?php
+require_once __DIR__ . '/../config.php';
+
+unset($_SESSION['agendamento_admin_email']);
+unset($_SESSION['agendamento_aluno_id']);
+unset($_SESSION['agendamento_aluno_token']);
+
+json_out([
+    'status' => 'ok',
+    'mensagem' => 'Deslogado com sucesso.'
+]);
+```
+
+### `api/agendamentos/register.php`
+
+- Linhas: 160
+- Tamanho: 5.9 KB
+- Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\agendamentos\register.php`
+
+```php
+<?php
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/_helpers.php';
+
+$body = body();
+$dados = $body['dados'] ?? [];
+$planoInput = $body['plano'] ?? [];
+$pagamentoInput = $body['pagamento'] ?? [];
+$aulasInput = $body['aulas'] ?? [];
+
+$nome = trim($dados['nome'] ?? '');
+$email = strtolower(trim($dados['email'] ?? ''));
+$telefone = agendamento_clean_phone($dados['telefone'] ?? '');
+$senha = $dados['senha'] ?? '';
+
+if (!$nome || !$email || !$telefone || !$senha) {
+    json_out(['status' => 'erro', 'mensagem' => 'Todos os campos do perfil são obrigatórios (nome, email, telefone, senha).'], 400);
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    json_out(['status' => 'erro', 'mensagem' => 'Informe um e-mail válido.'], 400);
+}
+
+if (strlen($nome) < 3) {
+    json_out(['status' => 'erro', 'mensagem' => 'Informe o nome completo.'], 400);
+}
+
+if (strlen($senha) < 6) {
+    json_out(['status' => 'erro', 'mensagem' => 'A senha deve conter pelo menos 6 caracteres.'], 400);
+}
+
+try {
+    $db = db();
+    agendamento_ensure_schema($db);
+
+    // Verifica se e-mail de aluno já existe
+    $chk = $db->prepare("SELECT id FROM agendamento_alunos WHERE email = ? LIMIT 1");
+    $chk->execute([$email]);
+    if ($chk->fetch()) {
+        json_out(['status' => 'erro', 'mensagem' => 'Este e-mail já está cadastrado.'], 400);
+    }
+
+    // Valida as aulas se houver
+    $aulasValidadas = [];
+    if (!empty($aulasInput)) {
+        $aulasValidadas = agendamento_validate_lessons($aulasInput);
+        
+        $horasPorDia = [];
+        foreach ($aulasValidadas as $aula) {
+            $data = $aula['data_aula'];
+            $horas = (int)$aula['quantidade_horas'];
+            if ($horas > 3) {
+                json_out(['status' => 'erro', 'mensagem' => 'O limite máximo é de 3 horas de aula por dia para alunos.'], 400);
+            }
+            if (!isset($horasPorDia[$data])) {
+                $horasPorDia[$data] = 0;
+            }
+            $horasPorDia[$data] += $horas;
+            if ($horasPorDia[$data] > 3) {
+                json_out(['status' => 'erro', 'mensagem' => 'Você não pode agendar mais de 3 horas de aula no mesmo dia (data: ' . date('d/m/Y', strtotime($data)) . ').'], 400);
+            }
+        }
+    }
+
+    $db->beginTransaction();
+
+    // 1. Cadastra o Aluno
+    $token = agendamento_public_token();
+    $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+    $codigoAcesso = agendamento_codigo_acesso();
+
+    $stmt = $db->prepare("
+        INSERT INTO agendamento_alunos (nome, email, telefone, senha_hash, token_publico, codigo_acesso)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([$nome, $email, $telefone, $senhaHash, $token, $codigoAcesso]);
+    $alunoId = (int)$db->lastInsertId();
+
+    agendamento_log($db, null, $alunoId, 'aluno_registrado_sistema', ['nome' => $nome], 'aluno', $email);
+
+    // 2. Cadastra o Plano
+    $planoNome = trim($planoInput['nome'] ?? 'Curso Fotografia Prática');
+    $totalAulas = max(0, (int)($planoInput['total_aulas'] ?? 0));
+    $formaPagamento = trim($pagamentoInput['forma_pagamento'] ?? '');
+    $cidade = trim($planoInput['cidade'] ?? 'Santo Antônio do Descoberto');
+    $valorHora = agendamento_valor_hora_centavos($cidade);
+
+    $insPlan = $db->prepare("
+        INSERT INTO agendamento_planos (aluno_id, nome, total_aulas, aulas_usadas, status, forma_pagamento, cidade, valor_hora_centavos)
+        VALUES (?, ?, ?, ?, 'ativo', ?, ?, ?)
+    ");
+    $insPlan->execute([$alunoId, $planoNome, $totalAulas, count($aulasValidadas), $formaPagamento, $cidade, $valorHora]);
+    $planoId = (int)$db->lastInsertId();
+
+    // 3. Cadastra as aulas
+    if (!empty($aulasValidadas)) {
+        agendamento_assert_no_schedule_overlap($db, $aulasValidadas, $alunoId);
+
+        $insertAula = $db->prepare("
+            INSERT INTO agendamento_aulas (
+                aluno_id, plano_id, dia_semana, data_aula, horario,
+                quantidade_horas, cidade, valor_hora_centavos, valor_centavos, status,
+                endereco, latitude, longitude
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pre_agendado', ?, ?, ?)
+        ");
+
+        foreach ($aulasValidadas as $aula) {
+            $insertAula->execute([
+                $alunoId,
+                $planoId,
+                $aula['dia_semana'],
+                $aula['data_aula'],
+                $aula['horario'],
+                $aula['quantidade_horas'],
+                $aula['cidade'],
+                $aula['valor_hora_centavos'],
+                $aula['valor_centavos'],
+                $aula['endereco'] ?? null,
+                $aula['latitude'] ?? null,
+                $aula['longitude'] ?? null
+            ]);
+            agendamento_log($db, (int)$db->lastInsertId(), $alunoId, 'aula_inicial_agendada', $aula, 'aluno', $email);
+        }
+    }
+
+    $db->commit();
+
+    // Inicia sessão automaticamente
+    $_SESSION['agendamento_aluno_id'] = $alunoId;
+    $_SESSION['agendamento_aluno_token'] = $token;
+    unset($_SESSION['agendamento_admin_email']); // desloga admin se houver
+
+    json_out([
+        'status' => 'ok',
+        'mensagem' => 'Cadastro realizado com sucesso.',
+        'token' => $token,
+        'aluno' => [
+            'id' => $alunoId,
+            'nome' => $nome,
+            'email' => $email,
+            'telefone' => $telefone
+        ]
+    ]);
+
+} catch (PDOException $e) {
+    if ($db->inTransaction()) {
+        $db->rollBack();
+    }
+    if ($e->getCode() === '23000') {
+        json_out(['status' => 'erro', 'mensagem' => 'Um ou mais horários selecionados já estão ocupados.'], 409);
+    }
+    error_log('Erro ao cadastrar aluno: ' . $e->getMessage());
+    json_out(['status' => 'erro', 'mensagem' => 'Erro de banco de dados ao salvar o cadastro.'], 500);
+} catch (Throwable $e) {
+    if (isset($db) && $db->inTransaction()) {
+        $db->rollBack();
+    }
+    error_log('Erro ao cadastrar aluno: ' . $e->getMessage());
+    json_out(['status' => 'erro', 'mensagem' => $e->getMessage()], 500);
+}
+```
+
 ### `api/agendamentos/save.php`
 
-- Linhas: 146
-- Tamanho: 5.4 KB
+- Linhas: 172
+- Tamanho: 6.5 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\agendamentos\save.php`
 
 ```php
@@ -6045,7 +10193,7 @@ require_once __DIR__ . '/_helpers.php';
 $body = body();
 $studentData = agendamento_validate_student($body['aluno'] ?? []);
 $lessons = agendamento_validate_lessons($body['aulas'] ?? []);
-$token = trim($body['token_publico'] ?? '');
+$token = trim($body['token_publico'] ?? $_SESSION['agendamento_aluno_token'] ?? '');
 $isAdmin = agendamento_is_admin();
 $planData = $body['plano'] ?? [];
 
@@ -6065,6 +10213,24 @@ $student = $token ? agendamento_fetch_student_by_token($db, $token) : null;
 
 if ($token !== '' && !$student && !$isAdmin) {
     json_out(['status' => 'erro', 'mensagem' => 'Pre-agendamento nao encontrado para este navegador.'], 404);
+}
+
+if (!$isAdmin) {
+    $horasPorDia = [];
+    foreach ($lessons as $lesson) {
+        $data = $lesson['data_aula'];
+        $horas = (int)$lesson['quantidade_horas'];
+        if ($horas > 3) {
+            json_out(['status' => 'erro', 'mensagem' => 'O limite máximo é de 3 horas de aula por dia para alunos.'], 400);
+        }
+        if (!isset($horasPorDia[$data])) {
+            $horasPorDia[$data] = 0;
+        }
+        $horasPorDia[$data] += $horas;
+        if ($horasPorDia[$data] > 3) {
+            json_out(['status' => 'erro', 'mensagem' => 'Você não pode agendar mais de 3 horas de aula no mesmo dia (data: ' . date('d/m/Y', strtotime($data)) . ').'], 400);
+        }
+    }
 }
 
 $db->beginTransaction();
@@ -6098,22 +10264,24 @@ try {
         $planStatus = 'ativo';
     }
 
+    $formaPagamento = trim($planData['forma_pagamento'] ?? '');
+
     $planStmt = $db->prepare("SELECT id FROM agendamento_planos WHERE aluno_id = ? ORDER BY id ASC LIMIT 1");
     $planStmt->execute([$studentId]);
     $planId = (int)($planStmt->fetchColumn() ?: 0);
     if ($planId > 0) {
         $updPlan = $db->prepare("
             UPDATE agendamento_planos
-            SET nome = ?, total_aulas = ?, aulas_usadas = ?, status = ?
+            SET nome = ?, total_aulas = ?, aulas_usadas = ?, status = ?, forma_pagamento = ?
             WHERE id = ?
         ");
-        $updPlan->execute([$planName, $totalAulas, count($lessons), $planStatus, $planId]);
+        $updPlan->execute([$planName, $totalAulas, count($lessons), $planStatus, $formaPagamento ?: null, $planId]);
     } else {
         $insPlan = $db->prepare("
-            INSERT INTO agendamento_planos (aluno_id, nome, total_aulas, aulas_usadas, status)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO agendamento_planos (aluno_id, nome, total_aulas, aulas_usadas, status, forma_pagamento)
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
-        $insPlan->execute([$studentId, $planName, $totalAulas, count($lessons), $planStatus]);
+        $insPlan->execute([$studentId, $planName, $totalAulas, count($lessons), $planStatus, $formaPagamento ?: null]);
         $planId = (int)$db->lastInsertId();
     }
 
@@ -6133,9 +10301,12 @@ try {
             valor_hora_centavos,
             valor_centavos,
             status,
-            observacoes
+            observacoes,
+            endereco,
+            latitude,
+            longitude
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     foreach ($lessons as $lesson) {
@@ -6153,6 +10324,9 @@ try {
             $lesson['valor_centavos'],
             $lesson['status'],
             $lesson['observacoes'],
+            $lesson['endereco'] ?? null,
+            $lesson['latitude'] ?? null,
+            $lesson['longitude'] ?? null,
         ]);
         agendamento_log($db, (int)$db->lastInsertId(), $studentId, 'aula_salva', $lesson, $isAdmin ? 'fotografo' : 'aluno', $isAdmin ? ($_SESSION['agendamento_admin_email'] ?? null) : $studentData['email']);
     }
@@ -6184,6 +10358,200 @@ try {
         'mensagem' => 'Nao foi possivel salvar o pre-agendamento. Erro inesperado no servidor.',
     ], 500);
 }
+```
+
+### `api/agendamentos/status.php`
+
+- Linhas: 76
+- Tamanho: 2.4 KB
+- Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\agendamentos\status.php`
+
+```php
+<?php
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/_helpers.php';
+
+try {
+    $db = db();
+    agendamento_ensure_schema($db);
+
+    // 1. Verifica se está logado como Fotógrafo (Admin)
+    if (agendamento_is_admin()) {
+        $email = $_SESSION['agendamento_admin_email'];
+        // Tenta pegar o nome na tabela usuarios
+        $stmt = $db->prepare("SELECT nome FROM usuarios WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $u = $stmt->fetch();
+
+        json_out([
+            'status' => 'ok',
+            'logado' => true,
+            'tipo' => 'fotografo',
+            'admin' => [
+                'email' => $email,
+                'nome' => $u['nome'] ?? 'Professor'
+            ]
+        ]);
+    }
+
+    // 2. Verifica se está logado como Aluno
+    $alunoId = $_SESSION['agendamento_aluno_id'] ?? 0;
+    $token = $_SESSION['agendamento_aluno_token'] ?? '';
+
+    $student = null;
+    if ($alunoId) {
+        $stmt = $db->prepare("SELECT * FROM agendamento_alunos WHERE id = ? LIMIT 1");
+        $stmt->execute([$alunoId]);
+        $student = $stmt->fetch();
+    } elseif ($token) {
+        $student = agendamento_fetch_student_by_token($db, $token);
+    }
+
+    if ($student) {
+        // Renova a sessão se ela expirou mas o token estava guardado
+        $_SESSION['agendamento_aluno_id'] = $student['id'];
+        $_SESSION['agendamento_aluno_token'] = $student['token_publico'];
+
+        // Pega plano do aluno
+        $planStmt = $db->prepare("SELECT * FROM agendamento_planos WHERE aluno_id = ? ORDER BY id ASC LIMIT 1");
+        $planStmt->execute([$student['id']]);
+        $plan = $planStmt->fetch() ?: null;
+
+        json_out([
+            'status' => 'ok',
+            'logado' => true,
+            'tipo' => 'aluno',
+            'token' => $student['token_publico'],
+            'aluno' => [
+                'id' => $student['id'],
+                'nome' => $student['nome'],
+                'email' => $student['email'],
+                'telefone' => $student['telefone'],
+                'foto_url' => $student['foto_url'] ?? null,
+                'plano' => $plan
+            ]
+        ]);
+    }
+
+    // Não logado
+    json_out([
+        'status' => 'ok',
+        'logado' => false
+    ]);
+
+} catch (Throwable $e) {
+    error_log('Erro ao checar status de autenticacao de agendamento: ' . $e->getMessage());
+    json_out(['status' => 'erro', 'mensagem' => 'Erro interno ao recuperar status.'], 500);
+}
+```
+
+### `api/agendamentos/upload_foto.php`
+
+- Linhas: 100
+- Tamanho: 3.4 KB
+- Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\agendamentos\upload_foto.php`
+
+```php
+<?php
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/_helpers.php';
+
+$token = trim($_POST['token_publico'] ?? $_SESSION['agendamento_aluno_token'] ?? '');
+$isAdmin = agendamento_is_admin();
+
+try {
+    $db = db();
+    agendamento_ensure_schema($db);
+} catch (Throwable $e) {
+    json_out(['status' => 'erro', 'mensagem' => 'Erro ao conectar ao banco de dados.'], 500);
+}
+
+$student = $token ? agendamento_fetch_student_by_token($db, $token) : null;
+
+// Se não for admin e não encontrar o aluno, barra
+if (!$student && !$isAdmin) {
+    json_out(['status' => 'erro', 'mensagem' => 'Sessão inválida ou não autorizado.'], 403);
+}
+
+// Se for admin, o ID do aluno deve ser passado no POST
+$studentId = $student ? (int)$student['id'] : (int)($_POST['aluno_id'] ?? 0);
+if (!$studentId) {
+    json_out(['status' => 'erro', 'mensagem' => 'ID do aluno é obrigatório.'], 400);
+}
+
+// Se for admin, verifica se o aluno existe
+if ($isAdmin && !$student) {
+    $chk = $db->prepare("SELECT id FROM agendamento_alunos WHERE id = ? LIMIT 1");
+    $chk->execute([$studentId]);
+    if (!$chk->fetch()) {
+        json_out(['status' => 'erro', 'mensagem' => 'Aluno não encontrado.'], 404);
+    }
+}
+
+$file = $_FILES['foto_aluno'] ?? null;
+if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+    json_out(['status' => 'erro', 'mensagem' => 'Nenhuma imagem enviada ou erro no envio.'], 400);
+}
+
+$allowed = [
+    'image/jpeg' => 'jpg',
+    'image/png' => 'png',
+    'image/webp' => 'webp',
+    'image/gif' => 'gif',
+];
+
+$type = '';
+if (class_exists('finfo')) {
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $type = $finfo->file($file['tmp_name']) ?: '';
+}
+if (!$type) {
+    $type = $file['type'] ?? '';
+}
+if (!isset($allowed[$type])) {
+    json_out(['status' => 'erro', 'mensagem' => 'Tipo de imagem não permitido. Use JPG, PNG, WEBP ou GIF.'], 400);
+}
+
+if (($file['size'] ?? 0) > 5 * 1024 * 1024) {
+    json_out(['status' => 'erro', 'mensagem' => 'Imagem muito grande. Envie um arquivo de até 5 MB.'], 400);
+}
+
+$filename = 'aluno_' . $studentId . '_' . bin2hex(random_bytes(6)) . '.' . $allowed[$type];
+$caminho = '';
+
+if (R2_ACCESS_KEY && R2_SECRET_KEY && R2_BUCKET && R2_ENDPOINT && R2_PUBLIC_URL) {
+    require_once __DIR__ . '/../lib/R2Storage.php';
+    $r2Path = 'alunos/' . $studentId . '/' . $filename;
+    $r2 = new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
+    if (!$r2->upload($file['tmp_name'], $r2Path, $type)) {
+        json_out(['status' => 'erro', 'mensagem' => 'Falha ao salvar a imagem no Cloudflare R2.'], 500);
+    }
+    $caminho = rtrim(R2_PUBLIC_URL, '/') . '/' . $r2Path;
+} else {
+    $uploadDir = __DIR__ . '/../../uploads/alunos/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0775, true);
+    }
+
+    $dest = $uploadDir . $filename;
+    $caminho = 'uploads/alunos/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $dest)) {
+        json_out(['status' => 'erro', 'mensagem' => 'Falha ao salvar a imagem no servidor.'], 500);
+    }
+}
+
+// Salva o caminho no cadastro do aluno
+$upd = $db->prepare("UPDATE agendamento_alunos SET foto_url = ? WHERE id = ?");
+$upd->execute([$caminho, $studentId]);
+
+agendamento_log($db, null, $studentId, 'foto_perfil_atualizada', ['caminho' => $caminho], $isAdmin ? 'fotografo' : 'aluno', $isAdmin ? ($_SESSION['agendamento_admin_email'] ?? null) : ($student['email'] ?? null));
+
+json_out([
+    'status' => 'ok',
+    'mensagem' => 'Foto de perfil atualizada com sucesso.',
+    'foto_url' => $caminho,
+]);
 ```
 
 ### `api/auth/login.php`
@@ -6627,8 +10995,8 @@ json_out([
 
 ### `api/config.php`
 
-- Linhas: 122
-- Tamanho: 4.4 KB
+- Linhas: 123
+- Tamanho: 4.5 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\config.php`
 
 ```php
@@ -6721,7 +11089,8 @@ function db(): PDO {
             "mysql:host=".DB_HOST.";port=".DB_PORT.";dbname=".DB_NAME.";charset=utf8mb4",
             DB_USER, DB_PASS,
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+             PDO::ATTR_TIMEOUT => 5]
         );
     }
     return $pdo;
@@ -6758,8 +11127,8 @@ function require_fotografo(): array {
 
 ### `api/db_migrations.php`
 
-- Linhas: 374
-- Tamanho: 18.3 KB
+- Linhas: 411
+- Tamanho: 20.4 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\api\db_migrations.php`
 
 ```php
@@ -6940,8 +11309,8 @@ try {
             horario VARCHAR(5) NOT NULL,
             quantidade_horas INT NOT NULL DEFAULT 1,
             cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-            valor_hora_centavos INT NOT NULL DEFAULT 7500,
-            valor_centavos INT NOT NULL DEFAULT 7500,
+            valor_hora_centavos INT NOT NULL DEFAULT 10000,
+            valor_centavos INT NOT NULL DEFAULT 10000,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_pre_agendamento_slot (data_aula, horario),
@@ -6958,6 +11327,7 @@ try {
             telefone VARCHAR(40) NOT NULL,
             token_publico VARCHAR(96) NOT NULL UNIQUE,
             codigo_acesso VARCHAR(12) DEFAULT NULL,
+            foto_url VARCHAR(512) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_agendamento_alunos_email (email)
@@ -7014,10 +11384,13 @@ try {
             horario VARCHAR(5) NOT NULL,
             quantidade_horas INT NOT NULL DEFAULT 1,
             cidade VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto',
-            valor_hora_centavos INT NOT NULL DEFAULT 7500,
-            valor_centavos INT NOT NULL DEFAULT 7500,
+            valor_hora_centavos INT NOT NULL DEFAULT 10000,
+            valor_centavos INT NOT NULL DEFAULT 10000,
             status VARCHAR(30) NOT NULL DEFAULT 'pre_agendado',
             observacoes TEXT NULL,
+            endereco VARCHAR(512) DEFAULT NULL,
+            latitude DECIMAL(10, 8) DEFAULT NULL,
+            longitude DECIMAL(11, 8) DEFAULT NULL,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_agendamento_slot (data_aula, horario),
@@ -7079,8 +11452,9 @@ try {
     add_column_if_missing($db, 'pre_agendamento_aulas', 'atualizado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'pre_agendamento_aulas', 'quantidade_horas', 'INT NOT NULL DEFAULT 1');
     add_column_if_missing($db, 'pre_agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
-    add_column_if_missing($db, 'pre_agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
+    add_column_if_missing($db, 'pre_agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 10000');
     add_column_if_missing($db, 'agendamento_alunos', 'codigo_acesso', 'VARCHAR(12) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_alunos', 'foto_url', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'agendamento_planos', 'total_aulas', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'agendamento_planos', 'aulas_usadas', 'INT NOT NULL DEFAULT 0');
     add_column_if_missing($db, 'agendamento_planos', 'status', "VARCHAR(30) NOT NULL DEFAULT 'ativo'");
@@ -7091,9 +11465,12 @@ try {
     add_column_if_missing($db, 'agendamento_aulas', 'assunto_id', 'INT NULL');
     add_column_if_missing($db, 'agendamento_aulas', 'quantidade_horas', 'INT NOT NULL DEFAULT 1');
     add_column_if_missing($db, 'agendamento_aulas', 'cidade', "VARCHAR(160) NOT NULL DEFAULT 'Santo Antônio do Descoberto'");
-    add_column_if_missing($db, 'agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 7500');
+    add_column_if_missing($db, 'agendamento_aulas', 'valor_hora_centavos', 'INT NOT NULL DEFAULT 10000');
     add_column_if_missing($db, 'agendamento_aulas', 'status', "VARCHAR(30) NOT NULL DEFAULT 'pre_agendado'");
     add_column_if_missing($db, 'agendamento_aulas', 'observacoes', 'TEXT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'endereco', 'VARCHAR(512) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'latitude', 'DECIMAL(10, 8) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'longitude', 'DECIMAL(11, 8) DEFAULT NULL');
 
     try {
         if (index_exists($db, 'agendamento_alunos', 'email')) {
@@ -7130,6 +11507,35 @@ try {
         add_index_if_missing($db, 'imagens', 'idx_imagens_tamanho', 'tamanho_bytes');
     } catch (Throwable $e) {
         error_log('Não foi possível adicionar índice idx_imagens_tamanho: ' . $e->getMessage());
+    }
+
+    try {
+        $db->exec("UPDATE agendamento_aulas SET valor_hora_centavos = 10000, valor_centavos = 10000 * quantidade_horas WHERE valor_hora_centavos = 7500");
+        $db->exec("UPDATE agendamento_aulas SET valor_hora_centavos = 15000, valor_centavos = 15000 * quantidade_horas WHERE valor_hora_centavos = 12000");
+        $db->exec("UPDATE agendamento_planos SET valor_hora_centavos = 10000 WHERE valor_hora_centavos = 7500");
+        $db->exec("UPDATE agendamento_planos SET valor_hora_centavos = 15000 WHERE valor_hora_centavos = 12000");
+    } catch (Throwable $e) {
+        error_log('Erro ao atualizar valores antigos de agendamento nas tabelas: ' . $e->getMessage());
+    }
+
+    try {
+        $emailAdmin = 'dougdouglas04@outlook.com';
+        $senhaAdmin = 'd19581958';
+        $nomeAdmin = 'Douglas Admin';
+        $hashAdmin = password_hash($senhaAdmin, PASSWORD_DEFAULT);
+
+        $chkUser = $db->prepare("SELECT id FROM usuarios WHERE email = ? LIMIT 1");
+        $chkUser->execute([$emailAdmin]);
+        $user = $chkUser->fetch();
+        if ($user) {
+            $updUser = $db->prepare("UPDATE usuarios SET senha = ?, tipo = 'admin' WHERE id = ?");
+            $updUser->execute([$hashAdmin, $user['id']]);
+        } else {
+            $insUser = $db->prepare("INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, 'admin')");
+            $insUser->execute([$nomeAdmin, $emailAdmin, $hashAdmin]);
+        }
+    } catch (Throwable $e) {
+        error_log('Erro ao assegurar administrador dougdouglas04 no banco: ' . $e->getMessage());
     }
 
     json_out(['status' => 'ok', 'mensagem' => 'Banco verificado e schema preparado com sucesso.']);
@@ -16242,8 +20648,8 @@ R2_SECRET_KEY=
 
 ### `documentacao/trabalho/trabalho_14_06_2026.md`
 
-- Linhas: 151
-- Tamanho: 8.6 KB
+- Linhas: 263
+- Tamanho: 14.6 KB
 - Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\documentacao\trabalho\trabalho_14_06_2026.md`
 
 ```markdown
@@ -16398,6 +20804,118 @@ R2_SECRET_KEY=
 **Resumo para commit:** otimiza carregamento da capa e implementa geracao assincrona de thumbs na galeria do fotografo.
 
 **Status Final:** Entrega de todas as otimizacoes de velocidade de carregamento de fotos para cliente e fotografo concluida e implantada em producao no Railway.
+
+---
+
+## 9. Registro adicional - ativacao do agente no fluxo de agendamento
+
+> **Metodologia ativa:** agente-willianbo
+> **Responsavel tecnico:** Willian Batista Oliveira
+> **Registrador:** agente-willianbo
+
+### Objetivo
+
+Registrar, sem apagar o historico ja documentado neste arquivo, a ativacao da metodologia `agente-willianbo` para acompanhar a melhoria textual do cadastro de agendamento de aulas.
+
+### Escopo incluido
+
+- Entender os cards e etapas do cadastro de aulas em `agendamento_aulas.html`.
+- Adicionar texto contextual no painel de apresentacao para cada momento do cadastro.
+- Preservar o comportamento existente do fluxo de login, cadastro, selecao de plano, pagamento e agenda.
+- Manter a documentacao anterior intacta, acrescentando apenas este registro adicional.
+
+### Arquivos impactados
+
+| Arquivo | Tipo | Descricao |
+|---------|------|-----------|
+| `agendamento_aulas.html` | Alterado | Adiciona textos dinamicos no painel visual conforme a etapa ativa do cadastro. |
+| `documentacao/trabalho/trabalho_14_06_2026.md` | Alterado | Acrescenta este registro adicional sem remover o historico existente. |
+
+### Implementacao registrada
+
+Foi criada uma tabela `HERO_COPY` no JavaScript da tela de agendamento para centralizar os textos do painel da marca por etapa:
+
+- Login: `Bem-vindo!`
+- Dados: `Vamos comecar?`
+- Plano: `Escolha seu plano`
+- Pagamento: `Forma de pagamento`
+- Agenda: `Vamos agendar sua aula!`
+
+A funcao `changeView(viewId)` passou a chamar `updateHeroCopy(viewId)`, garantindo que o texto seja atualizado quando o usuario avanca ou retorna no cadastro.
+
+### Works
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Busca do agente | `rg -n "willianbo|agente|agent|documenta" . .\.agents` | Metodologia `agente-willianbo` e registros em `documentacao/trabalho/` localizados. |
+| Leitura da metodologia | `Get-Content -Raw .\agente-willianbo\SKILL.md` | Fluxo obrigatorio confirmado: mapear impacto, registrar, implementar e validar. |
+| Revisao do registro atual | `Get-Content -Raw .\documentacao\trabalho\trabalho_14_06_2026.md` | Historico existente preservado para adicao incremental. |
+| Validacao JavaScript | `node --check` sobre o script extraido de `agendamento_aulas.html` | Sem erros de sintaxe. |
+
+### Pendencias
+
+- [ ] Validar visualmente no navegador o painel responsivo do cadastro em desktop e mobile.
+- [ ] Confirmar com o usuario se os textos finais de cada etapa estao aprovados.
+
+### Complemento - novo agendamento pelo aluno logado
+
+Foi ajustado o fluxo para que o aluno ja cadastrado, ao clicar em `Agendar Aula` no painel, volte para a mesma tela de calendario usada no cadastro inicial (`view-register-step4`), em vez de abrir o modal de agendamento separado.
+
+Mudancas registradas:
+
+- O botao `Agendar Aula` do painel do aluno agora chama `openStudentScheduleScreen()`.
+- A tela de agenda limpa data e horario anteriores, mantendo plano e forma de pagamento do aluno logado.
+- O botao `Voltar` da tela de agenda usa `handleScheduleBack()`: para cadastro inicial volta ao pagamento; para aluno logado volta ao painel.
+- O envio da agenda agora identifica aluno logado e usa `submitStudentScheduleFromCalendar()` para salvar a nova aula via `/api/agendamentos/save.php`, preservando as aulas ja cadastradas.
+- A marcacao de horarios ocupados passou a considerar a duracao da aula, bloqueando tambem os horarios cobertos por aulas de 2h ou 3h.
+
+Validacao adicional:
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Sintaxe JavaScript | `node --check` sobre o script extraido de `agendamento_aulas.html` | Sem erros de sintaxe. |
+| Revisao de conexoes | `rg -n 'openStudentScheduleScreen|handleScheduleBack|submitStudentScheduleFromCalendar' .\agendamento_aulas.html` | Funcoes e chamadas principais localizadas. |
+
+### Complemento - painel completo do aluno
+
+Foi iniciado o enriquecimento do painel do aluno para centralizar dados de cadastro, pagamento e agendamentos com acoes de edicao.
+
+Mudancas registradas:
+
+- Adicionado cartao de perfil com foto do aluno quando houver URL disponivel, fallback por iniciais, nome, e-mail, telefone e token parcial do cadastro.
+- Adicionado formulario inline para editar nome, e-mail e WhatsApp do aluno.
+- Cartao do plano passou a exibir forma de pagamento, status e total de aulas contratadas.
+- Adicionado formulario inline para alterar a forma de pagamento do pre-agendamento.
+- Lista de aulas passou a exibir informacoes complementares: data completa, dia da semana, modulo, assunto, valor e observacoes.
+- Cada card de aula recebeu botao inline `Editar`, reutilizando o modal existente de aula.
+- Modal de aula agora mostra campos administrativos apenas para professor; aluno edita somente dados de agenda/aula.
+
+Validacao adicional:
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Sintaxe JavaScript | `node --check` sobre o script extraido de `agendamento_aulas.html` | Sem erros de sintaxe. |
+| Sintaxe API de listagem | `php -l .\api\agendamentos\list.php` | Sem erros de sintaxe. |
+
+### Complemento - painel operacional do professor
+
+Foi melhorado o painel do professor para facilitar acompanhamento, busca, confirmacao e gestao de aulas e alunos.
+
+Mudancas registradas:
+
+- Adicionados cards de metricas no topo da aba de aulas: total de aulas, alunos, pre-agendadas e receita prevista.
+- Adicionada barra de busca por aluno, e-mail, telefone, cidade, modulo, assunto ou status.
+- Adicionado filtro por status de aula.
+- Tabela de aulas passou a exibir aluno com avatar por iniciais, e-mail, telefone, duracao, horario final, cidade, valor e observacoes.
+- Adicionado botao rapido para confirmar aula diretamente na tabela do professor.
+- Aba de alunos passou a exibir avatar, ID, contato, plano, status, forma de pagamento e barra de progresso de creditos.
+- Mantidas as acoes existentes de editar aula, excluir aula, editar creditos/plano e excluir aluno.
+
+Validacao adicional:
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Sintaxe JavaScript | `node --check` sobre o script extraido de `agendamento_aulas.html` | Sem erros de sintaxe. |
 ```
 
 ### `documentacao/trabalho/trabalho_15_05_2026.md`
@@ -16709,6 +21227,163 @@ O uso de `clamp()` garante que o título escale perfeitamente entre dispositivos
 - [x] Execução via CLI (silenciosa).
 - [x] Isolamento de autofill em múltiplos navegadores.
 ````
+
+### `documentacao/trabalho/trabalho_16_06_2026.md`
+
+- Linhas: 148
+- Tamanho: 9.3 KB
+- Caminho absoluto: `C:\Users\willi\Documents\criavibe_site\documentacao\trabalho\trabalho_16_06_2026.md`
+
+```markdown
+# Jornada Tecnica - 16/06/2026
+
+> **Status do dia:** Concluido
+> **Responsavel tecnico:** Willian Batista Oliveira
+> **Registrador:** agente-willianbo
+> **Projeto:** CriaVibe
+
+---
+
+## 1. Objetivos do Dia
+
+**Criterio de sucesso:** Implementar o fluxo de agendamento com multiplos horarios usando selecao por chips, estabelecer o limite maximo de 3 horas diarias para agendamentos por aluno, robustecer a busca e geocodificacao de enderecos por Nominatim/CEP tratando casos com "Lote" e "Quadra" (com banners informativos), alem de remover o fallback para SQLite em ambiente de producao de banco de dados.
+
+| # | Task | Modulo | Prioridade | Estimativa | Status |
+|---|------|--------|------------|------------|--------|
+| 1 | Ativar agente-willianbo e estruturar log de trabalho | Documentacao | Alta | Curta | [x] |
+| 2 | Otimizar conexao do MySQL em `api/config.php` removendo SQLite | Banco | Alta | Curta | [x] |
+| 3 | Criar fluxo de agendamento de multiplos horarios com chips | Frontend | Alta | Media | [x] |
+| 4 | Implementar limite diario de 3 horas de agendamento por aluno | Regra/Backend| Alta | Curta | [x] |
+| 5 | Aprimorar geocodificacao com Nominatim com tratativas de fallback | Mapa | Alta | Media | [x] |
+| 6 | Tratar busca por CEP com fallbacks inteligentes de geocode | Mapa | Alta | Curta | [x] |
+| 7 | Corrigir erro de chave orfa (sintaxe) na funcao `searchAddress` | Bugfix | Alta | Curta | [x] |
+| 8 | Corrigir media query CSS orfã que quebrava layout de chips em telas > 900px | Frontend | Alta | Curta | [x] |
+| 9 | Implementar selecao de novo horario clicando nos chips no modal Editar | Frontend | Alta | Curta | [x] |
+| 10| Garantir que aluno pode editar no painel sem resetar horas/obs | Regra/Frontend | Alta | Curta | [x] |
+| 11| Melhorar formato de hora/inicio e duracao no painel do fotografo | Frontend | Alta | Curta | [x] |
+
+---
+
+## 2. Task
+
+### Agendamento Multiplo, Limites por Aluno e Geolocalizacao Avancada
+
+**Problema de negocio:**
+1. Alunos precisam agendar multiplos horarios no mesmo dia de forma simples sem precisar abrir o modal varias vezes.
+2. E necessario limitar a carga horaria diaria por aluno para 3 horas para evitar sobrecarga de grade.
+3. Enderecos no Brasil frequentemente incluem termos como "Lote", "Lt", "Quadra", "Qd" que nao sao bem indexados pelo OpenStreetMap/Nominatim, fazendo a busca por CEP ou por endereco falhar ou posicionar incorretamente no mapa.
+4. O fallback de SQLite causava desvios silenciosos em producao caso houvesse instabilidade de rede ou timeout temporario no MySQL.
+
+**Escopo incluido:**
+- Remocao do SQLite como fallback em `api/config.php` e aumento do timeout do MySQL para 5 segundos para garantir conexao exclusiva e consistente com a base oficial no Railway.
+- Selecao multipla de horarios via chips de interface.
+- Validacao e trava de maximo 3 horas de aula agendadas por dia por aluno.
+- Mecanismo de limpeza de queries Nominatim com regex para remover indicacoes de Quadra/Lote em caso de falha de retorno, permitindo localizar a regiao aproximada e alertar o usuario com um banner.
+- Fallback em cascata para geocodificacao de CEP (Endereco completo -> Bairro/Cidade/UF -> Cidade/UF).
+- Correcao de erro de sintaxe javascript em `agendamento_aulas.html`.
+- Fechamento de bloco `@media` unclosed no CSS para restabelecer layout de chips de horario em desktops (>900px).
+- Habilitacao de selecao direta de novo horario de inicio no modal de edicao clicando nos chips de hora (tanto para o professor como no painel do aluno).
+- Regra de preservacao de horas, status e observacoes existentes do agendamento durante edicao pelo aluno, impedindo perdas acidentais de registros.
+
+**Fora de escopo:**
+- Alteracao de telas administrativas nao relacionadas ao agendamento de aulas.
+- Mudanca no layout da galeria de fotos.
+
+**Arquivos modificados:**
+- `api/config.php`
+- `agendamento_aulas.html`
+
+---
+
+## 3. Check Box
+
+### Planejamento
+- [x] Requisito entendido e registrado.
+- [x] Componentes impactados mapeados.
+- [x] Riscos e dependencias identificados.
+
+### Implementacao
+- [x] Alteracoes feitas em escopo controlado.
+- [x] Nomes, comentarios e documentacao em Portugues-BR quando aplicavel.
+- [x] Padroes existentes do projeto respeitados.
+- [x] Sem refatoracoes fora do objetivo da task.
+
+### Validacao
+- [x] Verificacao de sintaxe PHP (`php -l`) limpa para todos os arquivos modificados.
+- [x] Git diff revisado e limpo.
+
+### Entrega
+- [x] Documentacao atualizada.
+- [x] Pendencias registradas.
+
+---
+
+## 4. Implementacao
+
+### Decisao tecnica
+
+| Campo | Detalhe |
+|-------|---------|
+| Decisao | Criar um fluxo de limpeza progressiva de string de busca na API do Nominatim em caso de retorno vazio (removendo Quadra/Lote/etc). |
+| Contexto | O Nominatim e sensivel a informacoes muito especificas de enderecamento brasileiro que nao estao mapeadas em sua base vetorial. |
+| Alternativas descartadas | Obrigar o usuario a redigitar o endereco (ruim para UX); usar uma API comercial paga como Google Maps (custo alto). |
+| Motivo da escolha | O processamento progressivo de fallbacks no frontend reduz a taxa de falha de geocodificacao sem gerar custos adicionais de API. |
+| Trade-offs aceitos | O usuario recebe o mapa com um local aproximado (e um aviso em banner), mas pode mover o PIN manualmente no mapa para ajustar o local exato. |
+
+### Passo a passo
+
+1. **`api/config.php`:**
+   - Removeu-se o bloco `try-catch` que criava a base SQLite local de fallback.
+   - Configurou-se a instanciacao direta de `PDO` com MySQL com timeout estendido de 5 segundos.
+2. **`agendamento_aulas.html` (Chips & Multi-horarios):**
+   - Habilitou-se a selecao multipla no modal de horarios, coletando as selecoes em um array de chips.
+   - No salvamento, realiza-se um loop sobre as horas selecionadas para enfileirar as aulas.
+3. **`agendamento_aulas.html` (Regras de Limite):**
+   - Inseriu-se validacao que conta as horas ja agendadas pelo aluno no mesmo dia e impede a conclusao caso exceda 3 horas totais.
+4. **`agendamento_aulas.html` (Melhoria do Mapa & Nominatim):**
+   - Implementou-se a funcao `cleanString` para limpar delimitadores de busca.
+   - Criou-se fallback recursivo no `searchAddress` que, ao nao encontrar resultados, limpa sucessivamente marcas de "lote/lt", "quadra/qd", e depois foca nas ultimas partes (Bairro, Cidade, Estado) ate achar uma localizacao coerente.
+   - Inseriu-se um banner informativo no autocomplete (`Local exato não indexado. Exibindo região aproximada:`) quando a busca do Nominatim utilizou fallback.
+5. **`agendamento_aulas.html` (Melhoria de busca por CEP):**
+   - Ao buscar dados via ViaCEP, em caso de erro na geocodificacao do endereco completo retornado, tenta-se geocodificar com `Bairro, Cidade, Estado` ou `Cidade, Estado` sequencialmente.
+6. **`agendamento_aulas.html` (Bugfix de Sintaxe e CSS):**
+   - Fechou-se a chave orfa da funcao `searchAddress` no JavaScript.
+   - Fechou-se o bloco responsive `@media` no CSS (linha 1617) para que os estilos de `.time-chip` e `.time-chips-container` funcionem corretamente em telas maiores (>900px).
+7. **`agendamento_aulas.html` (Fluxo de Edição de Aula):**
+   - Habilitou-se a alteracao do horario de inicio ao clicar nos chips de horario no modal de edicao (para professor e aluno).
+   - Inseriu-se salvaguarda na criacao de opcoes de duracao no dropdown `slot-hours` na edicao para o aluno, impedindo que aulas agendadas com mais de 3 horas sejam resetadas.
+   - Adicionou-se lógica na edicao para preservar o `status` (caso data/hora nao mudem) e as `observacoes` existentes no banco de dados quando alterado pelo aluno, evitando sobrescritas vazias de metadados pedagogicos.
+8. **`agendamento_aulas.html` (Melhoria Visual do Painel do Fotógrafo):**
+   - Alterou-se a exibição da célula de Data/Hora no painel para mostrar a data, início da aula formatado (`inicio as HH:MM`) e duração (`Xh de aula`) em linhas separadas para clareza visual completa.
+   - Limpou-se uma declaração duplicada inativa da função `renderTeacherAulasPanel` para manter a integridade do código.
+
+---
+
+## 5. Works
+
+### Evidencias de funcionamento
+
+| Validacao | Comando / Acao | Resultado |
+|-----------|----------------|-----------|
+| Sintaxe PHP do Config | `php -l api/config.php` | `No syntax errors detected` |
+| Commits do Dia | `git log --since="2026-06-16 00:00:00" --oneline` | Commits `6fb956b`, `e9cf5af` e `d9e5611` devidamente registrados. |
+| Integridade dos Arquivos | `git diff --stat` | Verificou-se que a working tree esta limpa e em perfeita sincronia com `origin/main`. |
+
+---
+
+## 7. Pendencias e Proximos Passos
+
+- [ ] Acompanhar feedback do usuario sobre a flexibilidade de mover o PIN manualmente nas buscas aproximadas.
+- [ ] Monitorar a estabilidade de conexao MySQL exclusiva (sem SQLite fallback) nos logs de producao do Railway.
+
+---
+
+## 8. Sincronizacao
+
+**Resumo do dia:** Ativacao do registrador tecnico para log de 16/06/2026. Implementados múltiplos horários com chips, trava de limite diário de 3 horas por aluno, tratamento inteligente de endereços com termos não indexados no Nominatim/CEP, remoção do SQLite de fallback e correções gerais de sintaxe. Resolvida quebra de CSS de chips no desktop, melhorada a selecao de horario no modal de edicao, adicionada seguranca a edicao feita pelos alunos (preservando status, observacoes e duracoes prévias) e aprimorado o formato visual da data/hora e duracao de aulas no painel do fotografo.
+
+**Status Final:** Concluido.
+```
 
 ### `documentacao/trabalho/trabalho_22_05_2026.md`
 

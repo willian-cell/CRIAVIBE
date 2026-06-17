@@ -1613,6 +1613,7 @@
 
       .footer-note {
         margin-top: 15px;
+      }
     }
 
     /* Estilos para os Chips de Horário */
@@ -3450,35 +3451,6 @@
     function renderTeacherAulasPanel() {
       const tbody = document.getElementById('teacher-aulas-tbody');
       tbody.innerHTML = '';
-
-      if (state.board.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhuma aula agendada no sistema.</td></tr>';
-        return;
-      }
-
-      state.board.forEach(aula => {
-        const tr = document.createElement('tr');
-        const formattedDate = formatDateText(aula.data_aula) + ' às ' + aula.horario;
-        const moduloText = [aula.modulo_nome, aula.assunto_titulo].filter(Boolean).join(' • ') || 'Não especificado';
-
-        tr.innerHTML = `
-          <td><strong>${formattedDate}</strong> <span style="font-size:0.7rem; color:var(--text-muted); display:block;">(${aula.quantidade_horas}h)</span></td>
-          <td><strong>${escapeHtml(aula.aluno || 'Ex-aluno')}</strong><span style="font-size:0.7rem; color:var(--text-muted); display:block;">${escapeHtml(aula.email || '')}</span></td>
-          <td>${escapeHtml(aula.cidade)}</td>
-          <td>${escapeHtml(moduloText)}</td>
-          <td><span class="lesson-status-badge ${aula.status}">${(aula.status || 'pre_agendado').replace('_', ' ')}</span></td>
-          <td class="admin-actions-cell">
-            <button class="admin-btn-action" onclick="openEditLessonModal(${aula.aula_id})" title="Editar Aula"><i class="fa-solid fa-pen"></i></button>
-            <button class="admin-btn-action danger" onclick="deleteLesson(${aula.aula_id})" title="Excluir Aula"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderTeacherAulasPanel() {
-      const tbody = document.getElementById('teacher-aulas-tbody');
-      tbody.innerHTML = '';
       updateTeacherMetrics();
 
       const search = (document.getElementById('teacher-search-input')?.value || '').toLowerCase().trim();
@@ -3520,7 +3492,11 @@
         localDesc += `<span class="teacher-cell-muted">${escapeHtml(valorText)}</span>`;
 
         tr.innerHTML = `
-          <td><strong>${formattedDate}</strong><span class="teacher-cell-muted">${escapeHtml(aula.dia_semana || '')} - ${aula.quantidade_horas}h ate ${getEndTime(aula.horario, aula.quantidade_horas)}</span></td>
+          <td>
+            <strong>${formattedDate}</strong>
+            <span class="teacher-cell-muted">${escapeHtml(aula.dia_semana || '')} - inicio as ${aula.horario}</span>
+            <span class="teacher-cell-muted">${aula.quantidade_horas}h de aula</span>
+          </td>
           <td>
             <div class="teacher-student-cell">
               <span class="teacher-avatar">${getInitials(aula.aluno || 'Aluno')}</span>
@@ -4326,7 +4302,11 @@
 
       // Horas
       const maxHours = state.adminLogado ? 8 : 3;
-      const filteredOptions = state.horasOpcoes.filter(h => h <= maxHours);
+      let filteredOptions = state.horasOpcoes.filter(h => h <= maxHours);
+      if (!filteredOptions.includes(Number(aula.quantidade_horas))) {
+        filteredOptions.push(Number(aula.quantidade_horas));
+        filteredOptions.sort((a, b) => a - b);
+      }
       const hourSelect = document.getElementById('slot-hours');
       hourSelect.innerHTML = filteredOptions.map(h => `<option value="${h}">${h} hora${h > 1 ? 's' : ''}</option>`).join('');
       hourSelect.value = aula.quantidade_horas;
@@ -4579,6 +4559,8 @@
           }
         }
 
+        const existingLesson = state.board.find(a => a.aula_id === state.modalEditingLessonId);
+
         newLessonsList.push({
           aula_id: state.modalEditingLessonId,
           dia_semana: dayOfWeekName,
@@ -4588,8 +4570,8 @@
           cidade: cidade,
           modulo_id: moduloId,
           assunto_id: assuntoId,
-          status: state.adminLogado ? status : 'pre_agendado',
-          observacoes: state.adminLogado ? observacoes : '',
+          status: state.adminLogado ? status : (existingLesson && existingLesson.data_aula === dataVal && existingLesson.horario === state.modalSelectedTimes[0] ? (existingLesson.status || 'pre_agendado') : 'pre_agendado'),
+          observacoes: state.adminLogado ? observacoes : (existingLesson ? (existingLesson.observacoes || '') : ''),
           valor_hora_centavos: rateCentavos,
           valor_centavos: rateCentavos * hoursCount,
           endereco: enderecoVal || null,
