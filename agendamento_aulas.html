@@ -1318,9 +1318,9 @@
       transition: var(--transition);
     }
 
-    .teacher-day:hover:not(.empty):not(.unavailable) { border-color: var(--primary); }
+    .teacher-day:hover:not(.empty) { border-color: var(--primary); }
     .teacher-day.empty { visibility: hidden; cursor: default; }
-    .teacher-day.unavailable { background: #f1f2ef; color: #b4b6ad; cursor: default; }
+    .teacher-day.unavailable { background: #991b1b; color: white; cursor: pointer; }
     .teacher-day.has-class::after {
       content: '';
       width: 5px;
@@ -1333,8 +1333,8 @@
       transform: translateX(-50%);
     }
 
-    .teacher-day.pre-booked { background: #fff4d8; color: #a56a00; }
-    .teacher-day.pre-booked::after { background: #e5a400; }
+    .teacher-day.pre-booked { background: #fef08a; border-color: #facc15; color: #854d0e; }
+    .teacher-day.pre-booked::after { background: #ca8a04; }
     .teacher-day.selected { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 6px 12px rgba(119, 122, 67, 0.25); }
     .teacher-day.selected::after { background: white; }
 
@@ -1353,6 +1353,14 @@
       font: 800 0.9rem var(--font-title);
       text-transform: uppercase;
     }
+
+    .teacher-day-details-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .teacher-day-detail-actions { display: flex; gap: 8px; }
+    .teacher-day-detail-actions button { width: auto; padding: 8px 10px; font-size: 0.68rem; border-radius: 8px; }
+    .teacher-day-detail-actions .btn-danger { background: #991b1b; color: white; border: 0; }
+    .teacher-day-detail-actions .btn-release { background: #fff; color: #991b1b; border: 1px solid #991b1b; }
+
+    .calendar-day-btn.blocked, .hour-btn.blocked { background: #991b1b; border-color: #7f1d1d; color: white; }
 
     .teacher-lesson-row {
       display: grid;
@@ -2682,6 +2690,7 @@
       statusOpcoes: ['pre_agendado', 'confirmado', 'concluido', 'cancelado', 'remarcado'],
       course: { modulos: [], assuntos: [] },
       board: [], // Todos os agendamentos cadastrados no banco
+      blockedDates: [],
 
       // Valores de aula (centavos)
       valorSantoAntonioCentavos: 10000,
@@ -3037,8 +3046,7 @@
 
       while (dateCursor.getDate() <= lastDayOfMonth && dateCursor.getMonth() === month) {
         const dayOfWeek = dateCursor.getDay();
-        // Apenas Segunda (1) a Sexta (5)
-        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+        {
           const y = dateCursor.getFullYear();
           const mStr = String(dateCursor.getMonth() + 1).padStart(2, '0');
           const dStr = String(dateCursor.getDate()).padStart(2, '0');
@@ -3050,6 +3058,8 @@
 
           const btn = document.createElement('div');
           btn.className = 'calendar-day-btn';
+          const isBlocked = state.blockedDates.some(block => block.data_aula === formattedDate);
+          if (isBlocked) btn.classList.add('blocked');
           if (state.regData.data_aula === formattedDate) {
             btn.classList.add('selected');
           }
@@ -3057,7 +3067,7 @@
             <span class="day-name">${dayShort}</span>
             <span class="day-num">${dayNum}</span>
           `;
-          btn.onclick = () => selectRegDate(formattedDate, dayName);
+          btn.onclick = isBlocked ? () => alert('Este dia esta ocupado pelo professor e nao aceita agendamentos.') : () => selectRegDate(formattedDate, dayName);
           container.appendChild(btn);
         }
 
@@ -3100,6 +3110,10 @@
 
     function getOccupiedHoursFor(dateString) {
       const set = new Set();
+      if (state.blockedDates.some(block => block.data_aula === dateString)) {
+        state.horarios.forEach(hour => set.add(hour));
+        return set;
+      }
       state.board.forEach(item => {
         if (item.data_aula === dateString) {
           const start = timeToMinutes(item.horario);
@@ -3344,6 +3358,7 @@
       try {
         const data = await request(`/list.php`);
         state.board = data.aulas || [];
+        state.blockedDates = data.bloqueios || [];
         state.course = data.curso || state.course;
         state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 10000;
         state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 15000;
@@ -3590,6 +3605,7 @@
       try {
         const data = await request('/list.php');
         state.board = data.aulas || [];
+        state.blockedDates = data.bloqueios || [];
         state.course = data.curso || state.course;
         state.valorSantoAntonioCentavos = data.valor_santo_antonio_centavos || 10000;
         state.valorOutraCidadeCentavos = data.valor_outra_cidade_centavos || 15000;
@@ -3739,14 +3755,13 @@
         const dateKey = teacherDateKey(date);
         const dayLessons = lessons.filter(aula => aula.data_aula === dateKey);
         const hasPreBooked = dayLessons.some(aula => (aula.status || 'pre_agendado') === 'pre_agendado');
-        const unavailable = dayLessons.length === 0 && (date.getDay() === 0 || date.getDay() === 6);
+        const unavailable = state.blockedDates.some(block => block.data_aula === dateKey);
         const classes = ['teacher-day'];
         if (unavailable) classes.push('unavailable');
         if (dayLessons.length) classes.push('has-class');
         if (hasPreBooked) classes.push('pre-booked');
         if (state.teacherSelectedDate === dateKey) classes.push('selected');
-        const disabled = unavailable ? 'disabled' : '';
-        cells.push(`<button type="button" class="${classes.join(' ')}" ${disabled} onclick="selectTeacherCalendarDate('${dateKey}')" aria-label="${day} de ${monthName}">${day}</button>`);
+        cells.push(`<button type="button" class="${classes.join(' ')}" onclick="selectTeacherCalendarDate('${dateKey}')" aria-label="${day} de ${monthName}">${day}</button>`);
       }
       return `<section class="teacher-month-card"><h3 class="teacher-month-title">${monthName}</h3><div class="teacher-calendar-weekdays">${DAYS_SHORT.map(day => `<span>${day}</span>`).join('')}</div><div class="teacher-calendar-grid">${cells.join('')}</div></section>`;
     }
@@ -3756,11 +3771,60 @@
       renderTeacherAulasPanel();
     };
 
+    window.toggleTeacherDayBlock = async function () {
+      const blocked = state.blockedDates.some(item => item.data_aula === state.teacherSelectedDate);
+      const action = blocked ? 'desbloquear' : 'bloquear';
+      if (!confirm(blocked ? 'Liberar este dia para novos agendamentos?' : 'Bloquear este dia inteiro para novos agendamentos?')) return;
+      try {
+        await request('/bloqueios.php', { method: 'POST', body: JSON.stringify({ acao: action, data_aula: state.teacherSelectedDate }) });
+        await loadAdminDashboard();
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    window.quickScheduleStudent = async function () {
+      const nome = prompt('Nome completo do aluno:');
+      if (!nome) return;
+      const email = prompt('E-mail do aluno:');
+      if (!email) return;
+      const telefone = prompt('Telefone do aluno:');
+      if (!telefone) return;
+      const horario = prompt(`Horario (${state.horarios.join(', ')}):`, state.horarios[0]);
+      if (!horario) return;
+      const horas = Number(prompt('Quantidade de horas:', '1') || 1);
+      const date = new Date(state.teacherSelectedDate + 'T00:00:00');
+      const existing = state.board.find(item => String(item.email || '').toLowerCase() === email.toLowerCase());
+      const currentLessons = existing ? state.board.filter(item => item.aluno_id === existing.aluno_id).map(item => ({
+        aula_id: item.aula_id, data_aula: item.data_aula, dia_semana: item.dia_semana, horario: item.horario,
+        quantidade_horas: item.quantidade_horas, cidade: item.cidade, modulo_id: item.modulo_id,
+        assunto_id: item.assunto_id, status: item.status, observacoes: item.observacoes || '', endereco: item.endereco || null
+      })) : [];
+      try {
+        await request('/save.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            token_publico: existing?.token_publico || '',
+            aluno: { nome, email, telefone },
+            plano: { nome: existing?.plano_nome || 'Curso Fotografia Pratica', total_aulas: Math.max(1, (existing?.total_aulas || 0) + 1), status: existing?.plano_status || 'ativo' },
+            aulas: currentLessons.concat([{ data_aula: state.teacherSelectedDate, dia_semana: DAYS_NAMES[date.getDay()], horario, quantidade_horas: horas, cidade: 'Santo Antonio do Descoberto', status: 'confirmado' }])
+          })
+        });
+        await loadAdminDashboard();
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
     function renderTeacherDayDetails(lessons) {
       const container = document.getElementById('teacher-day-details');
       const selectedLessons = lessons.filter(aula => aula.data_aula === state.teacherSelectedDate)
         .sort((a, b) => String(a.horario).localeCompare(String(b.horario)));
-      const title = `<div class="teacher-day-details-title">${teacherLongDate(state.teacherSelectedDate)}</div>`;
+      const isBlocked = state.blockedDates.some(block => block.data_aula === state.teacherSelectedDate);
+      const actions = isBlocked
+        ? `<button class="btn btn-release" onclick="toggleTeacherDayBlock()"><i class="fa-solid fa-lock-open"></i> Liberar dia</button>`
+        : `<button class="btn btn-danger" onclick="toggleTeacherDayBlock()"><i class="fa-solid fa-lock"></i> Bloquear dia</button><button class="btn btn-primary" onclick="quickScheduleStudent()"><i class="fa-solid fa-plus"></i> Agendar aluno</button>`;
+      const title = `<div class="teacher-day-details-title teacher-day-details-heading"><span>${teacherLongDate(state.teacherSelectedDate)}</span><div class="teacher-day-detail-actions">${actions}</div></div>`;
       if (!selectedLessons.length) {
         container.innerHTML = title + '<p class="teacher-calendar-empty">Nenhuma aula encontrada para este dia e os filtros atuais.</p>';
         return;
@@ -5050,7 +5114,7 @@
       const dayOfWeekName = DAYS_NAMES[dateObj.getDay()];
 
       // Regra: Aulas apenas de Segunda a Sexta
-      if (dateObj.getDay() === 0 || dateObj.getDay() === 6) {
+      if (false && (dateObj.getDay() === 0 || dateObj.getDay() === 6)) {
         alert('Aulas práticas ocorrem apenas de segunda a sexta-feira.');
         return;
       }
@@ -5313,6 +5377,7 @@
         // Carrega dados iniciais da API geral
         const listData = await request('/list.php');
         state.board = listData.aulas || [];
+        state.blockedDates = listData.bloqueios || [];
         state.course = listData.curso || state.course;
         state.valorSantoAntonioCentavos = listData.valor_santo_antonio_centavos || 10000;
         state.valorOutraCidadeCentavos = listData.valor_outra_cidade_centavos || 15000;

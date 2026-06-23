@@ -20,6 +20,7 @@ try {
 $student = $token ? agendamento_fetch_student_by_token($db, $token) : null;
 $rows = agendamento_fetch_board($db);
 $items = agendamento_format_board($rows, $student['token_publico'] ?? null, $isAdmin);
+$bloqueios = agendamento_fetch_bloqueios($db);
 $course = agendamento_fetch_course($db);
 $plan = null;
 if ($student) {
@@ -61,6 +62,7 @@ $payload = [
         'plano' => $plan,
     ] : null,
     'aulas' => $items,
+    'bloqueios' => $bloqueios,
 ];
 
 json_out($payload);

@@ -45,6 +45,8 @@ if (!$isAdmin) {
     }
 }
 
+agendamento_assert_dates_not_blocked($db, $lessons);
+
 $db->beginTransaction();
 
 try {

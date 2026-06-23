@@ -102,6 +102,15 @@ function agendamento_ensure_schema(PDO $db): void {
         $db->exec("CREATE INDEX IF NOT EXISTS idx_aulas_data ON agendamento_aulas (data_aula)");
 
         $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_bloqueios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                data_aula DATE NOT NULL UNIQUE,
+                motivo VARCHAR(255) DEFAULT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        $db->exec("
             CREATE TABLE IF NOT EXISTS agendamento_historico (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 aula_id INT NULL,
@@ -220,6 +229,16 @@ function agendamento_ensure_schema(PDO $db): void {
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_historico_aula (aula_id),
             INDEX idx_historico_aluno (aluno_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS agendamento_bloqueios (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            data_aula DATE NOT NULL UNIQUE,
+            motivo VARCHAR(255) DEFAULT NULL,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_bloqueios_data (data_aula)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
@@ -510,10 +529,6 @@ function agendamento_validate_lessons(array $lessons): array {
         $status = trim($lesson['status'] ?? 'pre_agendado');
         $observacoes = trim($lesson['observacoes'] ?? '');
 
-        if (!in_array($dia, AGENDAMENTO_DIAS, true)) {
-            json_out(['status' => 'erro', 'mensagem' => 'Dia da semana invalido.'], 400);
-        }
-
         $date = DateTime::createFromFormat('Y-m-d', $data);
         if (!$date || $date->format('Y-m-d') !== $data) {
             json_out(['status' => 'erro', 'mensagem' => 'Data da aula invalida.'], 400);
@@ -607,6 +622,21 @@ function agendamento_fetch_board(PDO $db): array {
         ORDER BY CASE a.dia_semana WHEN 'SEGUNDA' THEN 1 WHEN 'TERÇA' THEN 2 WHEN 'QUARTA' THEN 3 WHEN 'QUINTA' THEN 4 WHEN 'SEXTA' THEN 5 ELSE 6 END, a.data_aula, a.horario
     ");
     return $stmt->fetchAll();
+}
+
+function agendamento_fetch_bloqueios(PDO $db): array {
+    $stmt = $db->query("SELECT id, data_aula, motivo FROM agendamento_bloqueios ORDER BY data_aula");
+    return $stmt->fetchAll();
+}
+
+function agendamento_assert_dates_not_blocked(PDO $db, array $lessons): void {
+    $dates = array_values(array_unique(array_column($lessons, 'data_aula')));
+    if (!$dates) return;
+    $stmt = $db->prepare("SELECT data_aula FROM agendamento_bloqueios WHERE data_aula IN (" . implode(',', array_fill(0, count($dates), '?')) . ")");
+    $stmt->execute($dates);
+    if ($blocked = $stmt->fetchColumn()) {
+        json_out(['status' => 'erro', 'mensagem' => 'Esta data foi bloqueada pelo professor e nao aceita agendamentos.'], 409);
+    }
 }
 
 function agendamento_format_board(array $rows, ?string $currentToken, bool $isAdmin): array {
