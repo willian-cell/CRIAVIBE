@@ -1334,16 +1334,17 @@
       transform: translateX(-50%);
     }
 
-    .teacher-day.pre-booked { background: #fef08a; border-color: #facc15; color: #854d0e; }
-    .teacher-day.pre-booked::after { background: #ca8a04; }
-    .teacher-day.confirmed { background: #22c55e; border-color: #16a34a; color: #ffffff; box-shadow: 0 0 0 2px rgba(34,197,94,0.20),0 8px 18px rgba(34,197,94,0.35); }
-    .teacher-day.confirmed::after { background: white; }
-    .teacher-day.completed { background: #e2e8f0; border-color: #94a3b8; color: #334155; }
-    .teacher-day.completed::after { background: #64748b; }
-    .teacher-day.cancelled { background: #b91c1c; border-color: #991b1b; color: white; }
-    .teacher-day.cancelled::after { background: white; }
-    .teacher-day.rescheduled { background: #fbbf24; border-color: #d97706; color: #78350f; }
-    .teacher-day.rescheduled::after { background: #92400e; }
+    /* Blocos de status: contraste alto para leitura imediata no calendario. */
+    .teacher-day.pre-booked { background: #fde047 !important; border: 3px solid #eab308 !important; color: #713f12 !important; box-shadow: 0 3px 0 rgba(161, 98, 7, 0.22); }
+    .teacher-day.pre-booked::after { background: #854d0e !important; }
+    .teacher-day.confirmed { background: #28e13c !important; border: 3px solid #08b522 !important; color: #064e16 !important; box-shadow: 0 0 0 2px rgba(40, 225, 60, 0.28), 0 5px 12px rgba(8, 181, 34, 0.34); }
+    .teacher-day.confirmed::after { background: #087f1a !important; }
+    .teacher-day.completed { background: #eef1f3 !important; border: 3px solid #cfd4d7 !important; color: #64748b !important; box-shadow: 0 2px 0 rgba(100, 116, 139, 0.12); }
+    .teacher-day.completed::after { background: #9aa3a8 !important; }
+    .teacher-day.cancelled { background: #b91c27 !important; border: 3px solid #ef202c !important; color: #ffffff !important; box-shadow: 0 3px 0 rgba(127, 29, 29, 0.25); }
+    .teacher-day.cancelled::after { background: #ffffff !important; }
+    .teacher-day.rescheduled { background: #fb923c !important; border: 3px solid #ea580c !important; color: #7c2d12 !important; box-shadow: 0 3px 0 rgba(154, 52, 18, 0.20); }
+    .teacher-day.rescheduled::after { background: #9a3412 !important; }
     .teacher-day.unavailable { background: #991b1b; border-color: #7f1d1d; color: white; }
     .teacher-day.selected { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 6px 12px rgba(119, 122, 67, 0.25); }
     .teacher-day.selected::after { background: white; }
