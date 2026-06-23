@@ -5,6 +5,7 @@ require_once __DIR__ . '/_helpers.php';
 agendamento_require_admin();
 $body = body();
 $action = trim($body['acao'] ?? '');
+$mode = trim($body['modo'] ?? 'somente_novos');
 $date = trim($body['data_aula'] ?? '');
 $dateObject = DateTime::createFromFormat('Y-m-d', $date);
 
@@ -17,14 +18,24 @@ try {
     agendamento_ensure_schema($db);
 
     if ($action === 'bloquear') {
-        $check = $db->prepare('SELECT COUNT(*) FROM agendamento_aulas WHERE data_aula = ?');
+        $db->beginTransaction();
+        try {
+        $check = $db->prepare("SELECT COUNT(*) FROM agendamento_aulas WHERE data_aula = ? AND status NOT IN ('cancelado', 'remarcado')");
         $check->execute([$date]);
-        if ((int)$check->fetchColumn() > 0) {
-            json_out(['status' => 'erro', 'mensagem' => 'Nao e possivel bloquear um dia que ja possui aulas.'], 409);
+        $activeLessons = (int)$check->fetchColumn();
+        if ($activeLessons > 0 && $mode === 'cancelar_aulas') {
+            $reason = trim($body['motivo'] ?? '') ?: 'Dia bloqueado pelo professor.';
+            $cancel = $db->prepare("UPDATE agendamento_aulas SET status = 'cancelado', observacoes = TRIM(CONCAT_WS('\n', observacoes, ?)) WHERE data_aula = ? AND status NOT IN ('cancelado', 'remarcado')");
+            $cancel->execute([$reason, $date]);
         }
         $stmt = $db->prepare('INSERT INTO agendamento_bloqueios (data_aula, motivo) VALUES (?, ?)');
         $stmt->execute([$date, trim($body['motivo'] ?? '') ?: null]);
+        $db->commit();
         json_out(['status' => 'ok', 'mensagem' => 'Dia bloqueado para novos agendamentos.']);
+        } catch (Throwable $e) {
+            if ($db->inTransaction()) $db->rollBack();
+            throw $e;
+        }
     }
 
     if ($action === 'desbloquear') {
