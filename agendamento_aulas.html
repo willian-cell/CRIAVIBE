@@ -1338,9 +1338,28 @@
     .teacher-day.pre-booked::after { background: #ca8a04; }
     .teacher-day.confirmed { background: #22c55e; border-color: #16a34a; color: #ffffff; box-shadow: 0 0 0 2px rgba(34,197,94,0.20),0 8px 18px rgba(34,197,94,0.35); }
     .teacher-day.confirmed::after { background: white; }
+    .teacher-day.completed { background: #e2e8f0; border-color: #94a3b8; color: #334155; }
+    .teacher-day.completed::after { background: #64748b; }
+    .teacher-day.cancelled { background: #b91c1c; border-color: #991b1b; color: white; }
+    .teacher-day.cancelled::after { background: white; }
+    .teacher-day.rescheduled { background: #fbbf24; border-color: #d97706; color: #78350f; }
+    .teacher-day.rescheduled::after { background: #92400e; }
     .teacher-day.unavailable { background: #991b1b; border-color: #7f1d1d; color: white; }
     .teacher-day.selected { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 6px 12px rgba(119, 122, 67, 0.25); }
     .teacher-day.selected::after { background: white; }
+    /* O status tem prioridade sobre o fundo de selecao, inclusive em "Todos". */
+    .teacher-day.selected.pre-booked { background: #fef08a; border-color: #ca8a04; color: #854d0e; }
+    .teacher-day.selected.confirmed { background: #22c55e; border-color: #15803d; color: white; box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.28), 0 8px 18px rgba(34, 197, 94, 0.35); }
+    .teacher-day.selected.completed { background: #e2e8f0; border-color: #64748b; color: #334155; }
+    .teacher-day.selected.cancelled { background: #b91c1c; border-color: #7f1d1d; color: white; }
+    .teacher-day.selected.rescheduled { background: #fbbf24; border-color: #b45309; color: #78350f; }
+    /* Com filtro ativo, a selecao continua visivel sem esconder a cor do status. */
+    .teacher-day.status-filter-active.selected { background: var(--surface); border: 2px solid var(--primary); color: var(--text); box-shadow: 0 0 0 2px rgba(119, 122, 67, 0.16); }
+    .teacher-day.status-filter-active.selected.pre-booked { background: #fef08a; border-color: #ca8a04; color: #854d0e; }
+    .teacher-day.status-filter-active.selected.confirmed { background: #22c55e; border-color: #15803d; color: white; }
+    .teacher-day.status-filter-active.selected.completed { background: #e2e8f0; border-color: #64748b; color: #334155; }
+    .teacher-day.status-filter-active.selected.cancelled { background: #b91c1c; border-color: #7f1d1d; color: white; }
+    .teacher-day.status-filter-active.selected.rescheduled { background: #fbbf24; border-color: #b45309; color: #78350f; }
 
     .teacher-day-details {
       background: var(--surface);
@@ -3728,13 +3747,27 @@
 
     function getTeacherFilteredLessons() {
       const search = (document.getElementById('teacher-search-input')?.value || '').toLowerCase().trim();
-      const statusFilter = document.getElementById('teacher-status-filter')?.value || '';
+      const statusFilter = getTeacherSelectedStatus();
       return state.board.filter(aula => {
-        if (statusFilter && aula.status !== statusFilter) return false;
+        if (statusFilter !== 'todos' && (aula.status || 'pre_agendado') !== statusFilter) return false;
         if (!search) return true;
         return [aula.aluno, aula.email, aula.telefone, aula.cidade, aula.modulo_nome, aula.assunto_titulo, aula.status]
           .some(value => String(value || '').toLowerCase().includes(search));
       });
+    }
+
+    function getTeacherSelectedStatus() {
+      return document.getElementById('teacher-status-filter')?.value || 'todos';
+    }
+
+    function getTeacherDayStatusClass(status) {
+      return {
+        pre_agendado: 'pre-booked',
+        confirmado: 'confirmed',
+        concluido: 'completed',
+        cancelado: 'cancelled',
+        remarcado: 'rescheduled'
+      }[status] || '';
     }
 
     function teacherDateKey(date) {
@@ -3753,6 +3786,7 @@
     function renderTeacherAulasPanel() {
       updateTeacherMetrics();
       const lessons = getTeacherFilteredLessons();
+      const selectedStatus = getTeacherSelectedStatus();
       const strip = document.getElementById('teacher-calendar-strip');
       const today = new Date();
       const months = [0, 1, 2].map(offset => new Date(today.getFullYear(), today.getMonth() + offset, 1));
@@ -3762,11 +3796,11 @@
         state.teacherSelectedDate = currentDate;
       }
 
-      strip.innerHTML = months.map(month => renderTeacherMonth(month, lessons)).join('');
+      strip.innerHTML = months.map(month => renderTeacherMonth(month, lessons, selectedStatus)).join('');
       renderTeacherDayDetails(lessons);
     }
 
-    function renderTeacherMonth(month, lessons) {
+    function renderTeacherMonth(month, lessons, selectedStatus) {
       const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(month).toUpperCase();
       const firstWeekday = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
       const lastDay = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
@@ -3776,12 +3810,17 @@
         const date = new Date(month.getFullYear(), month.getMonth(), day);
         const dateKey = teacherDateKey(date);
         const dayLessons = lessons.filter(aula => aula.data_aula === dateKey);
-        const hasPreBooked = dayLessons.some(aula => (aula.status || 'pre_agendado') === 'pre_agendado');
+        const matchingLesson = dayLessons[0];
         const unavailable = state.blockedDates.some(block => block.data_aula === dateKey);
         const classes = ['teacher-day'];
-        if (unavailable) classes.push('unavailable');
-        if (dayLessons.length) classes.push('has-class');
-        if (hasPreBooked) classes.push('pre-booked');
+        // Fora de "Todos", lessons ja contem apenas o status escolhido. Assim, os
+        // demais dias ficam neutros, mesmo que tenham aulas de outro status.
+        if (selectedStatus === 'todos' && unavailable) classes.push('unavailable');
+        if (matchingLesson) {
+          classes.push('has-class');
+          classes.push(getTeacherDayStatusClass(matchingLesson.status || 'pre_agendado'));
+        }
+        if (selectedStatus !== 'todos') classes.push('status-filter-active');
         if (state.teacherSelectedDate === dateKey) classes.push('selected');
         cells.push(`<button type="button" class="${classes.join(' ')}" onclick="selectTeacherCalendarDate('${dateKey}')" aria-label="${day} de ${monthName}">${day}</button>`);
       }
