@@ -1256,6 +1256,116 @@
       max-width: 190px;
     }
 
+    .teacher-calendar-strip {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 4px 1px 16px;
+      margin-bottom: 18px;
+      scroll-snap-type: x proximity;
+    }
+
+    .admin-table-container:has(#teacher-aulas-tbody) { display: none; }
+
+    .teacher-month-card {
+      flex: 0 0 330px;
+      scroll-snap-align: start;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .teacher-month-title {
+      color: var(--primary);
+      font-family: var(--font-title);
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .teacher-calendar-weekdays,
+    .teacher-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .teacher-calendar-weekdays {
+      margin-bottom: 8px;
+      color: var(--text-muted);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .teacher-day {
+      aspect-ratio: 1;
+      min-width: 0;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font: 600 0.82rem var(--font-body);
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .teacher-day:hover:not(.empty):not(.unavailable) { border-color: var(--primary); }
+    .teacher-day.empty { visibility: hidden; cursor: default; }
+    .teacher-day.unavailable { background: #f1f2ef; color: #b4b6ad; cursor: default; }
+    .teacher-day.has-class::after {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--primary);
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .teacher-day.pre-booked { background: #fff4d8; color: #a56a00; }
+    .teacher-day.pre-booked::after { background: #e5a400; }
+    .teacher-day.selected { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 6px 12px rgba(119, 122, 67, 0.25); }
+    .teacher-day.selected::after { background: white; }
+
+    .teacher-day-details {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .teacher-day-details-title {
+      padding: 16px 20px;
+      background: #f7f9f6;
+      color: var(--primary);
+      font: 800 0.9rem var(--font-title);
+      text-transform: uppercase;
+    }
+
+    .teacher-lesson-row {
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 18px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .teacher-lesson-time strong, .teacher-lesson-student strong { display: block; }
+    .teacher-lesson-time span, .teacher-lesson-student span { display: block; color: var(--text-muted); font-size: 0.75rem; line-height: 1.55; }
+    .teacher-lesson-time strong { font-family: var(--font-title); font-size: 1.05rem; }
+    .teacher-lesson-student { display: flex; gap: 12px; align-items: center; }
+    .teacher-lesson-actions { display: flex; gap: 7px; }
+    .teacher-calendar-empty { padding: 28px 20px; color: var(--text-muted); text-align: center; font-size: 0.82rem; }
+
     .teacher-student-cell {
       display: flex;
       align-items: center;
@@ -1609,6 +1719,10 @@
       .admin-filter-bar select {
         max-width: none;
       }
+
+      .teacher-month-card { flex-basis: min(330px, 86vw); }
+      .teacher-lesson-row { grid-template-columns: 1fr auto; gap: 14px; }
+      .teacher-lesson-student { grid-column: 1 / -1; }
 
       .or-separator {
         margin: 16px 0;
@@ -2305,11 +2419,11 @@
                     <th>Ações</th>
                   </tr>
                 </thead>
-                <tbody id="teacher-aulas-tbody">
-                  <!-- Aulas populated dynamically -->
-                </tbody>
+                <tbody id="teacher-aulas-tbody" style="display: none;"></tbody>
               </table>
             </div>
+            <div class="teacher-calendar-strip" id="teacher-calendar-strip" aria-label="Calendario de aulas"></div>
+            <div class="teacher-day-details" id="teacher-day-details" aria-live="polite"></div>
           </div>
 
           <!-- TAB CONTENT: ALUNOS -->
@@ -2542,6 +2656,7 @@
       token: localStorage.getItem(STORAGE_KEY) || '',
       currentView: 'view-login',
       selectedMonth: null,
+      teacherSelectedDate: null,
 
       // Dados do formulário de cadastro (Steps)
       regData: {
@@ -3496,7 +3611,7 @@
       document.getElementById('admin-panel-' + tab).style.display = 'block';
     }
 
-    function renderTeacherAulasPanel() {
+    function renderTeacherAulasTableLegacy() {
       const tbody = document.getElementById('teacher-aulas-tbody');
       tbody.innerHTML = '';
       updateTeacherMetrics();
@@ -3566,6 +3681,90 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function getTeacherFilteredLessons() {
+      const search = (document.getElementById('teacher-search-input')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('teacher-status-filter')?.value || '';
+      return state.board.filter(aula => {
+        if (statusFilter && aula.status !== statusFilter) return false;
+        if (!search) return true;
+        return [aula.aluno, aula.email, aula.telefone, aula.cidade, aula.modulo_nome, aula.assunto_titulo, aula.status]
+          .some(value => String(value || '').toLowerCase().includes(search));
+      });
+    }
+
+    function teacherDateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function teacherLongDate(dateKey) {
+      const [year, month, day] = dateKey.split('-').map(Number);
+      return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
+        .format(new Date(year, month - 1, day)).toUpperCase();
+    }
+
+    function renderTeacherAulasPanel() {
+      updateTeacherMetrics();
+      const lessons = getTeacherFilteredLessons();
+      const strip = document.getElementById('teacher-calendar-strip');
+      const today = new Date();
+      const months = [0, 1, 2].map(offset => new Date(today.getFullYear(), today.getMonth() + offset, 1));
+      const currentDate = teacherDateKey(today);
+
+      if (!state.teacherSelectedDate || !months.some(month => state.teacherSelectedDate.startsWith(`${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`))) {
+        state.teacherSelectedDate = currentDate;
+      }
+
+      strip.innerHTML = months.map(month => renderTeacherMonth(month, lessons)).join('');
+      renderTeacherDayDetails(lessons);
+    }
+
+    function renderTeacherMonth(month, lessons) {
+      const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(month).toUpperCase();
+      const firstWeekday = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
+      const lastDay = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+      const cells = [];
+      for (let blank = 0; blank < firstWeekday; blank++) cells.push('<span class="teacher-day empty"></span>');
+      for (let day = 1; day <= lastDay; day++) {
+        const date = new Date(month.getFullYear(), month.getMonth(), day);
+        const dateKey = teacherDateKey(date);
+        const dayLessons = lessons.filter(aula => aula.data_aula === dateKey);
+        const hasPreBooked = dayLessons.some(aula => (aula.status || 'pre_agendado') === 'pre_agendado');
+        const unavailable = dayLessons.length === 0 && (date.getDay() === 0 || date.getDay() === 6);
+        const classes = ['teacher-day'];
+        if (unavailable) classes.push('unavailable');
+        if (dayLessons.length) classes.push('has-class');
+        if (hasPreBooked) classes.push('pre-booked');
+        if (state.teacherSelectedDate === dateKey) classes.push('selected');
+        const disabled = unavailable ? 'disabled' : '';
+        cells.push(`<button type="button" class="${classes.join(' ')}" ${disabled} onclick="selectTeacherCalendarDate('${dateKey}')" aria-label="${day} de ${monthName}">${day}</button>`);
+      }
+      return `<section class="teacher-month-card"><h3 class="teacher-month-title">${monthName}</h3><div class="teacher-calendar-weekdays">${DAYS_SHORT.map(day => `<span>${day}</span>`).join('')}</div><div class="teacher-calendar-grid">${cells.join('')}</div></section>`;
+    }
+
+    window.selectTeacherCalendarDate = function (dateKey) {
+      state.teacherSelectedDate = dateKey;
+      renderTeacherAulasPanel();
+    };
+
+    function renderTeacherDayDetails(lessons) {
+      const container = document.getElementById('teacher-day-details');
+      const selectedLessons = lessons.filter(aula => aula.data_aula === state.teacherSelectedDate)
+        .sort((a, b) => String(a.horario).localeCompare(String(b.horario)));
+      const title = `<div class="teacher-day-details-title">${teacherLongDate(state.teacherSelectedDate)}</div>`;
+      if (!selectedLessons.length) {
+        container.innerHTML = title + '<p class="teacher-calendar-empty">Nenhuma aula encontrada para este dia e os filtros atuais.</p>';
+        return;
+      }
+      container.innerHTML = title + selectedLessons.map(aula => {
+        const status = aula.status || 'pre_agendado';
+        const statusText = status.replace('_', ' ');
+        return `<article class="teacher-lesson-row"><div class="teacher-lesson-time"><strong>${escapeHtml(aula.horario || '--:--')}</strong><span>${escapeHtml(String(aula.quantidade_horas || 1))}h de aula</span><span class="lesson-status-badge ${status}">${escapeHtml(statusText)}</span></div><div class="teacher-lesson-student"><span class="teacher-avatar">${getInitials(aula.aluno || 'Aluno')}</span><div><strong>${escapeHtml(aula.aluno || 'Ex-aluno')}</strong><span>${escapeHtml(aula.email || 'E-mail nao informado')}</span><span>${escapeHtml(aula.telefone || 'Telefone nao informado')}</span></div></div><div class="teacher-lesson-actions"><button class="admin-btn-action success" onclick="quickUpdateLessonStatus(${aula.aula_id}, 'confirmado')" title="Confirmar aula"><i class="fa-solid fa-check"></i></button><button class="admin-btn-action" onclick="openEditLessonModal(${aula.aula_id})" title="Editar aula"><i class="fa-solid fa-pen"></i></button></div></article>`;
+      }).join('');
     }
 
     function updateTeacherMetrics() {
