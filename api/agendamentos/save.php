@@ -121,9 +121,13 @@ try {
             observacoes,
             endereco,
             latitude,
-            longitude
+            longitude,
+            cep,
+            localizacao_origem,
+            localizacao_precisao,
+            localizacao_precisao_metros
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     foreach ($lessons as $lesson) {
@@ -144,6 +148,10 @@ try {
             $lesson['endereco'] ?? null,
             $lesson['latitude'] ?? null,
             $lesson['longitude'] ?? null,
+            $lesson['cep'] ?? null,
+            $lesson['localizacao_origem'] ?? null,
+            $lesson['localizacao_precisao'] ?? null,
+            $lesson['localizacao_precisao_metros'] ?? null,
         ]);
         agendamento_log($db, (int)$db->lastInsertId(), $studentId, 'aula_salva', $lesson, $isAdmin ? 'fotografo' : 'aluno', $isAdmin ? ($_SESSION['agendamento_admin_email'] ?? null) : $studentData['email']);
     }

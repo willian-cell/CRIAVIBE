@@ -1583,6 +1583,17 @@
       border-bottom: none;
     }
 
+    .location-status {
+      margin: 0;
+      min-height: 18px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .location-status.is-confirmed { color: #15803d; font-weight: 700; }
+    .location-status.is-approximate { color: #a16207; font-weight: 700; }
+    .location-status.is-error { color: #b91c1c; font-weight: 700; }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
@@ -2228,23 +2239,26 @@
               <div class="input-wrapper" style="flex: 1; min-width: 120px; max-width: 180px;">
                 <i class="fa-solid fa-map-pin input-icon"></i>
                 <input type="text" id="reg-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;"
-                  oninput="maskCEP(this)" maxlength="9">
+                  oninput="maskCEP(this); handleLocationCEPInput('reg')" maxlength="9">
               </div>
               <button type="button" class="btn btn-secondary"
                 style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;"
                 onclick="searchCEPReg()">Buscar CEP</button>
+              <button type="button" class="btn btn-secondary" title="Usar minha localização atual"
+                style="width: auto !important; padding: 0 13px; border-radius: 12px;" onclick="useCurrentLocation('reg')"><i class="fa-solid fa-crosshairs"></i></button>
             </div>
             <!-- Linha 2: Endereço -->
             <div class="input-wrapper" style="display: flex;">
               <i class="fa-solid fa-magnifying-glass input-icon"></i>
               <input type="text" id="reg-address-input" placeholder="Ou digite o endereço completo..."
                 style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;"
-                autocomplete="off">
+                autocomplete="off" oninput="handleLocationAddressInput('reg')">
               <button type="button" class="btn"
                 style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 20px; font-weight: 700; cursor: pointer;"
                 onclick="searchAddressReg()">Buscar</button>
             </div>
             <div id="address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
+            <p id="reg-location-status" class="location-status" aria-live="polite">Informe o CEP, endereço ou use sua localização.</p>
           </div>
           <div id="reg-map-container"
             style="height: 220px; border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; position: relative; z-index: 10;">
@@ -2562,22 +2576,25 @@
             <div class="input-wrapper" style="flex: 1; min-width: 120px; max-width: 180px;">
               <i class="fa-solid fa-map-pin input-icon"></i>
               <input type="text" id="modal-cep-input" placeholder="CEP (ex: 72900000)" style="padding-left: 40px;"
-                oninput="maskCEP(this)" maxlength="9">
+                oninput="maskCEP(this); handleLocationCEPInput('modal')" maxlength="9">
             </div>
-            <button type="button" class="btn btn-secondary"
+              <button type="button" class="btn btn-secondary"
               style="width: auto !important; padding: 0 16px; font-size: 0.8rem; border-radius: 12px;"
-              onclick="searchCEPModal()">Buscar CEP</button>
+                onclick="searchCEPModal()">Buscar CEP</button>
+              <button type="button" class="btn btn-secondary" title="Usar minha localização atual"
+                style="width: auto !important; padding: 0 13px; border-radius: 12px;" onclick="useCurrentLocation('modal')"><i class="fa-solid fa-crosshairs"></i></button>
           </div>
           <!-- Linha 2: Endereço -->
           <div class="input-wrapper" style="display: flex;">
             <i class="fa-solid fa-magnifying-glass input-icon"></i>
-            <input type="text" id="modal-address-input" placeholder="Endereço, número, bairro..."
-              style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off">
+              <input type="text" id="modal-address-input" placeholder="Endereço, número, bairro..."
+                style="flex: 1; border-radius: 12px 0 0 12px; border-right: none; padding-left: 40px;" autocomplete="off" oninput="handleLocationAddressInput('modal')">
             <button type="button" class="btn"
               style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 16px; font-weight: 700; cursor: pointer;"
               onclick="searchAddressModal()">Buscar</button>
           </div>
           <div id="modal-address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
+          <p id="modal-location-status" class="location-status" aria-live="polite">Informe o CEP, endereço ou use sua localização.</p>
         </div>
         <div id="modal-map-container"
           style="height: 180px; border-radius: 12px; border: 1.5px solid var(--border); margin-bottom: 15px; overflow: hidden; position: relative; z-index: 10;">
@@ -3267,7 +3284,11 @@
         observacoes: a.observacoes || '',
         endereco: a.endereco || null,
         latitude: a.latitude || null,
-        longitude: a.longitude || null
+        longitude: a.longitude || null,
+        cep: a.cep || null,
+        localizacao_origem: a.localizacao_origem || null,
+        localizacao_precisao: a.localizacao_precisao || null,
+        localizacao_precisao_metros: a.localizacao_precisao_metros || null
       }));
     }
 
@@ -3322,7 +3343,8 @@
         valor_centavos: rateCentavos,
         endereco: state.regData.endereco || null,
         latitude: state.regData.latitude || null,
-        longitude: state.regData.longitude || null
+        longitude: state.regData.longitude || null,
+        ...getLocationPayload('reg')
       }));
 
       try {
@@ -3394,7 +3416,8 @@
             status: 'pre_agendado',
             endereco: state.regData.endereco || null,
             latitude: state.regData.latitude || null,
-            longitude: state.regData.longitude || null
+            longitude: state.regData.longitude || null,
+            ...getLocationPayload('reg')
           }
         ))
       };
@@ -4139,6 +4162,71 @@
     let registerMarker = null;
     let modalMap = null;
     let modalMarker = null;
+    const locationTimers = {};
+    const locationRequestVersion = {};
+
+    function getLocationFields(mapType) {
+      return mapType === 'reg'
+        ? { address: 'reg-address-input', cep: 'reg-cep-input', suggestions: 'address-suggestions', status: 'reg-location-status' }
+        : { address: 'modal-address-input', cep: 'modal-cep-input', suggestions: 'modal-address-suggestions', status: 'modal-location-status' };
+    }
+
+    function setLocationStatus(mapType, message, level = '') {
+      const element = document.getElementById(getLocationFields(mapType).status);
+      if (!element) return;
+      element.className = `location-status${level ? ` is-${level}` : ''}`;
+      element.textContent = message;
+    }
+
+    function getLocationPayload(mapType) {
+      const fields = getLocationFields(mapType);
+      const input = document.getElementById(fields.address);
+      const cep = document.getElementById(fields.cep)?.value.replace(/\D/g, '') || '';
+      return {
+        cep: cep || null,
+        localizacao_origem: input?.dataset.locationSource || null,
+        localizacao_precisao: input?.dataset.locationPrecision || null,
+        localizacao_precisao_metros: input?.dataset.locationAccuracy ? Number(input.dataset.locationAccuracy) : null
+      };
+    }
+
+    window.handleLocationAddressInput = function (mapType) {
+      const fields = getLocationFields(mapType);
+      const query = document.getElementById(fields.address)?.value.trim() || '';
+      clearTimeout(locationTimers[mapType]);
+      if (query.length < 3) {
+        document.getElementById(fields.suggestions).style.display = 'none';
+        setLocationStatus(mapType, 'Digite ao menos 3 caracteres para buscar o endereço.');
+        return;
+      }
+      setLocationStatus(mapType, 'Buscando endereços…');
+      locationTimers[mapType] = setTimeout(() => searchAddress(query, fields.address, fields.suggestions, mapType), 350);
+    };
+
+    window.handleLocationCEPInput = function (mapType) {
+      const fields = getLocationFields(mapType);
+      const cep = document.getElementById(fields.cep)?.value.replace(/\D/g, '') || '';
+      clearTimeout(locationTimers[`${mapType}-cep`]);
+      if (cep.length !== 8) return;
+      setLocationStatus(mapType, 'Localizando CEP…');
+      locationTimers[`${mapType}-cep`] = setTimeout(() => searchCEP(cep, fields.address, mapType), 250);
+    };
+
+    window.useCurrentLocation = function (mapType) {
+      if (!navigator.geolocation) {
+        setLocationStatus(mapType, 'Seu navegador não oferece localização por GPS.', 'error');
+        return;
+      }
+      setLocationStatus(mapType, 'Obtendo sua localização…');
+      navigator.geolocation.getCurrentPosition(async position => {
+        const { latitude, longitude, accuracy } = position.coords;
+        const fields = getLocationFields(mapType);
+        updateMapMarker(latitude, longitude, document.getElementById(fields.address)?.value || '', mapType, { source: 'gps', precision: accuracy <= 50 ? 'confirmada' : 'aproximada', accuracy });
+        await reverseGeocode(latitude, longitude, fields.address, mapType, { source: 'gps', precision: accuracy <= 50 ? 'confirmada' : 'aproximada', accuracy });
+      }, error => {
+        setLocationStatus(mapType, error.code === 1 ? 'Permissão de localização negada.' : 'Não foi possível obter sua localização.', 'error');
+      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    };
 
     const STUDIO_LAT = -15.93278;
     const STUDIO_LNG = -48.2575;
@@ -4476,6 +4564,8 @@
 
     async function searchAddress(query, inputId, suggestionsId, mapType) {
       if (!query || query.trim().length < 3) return;
+      const requestVersion = (locationRequestVersion[mapType] || 0) + 1;
+      locationRequestVersion[mapType] = requestVersion;
       const suggestionsContainer = document.getElementById(suggestionsId);
       suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</div>';
       suggestionsContainer.style.display = 'block';
@@ -4532,6 +4622,7 @@
         let fallbackUsed = false;
 
         // Se a busca inicial falhar, tentamos remover referências a Lote/Lt
+        if (requestVersion !== locationRequestVersion[mapType]) return;
         if (!data || data.length === 0) {
           let q1 = currentQuery
             .replace(/\b(lote|lt\.?)\s*\w*\d+\w*\b/gi, '') // Remove "Lote 08", "Lt 8", "Lote B8"
@@ -4663,6 +4754,7 @@
           `;
           suggestionsContainer.appendChild(div);
         });
+        setLocationStatus(mapType, 'Selecione uma sugestão para confirmar o local.', 'approximate');
       } catch (err) {
         console.error(err);
         suggestionsContainer.innerHTML = '<div style="padding: 10px; color: var(--danger);">Erro ao buscar endereço.</div>';
@@ -4673,7 +4765,7 @@
       document.getElementById(inputId).value = name;
       document.getElementById(suggestionsId).style.display = 'none';
 
-      updateMapMarker(lat, lon, name, mapType);
+      updateMapMarker(lat, lon, name, mapType, { source: 'autocomplete', precision: 'confirmada' });
     };
 
     window.searchAddressReg = function () {
@@ -4769,7 +4861,7 @@
 
         // Se já temos a latitude e longitude precisas da BrasilAPI, usamos elas
         if (lat && lon && !isNaN(lat) && !isNaN(lon)) {
-          updateMapMarker(lat, lon, fullAddress, mapType);
+          updateMapMarker(lat, lon, fullAddress, mapType, { source: 'cep', precision: 'aproximada' });
         } else {
           // Caso contrário, fazemos geocodificação baseada no endereço do CEP
           let geoData = await geocodeAddressDirectly(fullAddress);
@@ -4792,7 +4884,7 @@
           }
 
           if (geoData) {
-            updateMapMarker(geoData.lat, geoData.lon, fullAddress, mapType);
+            updateMapMarker(geoData.lat, geoData.lon, fullAddress, mapType, { source: 'cep', precision: 'aproximada' });
           } else {
             if (mapType === 'reg') {
               state.regData.endereco = fullAddress;
@@ -4812,20 +4904,28 @@
       }
     }
 
-    function updateMapMarker(lat, lon, fullAddress, mapType) {
+    function updateMapMarker(lat, lon, fullAddress, mapType, details = {}) {
       if (mapType === 'reg') {
         state.regData.endereco = fullAddress;
         state.regData.latitude = lat;
         state.regData.longitude = lon;
+        state.regData.localizacao_origem = details.source || 'mapa';
+        state.regData.localizacao_precisao = details.precision || 'confirmada';
+        state.regData.localizacao_precisao_metros = Number.isFinite(details.accuracy) ? Math.round(details.accuracy) : null;
         const regInput = document.getElementById('reg-address-input');
         if (regInput) {
           regInput.value = fullAddress;
           regInput.dataset.lastResolvedAddress = fullAddress;
+          regInput.dataset.locationSource = state.regData.localizacao_origem;
+          regInput.dataset.locationPrecision = state.regData.localizacao_precisao;
+          regInput.dataset.locationAccuracy = state.regData.localizacao_precisao_metros || '';
         }
         if (registerMarker && registerMap) {
           registerMarker.setLatLng([lat, lon]);
           registerMap.setView([lat, lon], 16);
         }
+        const precisionText = state.regData.localizacao_precisao === 'aproximada' ? 'Localização aproximada — confirme o pino no mapa.' : 'Localização confirmada.';
+        setLocationStatus('reg', precisionText, state.regData.localizacao_precisao === 'aproximada' ? 'approximate' : 'confirmed');
       } else if (mapType === 'modal') {
         document.getElementById('modal-lat').value = lat;
         document.getElementById('modal-lng').value = lon;
@@ -4833,15 +4933,19 @@
         if (modalInput) {
           modalInput.value = fullAddress;
           modalInput.dataset.lastResolvedAddress = fullAddress;
+          modalInput.dataset.locationSource = details.source || 'mapa';
+          modalInput.dataset.locationPrecision = details.precision || 'confirmada';
+          modalInput.dataset.locationAccuracy = Number.isFinite(details.accuracy) ? Math.round(details.accuracy) : '';
         }
         if (modalMarker && modalMap) {
           modalMarker.setLatLng([lat, lon]);
           modalMap.setView([lat, lon], 16);
         }
+        setLocationStatus('modal', details.precision === 'aproximada' ? 'Localização aproximada — confirme o pino no mapa.' : 'Localização confirmada.', details.precision === 'aproximada' ? 'approximate' : 'confirmed');
       }
     }
 
-    async function reverseGeocode(lat, lng, inputId, mapType) {
+    async function reverseGeocode(lat, lng, inputId, mapType, details = {}) {
       try {
         const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
         const res = await fetch(url, {
@@ -4859,9 +4963,14 @@
             state.regData.endereco = name;
             state.regData.latitude = lat;
             state.regData.longitude = lng;
+            state.regData.localizacao_origem = details.source || 'mapa';
+            state.regData.localizacao_precisao = details.precision || 'confirmada';
+            state.regData.localizacao_precisao_metros = Number.isFinite(details.accuracy) ? Math.round(details.accuracy) : null;
+            setLocationStatus('reg', state.regData.localizacao_precisao === 'aproximada' ? 'Localização aproximada — confirme o pino no mapa.' : 'Localização confirmada.', state.regData.localizacao_precisao === 'aproximada' ? 'approximate' : 'confirmed');
           } else if (mapType === 'modal') {
             document.getElementById('modal-lat').value = lat;
             document.getElementById('modal-lng').value = lng;
+            setLocationStatus('modal', details.precision === 'aproximada' ? 'Localização aproximada — confirme o pino no mapa.' : 'Localização confirmada.', details.precision === 'aproximada' ? 'approximate' : 'confirmed');
           }
         }
       } catch (err) {
@@ -5232,7 +5341,8 @@
             valor_centavos: rateCentavos * 1,
             endereco: enderecoVal || null,
             latitude: latVal ? Number(latVal) : null,
-            longitude: lngVal ? Number(lngVal) : null
+            longitude: lngVal ? Number(lngVal) : null,
+            ...getLocationPayload('modal')
           });
         });
 
@@ -5280,7 +5390,8 @@
           valor_centavos: rateCentavos * hoursCount,
           endereco: enderecoVal || null,
           latitude: latVal ? Number(latVal) : null,
-          longitude: lngVal ? Number(lngVal) : null
+          longitude: lngVal ? Number(lngVal) : null,
+          ...getLocationPayload('modal')
         });
       }
 

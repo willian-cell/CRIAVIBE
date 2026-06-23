@@ -273,6 +273,10 @@ function agendamento_ensure_schema(PDO $db): void {
         'endereco' => 'VARCHAR(512) DEFAULT NULL',
         'latitude' => 'DECIMAL(10, 8) DEFAULT NULL',
         'longitude' => 'DECIMAL(11, 8) DEFAULT NULL',
+        'cep' => 'VARCHAR(9) DEFAULT NULL',
+        'localizacao_origem' => 'VARCHAR(20) DEFAULT NULL',
+        'localizacao_precisao' => 'VARCHAR(20) DEFAULT NULL',
+        'localizacao_precisao_metros' => 'INT DEFAULT NULL',
     ] as $column => $definition) {
         $stmt = $db->prepare("
             SELECT COUNT(*)
@@ -528,6 +532,12 @@ function agendamento_validate_lessons(array $lessons): array {
         $assuntoId = (int)($lesson['assunto_id'] ?? 0);
         $status = trim($lesson['status'] ?? 'pre_agendado');
         $observacoes = trim($lesson['observacoes'] ?? '');
+        $latitude = isset($lesson['latitude']) && $lesson['latitude'] !== '' ? (float)$lesson['latitude'] : null;
+        $longitude = isset($lesson['longitude']) && $lesson['longitude'] !== '' ? (float)$lesson['longitude'] : null;
+        $cep = preg_replace('/\D/', '', (string)($lesson['cep'] ?? ''));
+        $origem = trim((string)($lesson['localizacao_origem'] ?? ''));
+        $precisao = trim((string)($lesson['localizacao_precisao'] ?? ''));
+        $precisaoMetros = isset($lesson['localizacao_precisao_metros']) ? (int)$lesson['localizacao_precisao_metros'] : null;
 
         $date = DateTime::createFromFormat('Y-m-d', $data);
         if (!$date || $date->format('Y-m-d') !== $data) {
@@ -558,6 +568,19 @@ function agendamento_validate_lessons(array $lessons): array {
             json_out(['status' => 'erro', 'mensagem' => 'Status de aula invalido.'], 400);
         }
 
+        if (($latitude === null) !== ($longitude === null) || ($latitude !== null && ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180))) {
+            json_out(['status' => 'erro', 'mensagem' => 'Coordenadas de localização inválidas.'], 400);
+        }
+        if ($cep !== '' && strlen($cep) !== 8) {
+            json_out(['status' => 'erro', 'mensagem' => 'CEP de localização inválido.'], 400);
+        }
+        if ($origem !== '' && !in_array($origem, ['gps', 'cep', 'autocomplete', 'mapa', 'manual', 'estudio'], true)) {
+            json_out(['status' => 'erro', 'mensagem' => 'Origem da localização inválida.'], 400);
+        }
+        if ($precisao !== '' && !in_array($precisao, ['confirmada', 'aproximada', 'pendente'], true)) {
+            json_out(['status' => 'erro', 'mensagem' => 'Precisão da localização inválida.'], 400);
+        }
+
         $valorHora = agendamento_valor_hora_centavos($cidade);
         $key = $dia . '|' . $data . '|' . $horario;
         $valid[$key] = [
@@ -573,8 +596,12 @@ function agendamento_validate_lessons(array $lessons): array {
             'valor_hora_centavos' => $valorHora,
             'valor_centavos' => $valorHora * $quantidadeHoras,
             'endereco' => isset($lesson['endereco']) ? trim($lesson['endereco']) : null,
-            'latitude' => isset($lesson['latitude']) ? (float)$lesson['latitude'] : null,
-            'longitude' => isset($lesson['longitude']) ? (float)$lesson['longitude'] : null,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'cep' => $cep ?: null,
+            'localizacao_origem' => $origem ?: null,
+            'localizacao_precisao' => $precisao ?: null,
+            'localizacao_precisao_metros' => $precisaoMetros && $precisaoMetros > 0 ? $precisaoMetros : null,
         ];
     }
 
@@ -600,6 +627,10 @@ function agendamento_fetch_board(PDO $db): array {
             a.endereco,
             a.latitude,
             a.longitude,
+            a.cep,
+            a.localizacao_origem,
+            a.localizacao_precisao,
+            a.localizacao_precisao_metros,
             al.id AS aluno_id,
             al.token_publico,
             al.nome,
@@ -676,6 +707,10 @@ function agendamento_format_board(array $rows, ?string $currentToken, bool $isAd
             $item['endereco'] = $row['endereco'] ?? null;
             $item['latitude'] = isset($row['latitude']) ? (float)$row['latitude'] : null;
             $item['longitude'] = isset($row['longitude']) ? (float)$row['longitude'] : null;
+            $item['cep'] = $row['cep'] ?? null;
+            $item['localizacao_origem'] = $row['localizacao_origem'] ?? null;
+            $item['localizacao_precisao'] = $row['localizacao_precisao'] ?? null;
+            $item['localizacao_precisao_metros'] = isset($row['localizacao_precisao_metros']) ? (int)$row['localizacao_precisao_metros'] : null;
         } else {
             $item['plano_id'] = null;
             $item['modulo_id'] = null;
