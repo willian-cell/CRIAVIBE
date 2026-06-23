@@ -1814,8 +1814,7 @@
 
         <div class="hero-welcome-texts">
           <h2 id="hero-step-title">Bem-vindo!</h2>
-          <p>Acesse sua conta </p>
-          <p>e agende sua próxima aula.</p>
+          <p>Acesse sua conta e agende sua próxima aula.</p>
         </div>
       </div>
 
@@ -2742,7 +2741,7 @@
     const HERO_COPY = {
       'view-login': {
         title: 'Bem-vindo!',
-        text: 'Acesse sua conta e agende sua pr\u00f3xima aula.'
+        text: 'Acesse sua conta e agende sua próxima aula.'
       },
       'view-register-step1': {
         title: 'Vamos come\u00e7ar?',
@@ -3778,13 +3777,11 @@
         const dateKey = teacherDateKey(date);
         const dayLessons = lessons.filter(aula => aula.data_aula === dateKey);
         const hasPreBooked = dayLessons.some(aula => (aula.status || 'pre_agendado') === 'pre_agendado');
-        const hasConfirmed = dayLessons.some(aula => aula.status === 'confirmado');
         const unavailable = state.blockedDates.some(block => block.data_aula === dateKey);
         const classes = ['teacher-day'];
         if (unavailable) classes.push('unavailable');
         if (dayLessons.length) classes.push('has-class');
         if (hasPreBooked) classes.push('pre-booked');
-        if (hasConfirmed) classes.push('confirmed');
         if (state.teacherSelectedDate === dateKey) classes.push('selected');
         cells.push(`<button type="button" class="${classes.join(' ')}" onclick="selectTeacherCalendarDate('${dateKey}')" aria-label="${day} de ${monthName}">${day}</button>`);
       }
@@ -3799,19 +3796,9 @@
     window.toggleTeacherDayBlock = async function () {
       const blocked = state.blockedDates.some(item => item.data_aula === state.teacherSelectedDate);
       const action = blocked ? 'desbloquear' : 'bloquear';
-      let mode = 'somente_novos';
-      if (!blocked) {
-        const activeLessons = state.board.filter(item => item.data_aula === state.teacherSelectedDate && !['cancelado', 'remarcado'].includes(item.status || '')).length;
-        if (activeLessons) {
-          const choice = prompt(`Este dia possui ${activeLessons} aula(s).\n\n1 - Bloquear somente novos agendamentos (mantem as aulas)\n2 - Cancelar todas as aulas e bloquear o dia\n\nDigite 1 ou 2:`, '1');
-          if (!choice) return;
-          if (choice !== '1' && choice !== '2') { alert('Escolha 1 ou 2.'); return; }
-          mode = choice === '2' ? 'cancelar_aulas' : 'somente_novos';
-          if (mode === 'cancelar_aulas' && !confirm('Confirmar o cancelamento das aulas deste dia e bloquear novos agendamentos?')) return;
-        } else if (!confirm('Bloquear este dia para novos agendamentos?')) return;
-      } else if (!confirm('Liberar este dia para novos agendamentos?')) return;
+      if (!confirm(blocked ? 'Liberar este dia para novos agendamentos?' : 'Bloquear este dia inteiro para novos agendamentos?')) return;
       try {
-        await request('/bloqueios.php', { method: 'POST', body: JSON.stringify({ acao: action, data_aula: state.teacherSelectedDate, modo: mode }) });
+        await request('/bloqueios.php', { method: 'POST', body: JSON.stringify({ acao: action, data_aula: state.teacherSelectedDate }) });
         await loadAdminDashboard();
       } catch (err) {
         alert(err.message);
@@ -3865,12 +3852,7 @@
       container.innerHTML = title + selectedLessons.map(aula => {
         const status = aula.status || 'pre_agendado';
         const statusText = status.replace('_', ' ');
-        const actionButtons = status === 'pre_agendado'
-          ? `<button class="admin-btn-action success" onclick="quickUpdateLessonStatus(${aula.aula_id}, 'confirmado')" title="Confirmar aula"><i class="fa-solid fa-check"></i></button><button class="admin-btn-action danger" onclick="quickUpdateLessonStatus(${aula.aula_id}, 'cancelado')" title="Cancelar aula"><i class="fa-solid fa-xmark"></i></button>`
-          : status === 'confirmado'
-            ? `<button class="admin-btn-action" onclick="quickUpdateLessonStatus(${aula.aula_id}, 'pre_agendado')" title="Voltar para pre-agendamento"><i class="fa-solid fa-rotate-left"></i></button><button class="admin-btn-action danger" onclick="quickUpdateLessonStatus(${aula.aula_id}, 'cancelado')" title="Cancelar aula"><i class="fa-solid fa-xmark"></i></button>`
-            : '';
-        return `<article class="teacher-lesson-row"><div class="teacher-lesson-time"><strong>${escapeHtml(aula.horario || '--:--')}</strong><span>${escapeHtml(String(aula.quantidade_horas || 1))}h de aula</span><span class="lesson-status-badge ${status}">${escapeHtml(statusText)}</span></div><div class="teacher-lesson-student"><span class="teacher-avatar">${getInitials(aula.aluno || 'Aluno')}</span><div><strong>${escapeHtml(aula.aluno || 'Ex-aluno')}</strong><span>${escapeHtml(aula.email || 'E-mail nao informado')}</span><span>${escapeHtml(aula.telefone || 'Telefone nao informado')}</span></div></div><div class="teacher-lesson-actions">${actionButtons}<button class="admin-btn-action" onclick="openEditLessonModal(${aula.aula_id})" title="Editar aula"><i class="fa-solid fa-pen"></i></button></div></article>`;
+        return `<article class="teacher-lesson-row"><div class="teacher-lesson-time"><strong>${escapeHtml(aula.horario || '--:--')}</strong><span>${escapeHtml(String(aula.quantidade_horas || 1))}h de aula</span><span class="lesson-status-badge ${status}">${escapeHtml(statusText)}</span></div><div class="teacher-lesson-student"><span class="teacher-avatar">${getInitials(aula.aluno || 'Aluno')}</span><div><strong>${escapeHtml(aula.aluno || 'Ex-aluno')}</strong><span>${escapeHtml(aula.email || 'E-mail nao informado')}</span><span>${escapeHtml(aula.telefone || 'Telefone nao informado')}</span></div></div><div class="teacher-lesson-actions"><button class="admin-btn-action success" onclick="quickUpdateLessonStatus(${aula.aula_id}, 'confirmado')" title="Confirmar aula"><i class="fa-solid fa-check"></i></button><button class="admin-btn-action" onclick="openEditLessonModal(${aula.aula_id})" title="Editar aula"><i class="fa-solid fa-pen"></i></button></div></article>`;
       }).join('');
     }
 
@@ -4005,10 +3987,40 @@
     }
 
     async function quickUpdateLessonStatus(aulaId, nextStatus) {
+      const aulaRef = state.board.find(a => a.aula_id === aulaId);
+      if (!aulaRef) return;
+
+      const aulasDoAluno = state.board.filter(a => a.aluno_id === aulaRef.aluno_id).map(a => ({
+        aula_id: a.aula_id,
+        dia_semana: a.dia_semana,
+        data_aula: a.data_aula,
+        horario: a.horario,
+        quantidade_horas: a.quantidade_horas,
+        cidade: a.cidade,
+        modulo_id: a.modulo_id,
+        assunto_id: a.assunto_id,
+        status: a.aula_id === aulaId ? nextStatus : a.status,
+        observacoes: a.observacoes || ''
+      }));
+
       try {
-        await request('/status_aula.php', {
+        await request('/save.php', {
           method: 'POST',
-          body: JSON.stringify({ aula_id: aulaId, status: nextStatus })
+          body: JSON.stringify({
+            token_publico: aulaRef.token_publico,
+            aluno: {
+              nome: aulaRef.aluno,
+              email: aulaRef.email,
+              telefone: aulaRef.telefone
+            },
+            plano: {
+              nome: aulaRef.plano_nome || 'Curso Pratico',
+              total_aulas: aulaRef.total_aulas || 10,
+              status: aulaRef.plano_status || 'ativo',
+              forma_pagamento: aulaRef.forma_pagamento || ''
+            },
+            aulas: aulasDoAluno
+          })
         });
         await loadAdminDashboard();
       } catch (err) {
