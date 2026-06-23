@@ -29,7 +29,7 @@ if (isset($_POST['foto_id'])) {
     
     if ($foto) {
         $caminho = $foto['caminho_arquivo'];
-        $caminhoPreview = $foto['caminho_thumb_large'] ?: ($foto['caminho_thumb_medium'] ?: ($foto['caminho_thumb_small'] ?: $foto['caminho_arquivo']));
+        $caminhoPreview = $foto['caminho_thumb_small'] ?: null;
         $stmt = db()->prepare("UPDATE galerias SET capa_apresentacao = ?, capa_crop_horizontal = NULL, capa_crop_vertical = NULL WHERE id = ?");
         $stmt->execute([$caminho, $galeria_id]);
     } else {

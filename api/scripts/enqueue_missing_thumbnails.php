@@ -28,7 +28,7 @@ try {
     $q = new Queue();
 
     $where = [
-        "(i.caminho_thumb_medium IS NULL OR i.caminho_thumb_medium = '')",
+        "(i.caminho_thumb_small IS NULL OR i.caminho_thumb_small = '')",
         "i.caminho_arquivo IS NOT NULL",
         "i.caminho_arquivo <> ''"
     ];
@@ -71,8 +71,8 @@ try {
             'r2_path' => $r2Path,
             'public_url' => $public,
             'original_name' => $row['nome_arquivo'] ?? '',
-            'sizes' => ['small' => 360, 'medium' => 700, 'large' => 1080],
-            'qualities' => ['small' => 68, 'medium' => 72, 'large' => 76],
+            'sizes' => ['small' => 360],
+            'qualities' => ['small' => 68],
         ]);
         $enfileiradas++;
     }

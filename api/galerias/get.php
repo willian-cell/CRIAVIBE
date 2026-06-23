@@ -56,11 +56,11 @@ $stmtLogo->execute([$g['usuario_email']]);
 $dono = $stmtLogo->fetch();
 $g['foto_perfil'] = $dono['foto_perfil'] ?? null;
 
-$g['capa_preview'] = $g['capa_apresentacao'] ?? null;
+$g['capa_preview'] = null;
 
 if (!empty($g['capa_apresentacao'])) {
     $stmtCapa = db()->prepare("
-        SELECT COALESCE(caminho_thumb_large, caminho_thumb_medium, caminho_thumb_small, caminho_arquivo) AS capa_preview
+        SELECT caminho_thumb_small AS capa_preview
         FROM imagens
         WHERE galeria_id = ? AND caminho_arquivo = ?
         LIMIT 1
@@ -72,7 +72,7 @@ if (!empty($g['capa_apresentacao'])) {
     }
 } else {
     $stmtCapa = db()->prepare("
-        SELECT COALESCE(caminho_thumb_large, caminho_thumb_medium, caminho_thumb_small, caminho_arquivo) AS capa_preview
+        SELECT caminho_thumb_small AS capa_preview
         FROM imagens
         WHERE galeria_id = ?
         ORDER BY is_capa DESC, ordem ASC

@@ -18,7 +18,7 @@ try {
     $stmt = $db->prepare("
         SELECT id, galeria_id, nome_arquivo, caminho_arquivo 
         FROM imagens 
-        WHERE galeria_id = ? AND (caminho_thumb_medium IS NULL OR caminho_thumb_medium = '')
+        WHERE galeria_id = ? AND (caminho_thumb_small IS NULL OR caminho_thumb_small = '')
         LIMIT 3
     ");
     $stmt->execute([$galeria_id]);
@@ -36,8 +36,8 @@ try {
         ],
     ];
     
-    $sizes = ['small' => 360, 'medium' => 700, 'large' => 1080];
-    $qualities = ['small' => 68, 'medium' => 72, 'large' => 76];
+    $sizes = ['small' => 360];
+    $qualities = ['small' => 68];
     
     $atualizadas = [];
     
@@ -65,10 +65,9 @@ try {
         
         // Gera cada derivado
         foreach ($sizes as $label => $w) {
-            $ext = pathinfo($r2_path, PATHINFO_EXTENSION) ?: 'jpg';
-            $base = pathinfo($r2_path, PATHINFO_BASENAME);
+            $base = pathinfo($r2_path, PATHINFO_FILENAME);
             $dir = pathinfo($r2_path, PATHINFO_DIRNAME);
-            $derPath = $dir . '/derivados/' . $label . '_' . $base;
+            $derPath = $dir . '/derivados/' . $label . '_' . $base . '.webp';
             
             $outTmp = tempnam(sys_get_temp_dir(), 'cv_der_');
             
@@ -78,8 +77,7 @@ try {
                     $img = new Imagick($tmp);
                     $img->setImageColorspace(Imagick::COLORSPACE_RGB);
                     $img->thumbnailImage($w, 0);
-                    $img->setImageFormat('jpeg');
-                    $img->setImageCompression(Imagick::COMPRESSION_JPEG);
+                    $img->setImageFormat('webp');
                     $img->setImageCompressionQuality((int)($qualities[$label] ?? 72));
                     $img->stripImage();
                     $img->writeImage($outTmp);
@@ -98,7 +96,8 @@ try {
                     $nh = intval($sh * ($nw / $sw));
                     $dst = imagecreatetruecolor($nw, $nh);
                     imagecopyresampled($dst, $src, 0,0,0,0,$nw,$nh,$sw,$sh);
-                    imagejpeg($dst, $outTmp, (int)($qualities[$label] ?? 72));
+                    if (!function_exists('imagewebp')) { $sucesso = false; }
+                    else imagewebp($dst, $outTmp, (int)($qualities[$label] ?? 68));
                     imagedestroy($dst);
                     imagedestroy($src);
                 } else {
@@ -108,7 +107,7 @@ try {
             
             if ($sucesso) {
                 // Upload para R2
-                $mtype = 'image/jpeg';
+                $mtype = 'image/webp';
                 $ok = $r2->upload($outTmp, $derPath, $mtype);
                 if ($ok) {
                     $urls_thumbs[$label] = rtrim(R2_PUBLIC_URL, '/') . '/' . ltrim($derPath, '/');
@@ -126,13 +125,11 @@ try {
             // Atualiza o banco de dados
             $upd = $db->prepare("
                 UPDATE imagens 
-                SET caminho_thumb_small = ?, caminho_thumb_medium = ?, caminho_thumb_large = ?
+                SET caminho_thumb_small = ?
                 WHERE id = ?
             ");
             $upd->execute([
                 $urls_thumbs['small'] ?? null,
-                $urls_thumbs['medium'] ?? null,
-                $urls_thumbs['large'] ?? null,
                 $foto['id']
             ]);
             
@@ -149,7 +146,7 @@ try {
     $restantes_stmt = $db->prepare("
         SELECT COUNT(*) 
         FROM imagens 
-        WHERE galeria_id = ? AND (caminho_thumb_medium IS NULL OR caminho_thumb_medium = '')
+        WHERE galeria_id = ? AND (caminho_thumb_small IS NULL OR caminho_thumb_small = '')
     ");
     $restantes_stmt->execute([$galeria_id]);
     $restantes = (int)$restantes_stmt->fetchColumn();

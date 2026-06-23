@@ -1506,6 +1506,7 @@
     let heroCapaAtual = '';
     let musicaInicializada = false;
     let galeriaRequerSenha = true;
+    const FOTO_PLACEHOLDER = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="360" height="240"%3E%3Crect width="100%25" height="100%25" fill="%23f1f2ef"/%3E%3C/svg%3E';
 
     function mediaSrc(caminho) {
       if (!caminho) return '';
@@ -1513,15 +1514,15 @@
     }
 
     function fotoGridSrc(f) {
-      return mediaSrc(f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_thumb_large || f.caminho_arquivo);
+      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
     }
 
     function fotoLightboxSrc(f) {
-      return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
+      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
     }
 
     function fotoHeroSrc(f) {
-      return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
+      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
     }
 
     function moduloAtivo(valor) {
@@ -1938,7 +1939,7 @@
         atualizarToolbar();
 
         // Verifica se há alguma imagem que ainda não possui miniatura e dispara o processamento em segundo plano
-        const temFotosSemThumb = FOTOS.some(f => !f.caminho_thumb_medium);
+        const temFotosSemThumb = FOTOS.some(f => !f.caminho_thumb_small);
         if (temFotosSemThumb) {
           setTimeout(dispararProcessamentoLento, 1000);
         }
@@ -1972,7 +1973,7 @@
             }
           });
           // Se ainda há fotos pendentes, chama novamente
-          const aindaTem = FOTOS.some(f => !f.caminho_thumb_medium);
+          const aindaTem = FOTOS.some(f => !f.caminho_thumb_small);
           if (aindaTem) {
             setTimeout(dispararProcessamentoLento, 1500);
           }

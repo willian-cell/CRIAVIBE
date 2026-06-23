@@ -1015,6 +1015,7 @@
     let galeriaId = new URLSearchParams(location.search).get('id');
     let galeria = null;
     let fotos = [];
+    const FOTO_PLACEHOLDER = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="360" height="240"%3E%3Crect width="100%25" height="100%25" fill="%23f1f2ef"/%3E%3C/svg%3E';
     let fotosVisiveis = [];
     let filtroAtual = 'todas';
     let lbIdx = 0;
@@ -1122,7 +1123,7 @@
       renderFotos();
 
       // Dispara o processamento assíncrono caso existam fotos sem thumbnail de 700px
-      const temFotosSemThumb = fotos.some(f => !f.caminho_thumb_medium);
+        const temFotosSemThumb = fotos.some(f => !f.caminho_thumb_small);
       if (temFotosSemThumb) {
         setTimeout(dispararProcessamentoLento, 1000);
       }
@@ -1152,7 +1153,7 @@
             }
           });
           // Se ainda há fotos pendentes, chama novamente
-          const aindaTem = fotos.some(f => !f.caminho_thumb_medium);
+          const aindaTem = fotos.some(f => !f.caminho_thumb_small);
           if (aindaTem) {
             setTimeout(dispararProcessamentoLento, 1500);
           }
@@ -1170,7 +1171,7 @@
 
     function capaPreviewSrcFromFoto(f) {
       if (!f) return '';
-      return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo || '');
+      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
     }
 
     function aplicarPreviewCapa(src) {
@@ -1324,11 +1325,11 @@
     document.addEventListener('pointercancel', finalizarCropDrag);
 
     function fotoGridSrc(f) {
-      return mediaSrc(f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_thumb_large || f.caminho_arquivo);
+      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
     }
 
     function fotoLightboxSrc(f) {
-      return mediaSrc(f.caminho_thumb_large || f.caminho_thumb_medium || f.caminho_thumb_small || f.caminho_arquivo);
+      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
     }
 
     function orientacaoPorDimensoes(largura, altura) {
