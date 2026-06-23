@@ -2599,6 +2599,24 @@
   </div>
 
   <!-- ── MODAL: EDITAR PLANO DO ALUNO (ADMIN FOTÓGRAFO) ── -->
+  <div class="modal-overlay" id="teacher-schedule-modal">
+    <div class="modal-box">
+      <div class="modal-header"><h3 class="modal-title">Agendar aluno</h3><button class="modal-close" onclick="closeTeacherScheduleModal()">&times;</button></div>
+      <form onsubmit="event.preventDefault(); saveTeacherSchedule();">
+        <p id="teacher-schedule-date" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:18px;"></p>
+        <div class="form-group"><label for="teacher-student-select">Aluno cadastrado</label><div class="input-wrapper"><i class="fa-solid fa-user input-icon"></i><select id="teacher-student-select" onchange="toggleTeacherNewStudentFields()"><option value="">Cadastrar novo aluno</option></select></div></div>
+        <div id="teacher-new-student-fields">
+          <div class="form-group"><label for="teacher-new-name">Nome completo</label><div class="input-wrapper"><i class="fa-solid fa-user input-icon"></i><input id="teacher-new-name" required></div></div>
+          <div class="form-group"><label for="teacher-new-email">E-mail</label><div class="input-wrapper"><i class="fa-solid fa-envelope input-icon"></i><input id="teacher-new-email" type="email" required></div></div>
+          <div class="form-group"><label for="teacher-new-phone">Telefone</label><div class="input-wrapper"><i class="fa-solid fa-phone input-icon"></i><input id="teacher-new-phone" required></div></div>
+        </div>
+        <div class="form-group"><label for="teacher-schedule-time">Horario</label><div class="input-wrapper"><i class="fa-solid fa-clock input-icon"></i><select id="teacher-schedule-time"></select></div></div>
+        <div class="form-group"><label for="teacher-schedule-hours">Duracao</label><div class="input-wrapper"><i class="fa-solid fa-hourglass-half input-icon"></i><select id="teacher-schedule-hours"><option value="1">1 hora</option><option value="2">2 horas</option><option value="3">3 horas</option></select></div></div>
+        <div class="btn-actions-row"><button type="button" class="btn btn-secondary" onclick="closeTeacherScheduleModal()">Cancelar</button><button type="submit" class="btn btn-primary">Confirmar aula</button></div>
+      </form>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="plan-modal">
     <div class="modal-box">
       <div class="modal-header">
@@ -3786,36 +3804,34 @@
     };
 
     window.quickScheduleStudent = async function () {
-      const nome = prompt('Nome completo do aluno:');
-      if (!nome) return;
-      const email = prompt('E-mail do aluno:');
-      if (!email) return;
-      const telefone = prompt('Telefone do aluno:');
-      if (!telefone) return;
-      const horario = prompt(`Horario (${state.horarios.join(', ')}):`, state.horarios[0]);
-      if (!horario) return;
-      const horas = Number(prompt('Quantidade de horas:', '1') || 1);
-      const date = new Date(state.teacherSelectedDate + 'T00:00:00');
-      const existing = state.board.find(item => String(item.email || '').toLowerCase() === email.toLowerCase());
-      const currentLessons = existing ? state.board.filter(item => item.aluno_id === existing.aluno_id).map(item => ({
-        aula_id: item.aula_id, data_aula: item.data_aula, dia_semana: item.dia_semana, horario: item.horario,
-        quantidade_horas: item.quantidade_horas, cidade: item.cidade, modulo_id: item.modulo_id,
-        assunto_id: item.assunto_id, status: item.status, observacoes: item.observacoes || '', endereco: item.endereco || null
-      })) : [];
       try {
-        await request('/save.php', {
-          method: 'POST',
-          body: JSON.stringify({
-            token_publico: existing?.token_publico || '',
-            aluno: { nome, email, telefone },
-            plano: { nome: existing?.plano_nome || 'Curso Fotografia Pratica', total_aulas: Math.max(1, (existing?.total_aulas || 0) + 1), status: existing?.plano_status || 'ativo' },
-            aulas: currentLessons.concat([{ data_aula: state.teacherSelectedDate, dia_semana: DAYS_NAMES[date.getDay()], horario, quantidade_horas: horas, cidade: 'Santo Antonio do Descoberto', status: 'confirmado' }])
-          })
-        });
-        await loadAdminDashboard();
-      } catch (err) {
-        alert(err.message);
-      }
+        const data = await request('/alunos.php');
+        const select = document.getElementById('teacher-student-select');
+        select.innerHTML = '<option value="">Cadastrar novo aluno</option>' + (data.alunos || []).map(aluno => `<option value="${aluno.id}">${escapeHtml(aluno.nome)} - ${escapeHtml(aluno.email)}</option>`).join('');
+        document.getElementById('teacher-schedule-date').textContent = `Data selecionada: ${teacherLongDate(state.teacherSelectedDate)}`;
+        const occupied = getOccupiedHoursFor(state.teacherSelectedDate);
+        document.getElementById('teacher-schedule-time').innerHTML = state.horarios.map(hour => `<option value="${hour}" ${occupied.has(hour) ? 'disabled' : ''}>${hour}${occupied.has(hour) ? ' - ocupado' : ''}</option>`).join('');
+        document.getElementById('teacher-new-name').value = '';
+        document.getElementById('teacher-new-email').value = '';
+        document.getElementById('teacher-new-phone').value = '';
+        toggleTeacherNewStudentFields();
+        document.getElementById('teacher-schedule-modal').classList.add('open');
+      } catch (err) { alert(err.message); }
+    };
+
+    window.closeTeacherScheduleModal = function () { document.getElementById('teacher-schedule-modal').classList.remove('open'); };
+    window.toggleTeacherNewStudentFields = function () {
+      const isNew = !document.getElementById('teacher-student-select').value;
+      document.getElementById('teacher-new-student-fields').style.display = isNew ? 'block' : 'none';
+      ['teacher-new-name', 'teacher-new-email', 'teacher-new-phone'].forEach(id => document.getElementById(id).required = isNew);
+    };
+    window.saveTeacherSchedule = async function () {
+      const selectedId = Number(document.getElementById('teacher-student-select').value || 0);
+      const date = new Date(state.teacherSelectedDate + 'T00:00:00');
+      const payload = { aluno_id: selectedId, aula: { data_aula: state.teacherSelectedDate, dia_semana: DAYS_NAMES[date.getDay()], horario: document.getElementById('teacher-schedule-time').value, quantidade_horas: Number(document.getElementById('teacher-schedule-hours').value), cidade: 'Santo Antonio do Descoberto', status: 'confirmado' } };
+      if (!selectedId) payload.aluno = { nome: document.getElementById('teacher-new-name').value.trim(), email: document.getElementById('teacher-new-email').value.trim(), telefone: document.getElementById('teacher-new-phone').value.trim() };
+      try { await request('/admin_agendar.php', { method: 'POST', body: JSON.stringify(payload) }); closeTeacherScheduleModal(); await loadAdminDashboard(); }
+      catch (err) { alert(err.message); }
     };
 
     function renderTeacherDayDetails(lessons) {
