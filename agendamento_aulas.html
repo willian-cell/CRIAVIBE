@@ -728,6 +728,18 @@
       box-shadow: 0 8px 16px rgba(119, 122, 67, 0.2);
     }
 
+    .calendar-day-btn.has-reserved:not(.selected)::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #b91c1c;
+      bottom: 7px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     .calendar-day-btn .day-name {
       font-size: 0.6rem;
       font-weight: 700;
@@ -2993,9 +3005,19 @@
     }
 
     // Reaproveita a tela de agenda para alunos ja cadastrados.
-    function openStudentScheduleScreen() {
+    async function openStudentScheduleScreen() {
       if (!state.alunoLogado) {
         changeView('view-login');
+        return;
+      }
+
+      try {
+        const availability = await request('/list.php');
+        state.board = availability.aulas || [];
+        state.blockedDates = availability.bloqueios || [];
+        state.horarios = availability.horarios || state.horarios;
+      } catch (err) {
+        showAlert('Não foi possível atualizar os horários reservados: ' + err.message);
         return;
       }
 
@@ -3115,10 +3137,15 @@
           const dayShort = DAYS_SHORT[dayOfWeek];
           const dayNum = dateCursor.getDate();
 
-          const btn = document.createElement('div');
-          btn.className = 'calendar-day-btn';
-          const isBlocked = state.blockedDates.some(block => block.data_aula === formattedDate);
-          if (isBlocked) btn.classList.add('blocked');
+           const btn = document.createElement('div');
+           btn.className = 'calendar-day-btn';
+           const isBlocked = state.blockedDates.some(block => block.data_aula === formattedDate);
+           const hasReservedSlots = state.board.some(aula => aula.data_aula === formattedDate);
+           if (isBlocked) btn.classList.add('blocked');
+           if (hasReservedSlots) {
+             btn.classList.add('has-reserved');
+             btn.title = 'Há horários reservados neste dia.';
+           }
           if (state.regData.data_aula === formattedDate) {
             btn.classList.add('selected');
           }
@@ -3563,6 +3590,9 @@
           <div class="lesson-item-actions">
             <button class="inline-action-btn" type="button" onclick="openEditLessonModal(${aula.aula_id})">
               <i class="fa-solid fa-pen"></i> Editar
+            </button>
+            <button class="inline-action-btn" type="button" onclick="cancelStudentLesson(${aula.aula_id})" title="Excluir este agendamento" style="color:#b91c1c; border-color:#fecaca;">
+              <i class="fa-solid fa-trash"></i> Excluir
             </button>
           </div>
         `);
@@ -4132,6 +4162,19 @@
         alert(err.message);
       }
     }
+
+    window.cancelStudentLesson = async function (aulaId) {
+      if (!confirm('Excluir este agendamento? O horário ficará disponível novamente para outros alunos.')) return;
+      try {
+        await request('/cancelar_aula.php', {
+          method: 'POST',
+          body: JSON.stringify({ aula_id: aulaId, token_publico: state.token })
+        });
+        await loadStudentDashboard();
+      } catch (err) {
+        showAlert(err.message);
+      }
+    };
 
     async function deleteStudent(token) {
       if (!confirm('Deseja realmente excluir este aluno e TODOS os agendamentos dele? Esta ação é irreversível.')) return;

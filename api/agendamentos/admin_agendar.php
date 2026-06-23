@@ -53,5 +53,8 @@ try {
     json_out(['status' => 'ok', 'aula_id' => $aulaId, 'aluno_id' => $studentId]);
 } catch (Throwable $e) {
     if (isset($db) && $db->inTransaction()) $db->rollBack();
+    if ($e instanceof PDOException && $e->getCode() === '23000') {
+        json_out(['status' => 'erro', 'mensagem' => 'Este dia e horário já estão reservados.'], 409);
+    }
     throw $e;
 }
