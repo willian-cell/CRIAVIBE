@@ -759,6 +759,64 @@ function agendamento_ranges_overlap(string $startA, int $durationA, string $star
     return $aStart < $bEnd && $bStart < $aEnd;
 }
 
+function agendamento_period_for_time(string $time): string {
+    $minutes = agendamento_time_to_minutes($time);
+    return $minutes !== null && $minutes < (12 * 60) ? 'manha' : 'tarde';
+}
+
+/**
+ * Cada aluno ocupa apenas um periodo (manha ou tarde) em uma data, por ate 3h.
+ * Isso deixa o outro periodo disponivel para um segundo aluno no mesmo dia.
+ */
+function agendamento_assert_student_period_limits(PDO $db, array $lessons, ?int $studentId = null): void {
+    $requested = [];
+    foreach ($lessons as $lesson) {
+        $date = $lesson['data_aula'];
+        $period = agendamento_period_for_time($lesson['horario']);
+        if (!isset($requested[$date])) {
+            $requested[$date] = ['hours' => 0, 'periods' => []];
+        }
+        $requested[$date]['hours'] += max(1, (int)$lesson['quantidade_horas']);
+        $requested[$date]['periods'][$period] = true;
+    }
+
+    foreach ($requested as $date => $selection) {
+        if ($selection['hours'] > 3) {
+            json_out(['status' => 'erro', 'mensagem' => 'Cada aluno pode selecionar no maximo 3 horarios no mesmo periodo.'], 400);
+        }
+        if (count($selection['periods']) > 1) {
+            json_out(['status' => 'erro', 'mensagem' => 'Escolha horarios somente pela manha ou somente pela tarde para esta data.'], 400);
+        }
+    }
+
+    if (!$requested) return;
+    $dates = array_keys($requested);
+    $stmt = $db->prepare('SELECT aluno_id, data_aula, horario FROM agendamento_aulas WHERE data_aula IN (' . implode(',', array_fill(0, count($dates), '?')) . ')');
+    $stmt->execute($dates);
+    $saved = $stmt->fetchAll();
+    $reservedPeriods = [];
+    $studentsByDate = [];
+
+    foreach ($saved as $item) {
+        if ($studentId !== null && (int)$item['aluno_id'] === $studentId) continue;
+        $date = $item['data_aula'];
+        $reservedPeriods[$date][agendamento_period_for_time($item['horario'])] = true;
+        $studentsByDate[$date][(int)$item['aluno_id']] = true;
+    }
+
+    foreach ($requested as $date => $selection) {
+        if (count($studentsByDate[$date] ?? []) >= 2) {
+            json_out(['status' => 'erro', 'mensagem' => 'Esta data ja atingiu o limite de 2 alunos agendados.'], 409);
+        }
+        foreach (array_keys($selection['periods']) as $period) {
+            if (!empty($reservedPeriods[$date][$period])) {
+                $label = $period === 'manha' ? 'manha' : 'tarde';
+                json_out(['status' => 'erro', 'mensagem' => 'O periodo da ' . $label . ' ja esta reservado para outro aluno nesta data.'], 409);
+            }
+        }
+    }
+}
+
 function agendamento_assert_no_schedule_overlap(PDO $db, array $lessons, ?int $studentId = null): void {
     $dates = [];
     foreach ($lessons as $lesson) {

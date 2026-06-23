@@ -46,6 +46,9 @@ if (!$isAdmin) {
 }
 
 agendamento_assert_dates_not_blocked($db, $lessons);
+if (!$isAdmin) {
+    agendamento_assert_student_period_limits($db, $lessons, $student ? (int)$student['id'] : null);
+}
 
 $db->beginTransaction();
 

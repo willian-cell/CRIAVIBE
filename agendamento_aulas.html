@@ -2722,7 +2722,7 @@
         plano: 'local', // 'local' ou 'out'
         forma_pagamento: 'PIX', // 'PIX', 'Dinheiro', 'Cartão de crédito'
         data_aula: '',
-        horario: ''
+        horarios: []
       },
 
       // Dados carregados das APIs
@@ -2986,7 +2986,7 @@
       state.regData.plano = (plano.cidade || '').includes('Santo Ant') ? 'local' : 'out';
       state.regData.forma_pagamento = plano.forma_pagamento || state.regData.forma_pagamento || 'PIX';
       state.regData.data_aula = '';
-      state.regData.horario = '';
+      state.regData.horarios = [];
 
       updatePlanSummary();
       changeView('view-register-step4');
@@ -3138,6 +3138,7 @@
 
     function selectRegDate(dateString, dayName) {
       state.regData.data_aula = dateString;
+      state.regData.horarios = [];
       document.querySelectorAll('#reg-calendar-days .calendar-day-btn').forEach(btn => btn.classList.remove('selected'));
 
       // Acha e marca selecionado
@@ -3178,22 +3179,41 @@
       return (hour * 60) + (minute || 0);
     }
 
+    function getSchedulePeriod(time) {
+      return timeToMinutes(time) < 12 * 60 ? 'manha' : 'tarde';
+    }
+
+    function getReservedPeriodsFor(dateString) {
+      const periods = new Set();
+      state.board.forEach(item => {
+        if (item.data_aula === dateString && !item.is_owner) periods.add(getSchedulePeriod(item.horario));
+      });
+      return periods;
+    }
+
     function generateRegHours(dateString, dayName) {
       const container = document.getElementById('reg-calendar-hours');
       container.innerHTML = '';
       const occupied = getOccupiedHoursFor(dateString);
+      const selectedTimes = state.regData.horarios || [];
+      const selectedPeriod = selectedTimes.length ? getSchedulePeriod(selectedTimes[0]) : null;
+      const reservedPeriods = getReservedPeriodsFor(dateString);
 
       state.horarios.forEach(h => {
         const isOccupied = occupied.has(h);
+        const period = getSchedulePeriod(h);
+        const isPeriodLocked = selectedPeriod && period !== selectedPeriod;
+        const isPeriodReserved = reservedPeriods.has(period);
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'hour-btn';
-        if (isOccupied) {
+        if (isOccupied || isPeriodLocked || isPeriodReserved) {
           btn.disabled = true;
-          btn.textContent = h + ' (Ocupado)';
+          btn.classList.add(isPeriodLocked ? 'period-locked' : 'blocked');
+          btn.textContent = h + (isPeriodLocked ? ' (Outro período)' : isPeriodReserved && !isOccupied ? ' (Período reservado)' : ' (Ocupado)');
         } else {
           btn.textContent = h;
-          if (state.regData.horario === h) {
+          if (selectedTimes.includes(h)) {
             btn.classList.add('selected');
           }
           btn.onclick = () => selectRegHour(h);
@@ -3203,17 +3223,26 @@
     }
 
     function selectRegHour(hour) {
-      state.regData.horario = hour;
-      document.querySelectorAll('#reg-calendar-hours .hour-btn').forEach(btn => btn.classList.remove('selected'));
-
-      // Marca selecionado
+      const selectedTimes = state.regData.horarios || [];
+      const position = selectedTimes.indexOf(hour);
+      if (position >= 0) {
+        selectedTimes.splice(position, 1);
+      } else {
+        if (selectedTimes.length >= 3) {
+          showAlert('Você pode selecionar no máximo 3 horários no mesmo período.');
+          return;
+        }
+        selectedTimes.push(hour);
+        selectedTimes.sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
+      }
+      state.regData.horarios = selectedTimes;
       generateRegHours(state.regData.data_aula, DAYS_NAMES[new Date(state.regData.data_aula + 'T00:00:00').getDay()]);
       updateStep4Summary();
     }
 
     function updateStep4Summary() {
       const dateText = state.regData.data_aula ? formatDateText(state.regData.data_aula) : 'Selecione...';
-      const hourText = state.regData.horario ? state.regData.horario : 'Selecione...';
+      const hourText = state.regData.horarios?.length ? state.regData.horarios.join(', ') : 'Selecione...';
 
       document.getElementById('sum-agenda-data').textContent = dateText;
       document.getElementById('sum-agenda-hora').textContent = hourText;
@@ -3279,10 +3308,10 @@
 
       const minhasAulas = getStudentLessonsPayload();
 
-      minhasAulas.push({
+      state.regData.horarios.forEach(horario => minhasAulas.push({
         dia_semana: dayOfWeek,
         data_aula: state.regData.data_aula,
-        horario: state.regData.horario,
+        horario,
         quantidade_horas: 1,
         cidade: cidade,
         modulo_id: null,
@@ -3294,7 +3323,7 @@
         endereco: state.regData.endereco || null,
         latitude: state.regData.latitude || null,
         longitude: state.regData.longitude || null
-      });
+      }));
 
       try {
         await saveStudentDataInline({
@@ -3309,7 +3338,7 @@
 
         alert('Aula agendada com sucesso!');
         state.regData.data_aula = '';
-        state.regData.horario = '';
+        state.regData.horarios = [];
         await loadStudentDashboard();
       } catch (err) {
         showAlert(err.message);
@@ -3323,11 +3352,11 @@
       // Garante sincronização de endereço/coordenadas do cadastro se editado manualmente
       await ensureGeocodedAddress('reg-address-input', null, null, 'reg');
 
-      if (state.alunoLogado && state.token && state.regData.data_aula && state.regData.horario) {
+      if (state.alunoLogado && state.token && state.regData.data_aula && state.regData.horarios.length) {
         await submitStudentScheduleFromCalendar();
         return;
       }
-      if (!state.regData.data_aula || !state.regData.horario) {
+      if (!state.regData.data_aula || !state.regData.horarios.length) {
         showAlert('Por favor, selecione uma data e horário para a sua aula.');
         return;
       }
@@ -3356,11 +3385,10 @@
         pagamento: {
           forma_pagamento: state.regData.forma_pagamento
         },
-        aulas: [
-          {
+        aulas: state.regData.horarios.map(horario => ({
             dia_semana: dayOfWeek,
             data_aula: state.regData.data_aula,
-            horario: state.regData.horario,
+            horario,
             quantidade_horas: 1,
             cidade: cidade,
             status: 'pre_agendado',
@@ -3368,7 +3396,7 @@
             latitude: state.regData.latitude || null,
             longitude: state.regData.longitude || null
           }
-        ]
+        ))
       };
 
       try {

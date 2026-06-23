@@ -60,6 +60,8 @@ try {
                 json_out(['status' => 'erro', 'mensagem' => 'Você não pode agendar mais de 3 horas de aula no mesmo dia (data: ' . date('d/m/Y', strtotime($data)) . ').'], 400);
             }
         }
+        agendamento_assert_dates_not_blocked($db, $aulasValidadas);
+        agendamento_assert_student_period_limits($db, $aulasValidadas);
     }
 
     $db->beginTransaction();
