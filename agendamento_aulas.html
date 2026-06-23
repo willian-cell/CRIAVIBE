@@ -80,11 +80,11 @@
     /* ── LEFT HERO PANEL ── */
     .hero-panel {
       background: var(--bg-gradient);
-      padding: 50px 40px;
+      padding: 52px 38px;
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: minmax(0, 1.08fr) minmax(180px, 0.92fr);
       align-items: center;
-      gap: 30px;
+      gap: 24px;
       border-right: 1px solid var(--border);
       position: relative;
       overflow: hidden;
@@ -94,7 +94,9 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      gap: 30px;
+      gap: 42px;
+      position: relative;
+      z-index: 2;
     }
 
     .hero-welcome-texts h2 {
@@ -115,19 +117,21 @@
 
     .hero-camera-wrapper {
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       align-items: center;
       position: relative;
-      height: 100%;
+      align-self: start;
+      margin-top: 4px;
+      z-index: 1;
     }
 
     .hero-camera-img {
-      max-width: 140%;
+      width: 100%;
+      max-width: 300px;
       height: auto;
       object-fit: contain;
       mix-blend-mode: multiply;
-      transform: scale(1.15) translateX(10px);
-      transform-origin: center right;
+      transform: none;
     }
 
     .brand-section h1 {
@@ -1594,8 +1598,8 @@
 
       .hero-panel {
         position: relative;
-        padding: 24px 20px;
-        min-height: 120px;
+        padding: 28px 14px 26px;
+        min-height: 236px;
         border-right: none;
         border-bottom: none;
         background: transparent;
@@ -1603,16 +1607,16 @@
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
-        overflow: visible;
+        overflow: hidden;
       }
 
       .hero-header-content {
-        max-width: 60%;
-        gap: 10px;
+        max-width: 51%;
+        gap: 22px;
       }
 
       .brand-section h1 {
-        font-size: 2.2rem;
+        font-size: clamp(1.6rem, 8vw, 2.2rem);
       }
 
       .brand-section .subtitle {
@@ -1620,7 +1624,7 @@
       }
 
       .hero-welcome-texts {
-        margin-top: 10px;
+        margin-top: 0;
       }
 
       .hero-welcome-texts h2 {
@@ -1629,27 +1633,28 @@
       }
 
       .hero-welcome-texts p {
-        font-size: 0.75rem;
-        line-height: 1.3;
+        font-size: 0.72rem;
+        line-height: 1.35;
       }
 
       .hero-camera-wrapper {
         position: absolute;
-        right: -10px;
-        top: -5px;
-        height: 180px;
-        width: 45%;
+        right: 8px;
+        top: 28px;
+        height: auto;
+        width: 46%;
         display: flex;
         justify-content: flex-end;
-        align-items: center;
-        overflow: visible;
+        align-items: flex-start;
+        overflow: hidden;
         pointer-events: none;
         z-index: 1;
       }
 
       .hero-camera-img {
-        height: 100%;
-        width: auto;
+        width: 100%;
+        height: auto;
+        max-width: none;
         object-fit: contain;
       }
 
