@@ -15,12 +15,12 @@ try {
     agendamento_ensure_schema($db);
 
     // 1. Verifica se é Professor Fotógrafo (Admin)
-    if (in_array($email, AGENDAMENTO_ADMIN_EMAILS, true)) {
+    {
         $stmt = $db->prepare("SELECT * FROM usuarios WHERE email = ? LIMIT 1");
         $stmt->execute([$email]);
         $u = $stmt->fetch();
 
-        if ($u && password_verify($senha, $u['senha'])) {
+        if ($u && in_array($u['tipo'] ?? '', ['fotografo', 'admin'], true) && password_verify($senha, $u['senha'])) {
             $_SESSION['agendamento_admin_email'] = $email;
             // Desloga sessão de aluno para evitar conflitos
             unset($_SESSION['agendamento_aluno_id']);

@@ -310,7 +310,7 @@ function agendamento_ensure_schema(PDO $db): void {
 
 function agendamento_is_admin(): bool {
     $email = strtolower(trim($_SESSION['agendamento_admin_email'] ?? ''));
-    return $email !== '' && in_array($email, AGENDAMENTO_ADMIN_EMAILS, true);
+    return $email !== '';
 }
 
 function agendamento_require_admin(): string {
