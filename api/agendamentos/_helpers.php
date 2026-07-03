@@ -92,6 +92,30 @@ function agendamento_ensure_schema(PDO $db): void {
                 endereco VARCHAR(512) DEFAULT NULL,
                 latitude DECIMAL(10, 8) DEFAULT NULL,
                 longitude DECIMAL(11, 8) DEFAULT NULL,
+                cep VARCHAR(9) DEFAULT NULL,
+                endereco_tipo_logradouro VARCHAR(40) DEFAULT NULL,
+                endereco_logradouro VARCHAR(180) DEFAULT NULL,
+                endereco_bairro VARCHAR(120) DEFAULT NULL,
+                endereco_cidade VARCHAR(120) DEFAULT NULL,
+                endereco_uf VARCHAR(2) DEFAULT NULL,
+                tipo_imovel VARCHAR(40) DEFAULT NULL,
+                endereco_condominio VARCHAR(160) DEFAULT NULL,
+                endereco_numero VARCHAR(40) DEFAULT NULL,
+                endereco_quadra VARCHAR(80) DEFAULT NULL,
+                endereco_conjunto VARCHAR(80) DEFAULT NULL,
+                endereco_lote VARCHAR(80) DEFAULT NULL,
+                endereco_predio VARCHAR(120) DEFAULT NULL,
+                endereco_bloco VARCHAR(80) DEFAULT NULL,
+                endereco_torre VARCHAR(80) DEFAULT NULL,
+                endereco_andar VARCHAR(40) DEFAULT NULL,
+                endereco_apartamento VARCHAR(80) DEFAULT NULL,
+                endereco_casa VARCHAR(80) DEFAULT NULL,
+                endereco_sala VARCHAR(80) DEFAULT NULL,
+                endereco_complemento VARCHAR(180) DEFAULT NULL,
+                ponto_referencia VARCHAR(220) DEFAULT NULL,
+                localizacao_origem VARCHAR(20) DEFAULT NULL,
+                localizacao_precisao VARCHAR(20) DEFAULT NULL,
+                localizacao_precisao_metros INT DEFAULT NULL,
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE (data_aula, horario)
@@ -274,12 +298,26 @@ function agendamento_ensure_schema(PDO $db): void {
         'latitude' => 'DECIMAL(10, 8) DEFAULT NULL',
         'longitude' => 'DECIMAL(11, 8) DEFAULT NULL',
         'cep' => 'VARCHAR(9) DEFAULT NULL',
+        'endereco_tipo_logradouro' => 'VARCHAR(40) DEFAULT NULL',
+        'endereco_logradouro' => 'VARCHAR(180) DEFAULT NULL',
+        'endereco_bairro' => 'VARCHAR(120) DEFAULT NULL',
+        'endereco_cidade' => 'VARCHAR(120) DEFAULT NULL',
+        'endereco_uf' => 'VARCHAR(2) DEFAULT NULL',
+        'tipo_imovel' => 'VARCHAR(40) DEFAULT NULL',
+        'endereco_condominio' => 'VARCHAR(160) DEFAULT NULL',
         'endereco_numero' => 'VARCHAR(40) DEFAULT NULL',
         'endereco_quadra' => 'VARCHAR(80) DEFAULT NULL',
+        'endereco_conjunto' => 'VARCHAR(80) DEFAULT NULL',
         'endereco_lote' => 'VARCHAR(80) DEFAULT NULL',
         'endereco_predio' => 'VARCHAR(120) DEFAULT NULL',
+        'endereco_bloco' => 'VARCHAR(80) DEFAULT NULL',
+        'endereco_torre' => 'VARCHAR(80) DEFAULT NULL',
+        'endereco_andar' => 'VARCHAR(40) DEFAULT NULL',
         'endereco_apartamento' => 'VARCHAR(80) DEFAULT NULL',
+        'endereco_casa' => 'VARCHAR(80) DEFAULT NULL',
+        'endereco_sala' => 'VARCHAR(80) DEFAULT NULL',
         'endereco_complemento' => 'VARCHAR(180) DEFAULT NULL',
+        'ponto_referencia' => 'VARCHAR(220) DEFAULT NULL',
         'localizacao_origem' => 'VARCHAR(20) DEFAULT NULL',
         'localizacao_precisao' => 'VARCHAR(20) DEFAULT NULL',
         'localizacao_precisao_metros' => 'INT DEFAULT NULL',
@@ -541,12 +579,26 @@ function agendamento_validate_lessons(array $lessons): array {
         $latitude = isset($lesson['latitude']) && $lesson['latitude'] !== '' ? (float)$lesson['latitude'] : null;
         $longitude = isset($lesson['longitude']) && $lesson['longitude'] !== '' ? (float)$lesson['longitude'] : null;
         $cep = preg_replace('/\D/', '', (string)($lesson['cep'] ?? ''));
+        $enderecoTipoLogradouro = trim((string)($lesson['endereco_tipo_logradouro'] ?? ''));
+        $enderecoLogradouro = trim((string)($lesson['endereco_logradouro'] ?? ''));
+        $enderecoBairro = trim((string)($lesson['endereco_bairro'] ?? ''));
+        $enderecoCidade = trim((string)($lesson['endereco_cidade'] ?? ''));
+        $enderecoUf = strtoupper(trim((string)($lesson['endereco_uf'] ?? '')));
+        $tipoImovel = trim((string)($lesson['tipo_imovel'] ?? ''));
+        $enderecoCondominio = trim((string)($lesson['endereco_condominio'] ?? ''));
         $enderecoNumero = trim((string)($lesson['endereco_numero'] ?? ''));
         $enderecoQuadra = trim((string)($lesson['endereco_quadra'] ?? ''));
+        $enderecoConjunto = trim((string)($lesson['endereco_conjunto'] ?? ''));
         $enderecoLote = trim((string)($lesson['endereco_lote'] ?? ''));
         $enderecoPredio = trim((string)($lesson['endereco_predio'] ?? ''));
+        $enderecoBloco = trim((string)($lesson['endereco_bloco'] ?? ''));
+        $enderecoTorre = trim((string)($lesson['endereco_torre'] ?? ''));
+        $enderecoAndar = trim((string)($lesson['endereco_andar'] ?? ''));
         $enderecoApartamento = trim((string)($lesson['endereco_apartamento'] ?? ''));
+        $enderecoCasa = trim((string)($lesson['endereco_casa'] ?? ''));
+        $enderecoSala = trim((string)($lesson['endereco_sala'] ?? ''));
         $enderecoComplemento = trim((string)($lesson['endereco_complemento'] ?? ''));
+        $pontoReferencia = trim((string)($lesson['ponto_referencia'] ?? ''));
         $origem = trim((string)($lesson['localizacao_origem'] ?? ''));
         $precisao = trim((string)($lesson['localizacao_precisao'] ?? ''));
         $precisaoMetros = isset($lesson['localizacao_precisao_metros']) ? (int)$lesson['localizacao_precisao_metros'] : null;
@@ -586,6 +638,12 @@ function agendamento_validate_lessons(array $lessons): array {
         if ($cep !== '' && strlen($cep) !== 8) {
             json_out(['status' => 'erro', 'mensagem' => 'CEP de localização inválido.'], 400);
         }
+        if ($enderecoUf !== '' && strlen($enderecoUf) !== 2) {
+            json_out(['status' => 'erro', 'mensagem' => 'UF do endereco invalida.'], 400);
+        }
+        if ($tipoImovel !== '' && !in_array($tipoImovel, ['casa', 'apartamento', 'condominio_horizontal', 'sala_comercial', 'loja', 'galpao', 'chacara', 'sitio', 'fazenda', 'outro'], true)) {
+            json_out(['status' => 'erro', 'mensagem' => 'Tipo do imovel invalido.'], 400);
+        }
         if ($origem !== '' && !in_array($origem, ['gps', 'cep', 'autocomplete', 'mapa', 'manual', 'estudio'], true)) {
             json_out(['status' => 'erro', 'mensagem' => 'Origem da localização inválida.'], 400);
         }
@@ -611,12 +669,26 @@ function agendamento_validate_lessons(array $lessons): array {
             'latitude' => $latitude,
             'longitude' => $longitude,
             'cep' => $cep ?: null,
+            'endereco_tipo_logradouro' => $enderecoTipoLogradouro ?: null,
+            'endereco_logradouro' => $enderecoLogradouro ?: null,
+            'endereco_bairro' => $enderecoBairro ?: null,
+            'endereco_cidade' => $enderecoCidade ?: null,
+            'endereco_uf' => $enderecoUf ?: null,
+            'tipo_imovel' => $tipoImovel ?: null,
+            'endereco_condominio' => $enderecoCondominio ?: null,
             'endereco_numero' => $enderecoNumero ?: null,
             'endereco_quadra' => $enderecoQuadra ?: null,
+            'endereco_conjunto' => $enderecoConjunto ?: null,
             'endereco_lote' => $enderecoLote ?: null,
             'endereco_predio' => $enderecoPredio ?: null,
+            'endereco_bloco' => $enderecoBloco ?: null,
+            'endereco_torre' => $enderecoTorre ?: null,
+            'endereco_andar' => $enderecoAndar ?: null,
             'endereco_apartamento' => $enderecoApartamento ?: null,
+            'endereco_casa' => $enderecoCasa ?: null,
+            'endereco_sala' => $enderecoSala ?: null,
             'endereco_complemento' => $enderecoComplemento ?: null,
+            'ponto_referencia' => $pontoReferencia ?: null,
             'localizacao_origem' => $origem ?: null,
             'localizacao_precisao' => $precisao ?: null,
             'localizacao_precisao_metros' => $precisaoMetros && $precisaoMetros > 0 ? $precisaoMetros : null,
@@ -646,12 +718,26 @@ function agendamento_fetch_board(PDO $db): array {
             a.latitude,
             a.longitude,
             a.cep,
+            a.endereco_tipo_logradouro,
+            a.endereco_logradouro,
+            a.endereco_bairro,
+            a.endereco_cidade,
+            a.endereco_uf,
+            a.tipo_imovel,
+            a.endereco_condominio,
             a.endereco_numero,
             a.endereco_quadra,
+            a.endereco_conjunto,
             a.endereco_lote,
             a.endereco_predio,
+            a.endereco_bloco,
+            a.endereco_torre,
+            a.endereco_andar,
             a.endereco_apartamento,
+            a.endereco_casa,
+            a.endereco_sala,
             a.endereco_complemento,
+            a.ponto_referencia,
             a.localizacao_origem,
             a.localizacao_precisao,
             a.localizacao_precisao_metros,
@@ -732,12 +818,26 @@ function agendamento_format_board(array $rows, ?string $currentToken, bool $isAd
             $item['latitude'] = isset($row['latitude']) ? (float)$row['latitude'] : null;
             $item['longitude'] = isset($row['longitude']) ? (float)$row['longitude'] : null;
             $item['cep'] = $row['cep'] ?? null;
+            $item['endereco_tipo_logradouro'] = $row['endereco_tipo_logradouro'] ?? null;
+            $item['endereco_logradouro'] = $row['endereco_logradouro'] ?? null;
+            $item['endereco_bairro'] = $row['endereco_bairro'] ?? null;
+            $item['endereco_cidade'] = $row['endereco_cidade'] ?? null;
+            $item['endereco_uf'] = $row['endereco_uf'] ?? null;
+            $item['tipo_imovel'] = $row['tipo_imovel'] ?? null;
+            $item['endereco_condominio'] = $row['endereco_condominio'] ?? null;
             $item['endereco_numero'] = $row['endereco_numero'] ?? null;
             $item['endereco_quadra'] = $row['endereco_quadra'] ?? null;
+            $item['endereco_conjunto'] = $row['endereco_conjunto'] ?? null;
             $item['endereco_lote'] = $row['endereco_lote'] ?? null;
             $item['endereco_predio'] = $row['endereco_predio'] ?? null;
+            $item['endereco_bloco'] = $row['endereco_bloco'] ?? null;
+            $item['endereco_torre'] = $row['endereco_torre'] ?? null;
+            $item['endereco_andar'] = $row['endereco_andar'] ?? null;
             $item['endereco_apartamento'] = $row['endereco_apartamento'] ?? null;
+            $item['endereco_casa'] = $row['endereco_casa'] ?? null;
+            $item['endereco_sala'] = $row['endereco_sala'] ?? null;
             $item['endereco_complemento'] = $row['endereco_complemento'] ?? null;
+            $item['ponto_referencia'] = $row['ponto_referencia'] ?? null;
             $item['localizacao_origem'] = $row['localizacao_origem'] ?? null;
             $item['localizacao_precisao'] = $row['localizacao_precisao'] ?? null;
             $item['localizacao_precisao_metros'] = isset($row['localizacao_precisao_metros']) ? (int)$row['localizacao_precisao_metros'] : null;

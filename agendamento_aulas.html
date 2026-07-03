@@ -713,6 +713,90 @@
       font-size: 0.8rem;
     }
 
+    .address-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .address-step {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .address-step-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .address-found-card {
+      display: none;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 12px;
+      color: #166534;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .address-found-card.is-visible {
+      display: block;
+    }
+
+    .address-actions-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .address-actions-row .input-wrapper {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .address-details-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .address-summary-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .address-summary-card strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .address-summary-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
     .summary-location-note {
       margin: 12px 0 0;
       font-size: 0.72rem;
@@ -1810,6 +1894,10 @@
         grid-template-columns: 1fr;
       }
 
+      .address-actions-row {
+        flex-direction: column;
+      }
+
       .lesson-item-card {
         align-items: flex-start;
         flex-wrap: wrap;
@@ -2321,12 +2409,19 @@
                 style="width: auto !important; border-radius: 0 12px 12px 0; background: var(--primary); color: white; border: 1.5px solid var(--primary); padding: 0 20px; font-weight: 700; cursor: pointer;"
                 onclick="searchAddressReg()">Buscar</button>
             </div>
+            <div id="reg-address-found" class="address-found-card" aria-live="polite"></div>
             <div id="address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
             <p id="reg-location-status" class="location-status" aria-live="polite">Informe o CEP, endereço ou use sua localização.</p>
           </div>
           <div id="reg-map-container"
             style="height: 220px; border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; position: relative; z-index: 10;">
           </div>
+          <p class="summary-location-note">Arraste o pino caso necessario.</p>
+          <div class="address-step">
+            <div class="address-step-title"><i class="fa-solid fa-house"></i> Detalhes do imovel</div>
+            <div id="reg-dynamic-address-fields" class="address-details-panel"></div>
+          </div>
+          <div id="reg-address-summary" class="address-summary-card"></div>
         </div>
 
         <div class="summary-box">
@@ -2340,51 +2435,7 @@
             <div class="summary-item"><label>Data da aula</label><span id="sum-agenda-data">Selecione...</span></div>
             <div class="summary-item"><label>Horário</label><span id="sum-agenda-hora">Selecione...</span></div>
           </div>
-          <div class="location-details-grid" aria-label="Detalhes do local da aula">
-            <div class="form-group">
-              <label for="reg-address-number">Numero</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-hashtag input-icon"></i>
-                <input type="text" id="reg-address-number" placeholder="Ex: 12" oninput="syncAddressDetails('reg')">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="reg-address-block">Quadra</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-border-all input-icon"></i>
-                <input type="text" id="reg-address-block" placeholder="Ex: 71" oninput="syncAddressDetails('reg')">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="reg-address-lot">Lote</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-vector-square input-icon"></i>
-                <input type="text" id="reg-address-lot" placeholder="Ex: 08" oninput="syncAddressDetails('reg')">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="reg-address-building">Predio</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-building input-icon"></i>
-                <input type="text" id="reg-address-building" placeholder="Bloco/predio" oninput="syncAddressDetails('reg')">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="reg-address-apartment">Apartamento</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-door-closed input-icon"></i>
-                <input type="text" id="reg-address-apartment" placeholder="Ex: 204" oninput="syncAddressDetails('reg')">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="reg-address-complement">Complemento</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-note-sticky input-icon"></i>
-                <input type="text" id="reg-address-complement" placeholder="Portao, referencia..." oninput="syncAddressDetails('reg')">
-              </div>
-            </div>
-          </div>
-          <p class="summary-location-note">Confirme ou complete estes detalhes antes de finalizar. Eles ficam visiveis para aluno e professor no painel.</p>
+          <p class="summary-location-note">O resumo do endereco acima e atualizado conforme voce preenche os detalhes do local.</p>
         </div>
 
         <div class="btn-actions-row">
@@ -2706,50 +2757,8 @@
           </div>
           <div id="modal-address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
           <p id="modal-location-status" class="location-status" aria-live="polite">Informe o CEP, endereço ou use sua localização.</p>
-          <div class="location-details-grid" aria-label="Detalhes do local da aula">
-            <div class="form-group">
-              <label for="modal-address-number">Numero</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-hashtag input-icon"></i>
-                <input type="text" id="modal-address-number" placeholder="Ex: 12">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="modal-address-block">Quadra</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-border-all input-icon"></i>
-                <input type="text" id="modal-address-block" placeholder="Ex: 71">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="modal-address-lot">Lote</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-vector-square input-icon"></i>
-                <input type="text" id="modal-address-lot" placeholder="Ex: 08">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="modal-address-building">Predio</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-building input-icon"></i>
-                <input type="text" id="modal-address-building" placeholder="Bloco/predio">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="modal-address-apartment">Apartamento</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-door-closed input-icon"></i>
-                <input type="text" id="modal-address-apartment" placeholder="Ex: 204">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="modal-address-complement">Complemento</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-note-sticky input-icon"></i>
-                <input type="text" id="modal-address-complement" placeholder="Portao, referencia...">
-              </div>
-            </div>
-          </div>
+          <div id="modal-dynamic-address-fields" class="address-details-panel"></div>
+          <div id="modal-address-summary" class="address-summary-card"></div>
         </div>
         <div id="modal-map-container"
           style="height: 180px; border-radius: 12px; border: 1.5px solid var(--border); margin-bottom: 15px; overflow: hidden; position: relative; z-index: 10;">
@@ -4359,58 +4368,194 @@
     function getAddressDetailFields(mapType) {
       const prefix = mapType === 'reg' ? 'reg' : 'modal';
       return {
+        tipo_imovel: `${prefix}-property-type`,
+        endereco_condominio: `${prefix}-address-condominium`,
         endereco_numero: `${prefix}-address-number`,
         endereco_quadra: `${prefix}-address-block`,
+        endereco_conjunto: `${prefix}-address-set`,
         endereco_lote: `${prefix}-address-lot`,
         endereco_predio: `${prefix}-address-building`,
+        endereco_bloco: `${prefix}-address-block-building`,
+        endereco_torre: `${prefix}-address-tower`,
+        endereco_andar: `${prefix}-address-floor`,
         endereco_apartamento: `${prefix}-address-apartment`,
-        endereco_complemento: `${prefix}-address-complement`
+        endereco_casa: `${prefix}-address-house`,
+        endereco_sala: `${prefix}-address-room`,
+        endereco_complemento: `${prefix}-address-complement`,
+        ponto_referencia: `${prefix}-address-reference`
       };
     }
 
+    const PROPERTY_TYPES = [
+      ['casa', 'Casa'],
+      ['apartamento', 'Apartamento'],
+      ['condominio_horizontal', 'Condominio horizontal'],
+      ['sala_comercial', 'Sala Comercial'],
+      ['loja', 'Loja'],
+      ['galpao', 'Galpao'],
+      ['chacara', 'Chacara'],
+      ['sitio', 'Sitio'],
+      ['fazenda', 'Fazenda'],
+      ['outro', 'Outro']
+    ];
+
+    const ADDRESS_FIELD_META = {
+      endereco_numero: ['Numero', 'Ex: 13', 'fa-hashtag'],
+      endereco_condominio: ['Condominio', 'Ex: Parque das Flores', 'fa-tree-city'],
+      endereco_quadra: ['Quadra', 'Ex: 71', 'fa-border-all'],
+      endereco_conjunto: ['Conjunto', 'Ex: C', 'fa-layer-group'],
+      endereco_lote: ['Lote', 'Ex: 08', 'fa-vector-square'],
+      endereco_predio: ['Numero do predio', 'Ex: Torre 2 ou 13', 'fa-building'],
+      endereco_bloco: ['Bloco', 'Ex: B', 'fa-cubes'],
+      endereco_torre: ['Torre', 'Ex: Norte', 'fa-building-columns'],
+      endereco_andar: ['Andar', 'Ex: 4', 'fa-up-down'],
+      endereco_apartamento: ['Apartamento', 'Ex: 204', 'fa-door-closed'],
+      endereco_casa: ['Casa', 'Ex: 13', 'fa-house'],
+      endereco_sala: ['Sala', 'Ex: 204', 'fa-briefcase'],
+      endereco_complemento: ['Complemento', 'Portao, entrada, observacao', 'fa-note-sticky'],
+      ponto_referencia: ['Ponto de referencia', 'Ao lado da farmacia, portao azul...', 'fa-signs-post']
+    };
+
+    const ADDRESS_FIELDS_BY_TYPE = {
+      casa: ['endereco_numero', 'endereco_quadra', 'endereco_conjunto', 'endereco_lote', 'endereco_complemento', 'ponto_referencia'],
+      apartamento: ['endereco_predio', 'endereco_condominio', 'endereco_bloco', 'endereco_torre', 'endereco_andar', 'endereco_apartamento', 'endereco_complemento', 'ponto_referencia'],
+      condominio_horizontal: ['endereco_condominio', 'endereco_quadra', 'endereco_conjunto', 'endereco_casa', 'endereco_complemento', 'ponto_referencia'],
+      sala_comercial: ['endereco_predio', 'endereco_sala', 'endereco_andar', 'endereco_complemento', 'ponto_referencia'],
+      loja: ['endereco_numero', 'endereco_sala', 'endereco_complemento', 'ponto_referencia'],
+      galpao: ['endereco_numero', 'endereco_lote', 'endereco_complemento', 'ponto_referencia'],
+      chacara: ['endereco_numero', 'endereco_lote', 'endereco_complemento', 'ponto_referencia'],
+      sitio: ['endereco_numero', 'endereco_lote', 'endereco_complemento', 'ponto_referencia'],
+      fazenda: ['endereco_numero', 'endereco_lote', 'endereco_complemento', 'ponto_referencia'],
+      outro: ['endereco_numero', 'endereco_complemento', 'ponto_referencia']
+    };
+
+    const addressDetailCache = { reg: {}, modal: {} };
+
+    function renderAddressDetailFields(mapType) {
+      const prefix = mapType === 'reg' ? 'reg' : 'modal';
+      const container = document.getElementById(`${prefix}-dynamic-address-fields`);
+      if (!container) return;
+      const fields = getAddressDetailFields(mapType);
+      const current = { ...addressDetailCache[mapType], ...getAddressDetailsPayload(mapType) };
+      const selectedType = current.tipo_imovel || 'casa';
+      const visibleFields = ADDRESS_FIELDS_BY_TYPE[selectedType] || ADDRESS_FIELDS_BY_TYPE.casa;
+      const typeOptions = PROPERTY_TYPES.map(([value, label]) => `<option value="${value}"${value === selectedType ? ' selected' : ''}>${label}</option>`).join('');
+      const rows = visibleFields.map(key => {
+        const [label, placeholder, icon] = ADDRESS_FIELD_META[key];
+        const value = current[key] || '';
+        return `
+          <div class="form-group">
+            <label for="${fields[key]}">${label}</label>
+            <div class="input-wrapper">
+              <i class="fa-solid ${icon} input-icon"></i>
+              <input type="text" id="${fields[key]}" value="${escapeHtml(value)}" placeholder="${placeholder}" oninput="syncAddressDetails('${mapType}')">
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="location-details-grid">
+          <div class="form-group">
+            <label for="${fields.tipo_imovel}">Tipo do imovel</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-house-user input-icon"></i>
+              <select id="${fields.tipo_imovel}" onchange="handlePropertyTypeChange('${mapType}')">${typeOptions}</select>
+            </div>
+          </div>
+          ${rows}
+        </div>
+      `;
+      addressDetailCache[mapType] = { ...addressDetailCache[mapType], ...current, tipo_imovel: selectedType };
+      updateAddressSummary(mapType);
+    }
+
+    window.handlePropertyTypeChange = function (mapType) {
+      renderAddressDetailFields(mapType);
+      syncAddressDetails(mapType);
+    };
+
     function getAddressDetailsPayload(mapType) {
       const fields = getAddressDetailFields(mapType);
-      return Object.fromEntries(Object.entries(fields).map(([key, id]) => {
-        const value = document.getElementById(id)?.value.trim() || '';
-        return [key, value || null];
-      }));
+      const payload = {};
+      Object.entries(fields).forEach(([key, id]) => {
+        const element = document.getElementById(id);
+        if (!element) return;
+        const value = element.value.trim();
+        payload[key] = value || null;
+      });
+      addressDetailCache[mapType] = { ...addressDetailCache[mapType], ...Object.fromEntries(Object.entries(payload).filter(([, value]) => value !== null)) };
+      return { ...addressDetailCache[mapType], ...payload };
     }
 
     function setAddressDetailsFields(mapType, data = {}) {
+      addressDetailCache[mapType] = { tipo_imovel: data.tipo_imovel || 'casa', ...data };
+      renderAddressDetailFields(mapType);
       Object.entries(getAddressDetailFields(mapType)).forEach(([key, id]) => {
         const input = document.getElementById(id);
         if (input) input.value = data[key] || '';
       });
-      if (mapType === 'reg') syncAddressDetails('reg');
+      syncAddressDetails(mapType);
     }
 
     window.syncAddressDetails = function (mapType) {
-      if (mapType !== 'reg') return;
-      Object.assign(state.regData, getAddressDetailsPayload('reg'));
+      const payload = getAddressDetailsPayload(mapType);
+      addressDetailCache[mapType] = { ...addressDetailCache[mapType], ...payload };
+      if (mapType === 'reg') Object.assign(state.regData, payload);
+      updateAddressSummary(mapType);
     };
 
+    function addressDetailEntries(aula) {
+      const labels = {
+        endereco_numero: 'Numero',
+        endereco_condominio: 'Condominio',
+        endereco_quadra: 'Quadra',
+        endereco_conjunto: 'Conjunto',
+        endereco_lote: 'Lote',
+        endereco_predio: 'Predio',
+        endereco_bloco: 'Bloco',
+        endereco_torre: 'Torre',
+        endereco_andar: 'Andar',
+        endereco_apartamento: 'Apartamento',
+        endereco_casa: 'Casa',
+        endereco_sala: 'Sala',
+        endereco_complemento: 'Complemento',
+        ponto_referencia: 'Referencia'
+      };
+      const type = aula.tipo_imovel || 'casa';
+      const keys = ADDRESS_FIELDS_BY_TYPE[type] || Object.keys(labels);
+      return keys.map(key => [labels[key], aula[key]]).filter(([label, value]) => label && value);
+    }
+
+    function updateAddressSummary(mapType) {
+      const prefix = mapType === 'reg' ? 'reg' : 'modal';
+      const target = document.getElementById(`${prefix}-address-summary`);
+      if (!target) return;
+      const fields = getLocationFields(mapType);
+      const baseAddress = document.getElementById(fields.address)?.value.trim() || '';
+      const cep = document.getElementById(fields.cep)?.value.trim() || '';
+      const details = getAddressDetailsPayload(mapType);
+      const lines = [
+        baseAddress,
+        ...addressDetailEntries(details).map(([label, value]) => `${label}: ${value}`),
+        cep ? `CEP ${cep}` : ''
+      ].filter(Boolean);
+      target.innerHTML = `
+        <strong><i class="fa-solid fa-location-dot"></i> Endereco da aula</strong>
+        <div class="address-summary-lines">
+          ${lines.length ? lines.map(line => `<span>${escapeHtml(line)}</span>`).join('') : '<span>Preencha o CEP e os detalhes do imovel.</span>'}
+        </div>
+      `;
+    }
+
     function lessonAddressDetailsHtml(aula) {
-      const detailItems = [
-        ['No.', aula.endereco_numero],
-        ['Quadra', aula.endereco_quadra],
-        ['Lote', aula.endereco_lote],
-        ['Predio', aula.endereco_predio],
-        ['Apto', aula.endereco_apartamento],
-        ['Compl.', aula.endereco_complemento]
-      ].filter(([, value]) => value);
+      const detailItems = addressDetailEntries(aula);
       if (!detailItems.length) return '';
       return `<span class="lesson-location-details">${detailItems.map(([label, value]) => `<span>${label}: ${escapeHtml(value)}</span>`).join('')}</span>`;
     }
 
     function lessonAddressDetailsText(aula) {
-      return [
-        aula.endereco_numero ? `No. ${aula.endereco_numero}` : '',
-        aula.endereco_quadra ? `Quadra ${aula.endereco_quadra}` : '',
-        aula.endereco_lote ? `Lote ${aula.endereco_lote}` : '',
-        aula.endereco_predio ? `Predio ${aula.endereco_predio}` : '',
-        aula.endereco_apartamento ? `Apto ${aula.endereco_apartamento}` : '',
-        aula.endereco_complemento || ''
-      ].filter(Boolean).join(', ');
+      return addressDetailEntries(aula).map(([label, value]) => `${label}: ${value}`).join(', ');
     }
 
     function getFullLessonAddress(aula) {
@@ -4452,13 +4597,54 @@
       element.textContent = message;
     }
 
+    function setAddressFoundCard(mapType, data = {}) {
+      const id = mapType === 'reg' ? 'reg-address-found' : null;
+      const element = id ? document.getElementById(id) : null;
+      if (!element) return;
+      const street = data.street || data.logradouro || '';
+      const neighborhood = data.neighborhood || data.bairro || '';
+      const city = data.city || data.localidade || '';
+      const uf = data.state || data.uf || '';
+      const cep = data.cep || data.code || document.getElementById('reg-cep-input')?.value || '';
+      const lines = [
+        street,
+        neighborhood,
+        [city, uf].filter(Boolean).join(' - '),
+        cep ? `CEP ${cep}` : ''
+      ].filter(Boolean);
+      element.innerHTML = `<strong>Endereco encontrado</strong>${lines.map(line => `<div>${escapeHtml(line)}</div>`).join('')}`;
+      element.classList.add('is-visible');
+    }
+
+    function applyCepStructuredData(mapType, data = {}, cleanCep = '') {
+      const structured = {
+        cep: cleanCep || null,
+        endereco_logradouro: data.street || data.logradouro || null,
+        endereco_bairro: data.neighborhood || data.bairro || null,
+        endereco_cidade: data.city || data.localidade || null,
+        endereco_uf: data.state || data.uf || null
+      };
+      const street = structured.endereco_logradouro || '';
+      const firstSpace = street.indexOf(' ');
+      structured.endereco_tipo_logradouro = firstSpace > 0 ? street.slice(0, firstSpace) : null;
+      if (mapType === 'reg') Object.assign(state.regData, structured);
+      addressDetailCache[mapType] = { ...addressDetailCache[mapType], ...structured };
+      setAddressFoundCard(mapType, { ...data, cep: cleanCep });
+      updateAddressSummary(mapType);
+    }
+
     function getLocationPayload(mapType) {
       const fields = getLocationFields(mapType);
       const input = document.getElementById(fields.address);
       const cep = document.getElementById(fields.cep)?.value.replace(/\D/g, '') || '';
+      const details = getAddressDetailsPayload(mapType);
+      const allowedDetailFields = new Set(ADDRESS_FIELDS_BY_TYPE[details.tipo_imovel || 'casa'] || ADDRESS_FIELDS_BY_TYPE.casa);
+      Object.keys(ADDRESS_FIELD_META).forEach(key => {
+        if (!allowedDetailFields.has(key)) details[key] = null;
+      });
       return {
         cep: cep || null,
-        ...getAddressDetailsPayload(mapType),
+        ...details,
         localizacao_origem: input?.dataset.locationSource || null,
         localizacao_precisao: input?.dataset.locationPrecision || null,
         localizacao_precisao_metros: input?.dataset.locationAccuracy ? Number(input.dataset.locationAccuracy) : null
@@ -4481,12 +4667,26 @@
         latitude: a.latitude || null,
         longitude: a.longitude || null,
         cep: a.cep || null,
+        endereco_tipo_logradouro: a.endereco_tipo_logradouro || null,
+        endereco_logradouro: a.endereco_logradouro || null,
+        endereco_bairro: a.endereco_bairro || null,
+        endereco_cidade: a.endereco_cidade || null,
+        endereco_uf: a.endereco_uf || null,
+        tipo_imovel: a.tipo_imovel || null,
+        endereco_condominio: a.endereco_condominio || null,
         endereco_numero: a.endereco_numero || null,
         endereco_quadra: a.endereco_quadra || null,
+        endereco_conjunto: a.endereco_conjunto || null,
         endereco_lote: a.endereco_lote || null,
         endereco_predio: a.endereco_predio || null,
+        endereco_bloco: a.endereco_bloco || null,
+        endereco_torre: a.endereco_torre || null,
+        endereco_andar: a.endereco_andar || null,
         endereco_apartamento: a.endereco_apartamento || null,
+        endereco_casa: a.endereco_casa || null,
+        endereco_sala: a.endereco_sala || null,
         endereco_complemento: a.endereco_complemento || null,
+        ponto_referencia: a.ponto_referencia || null,
         localizacao_origem: a.localizacao_origem || null,
         localizacao_precisao: a.localizacao_precisao || null,
         localizacao_precisao_metros: a.localizacao_precisao_metros || null
@@ -4829,6 +5029,7 @@
           state.regData.latitude = null;
           state.regData.longitude = null;
         }
+        updateAddressSummary(mapType);
         return;
       }
 
@@ -4861,6 +5062,7 @@
             state.regData.latitude = null;
             state.regData.longitude = null;
           }
+          updateAddressSummary(mapType);
         }
       }
     }
@@ -5161,6 +5363,7 @@
         }
 
         addressInput.value = fullAddress;
+        applyCepStructuredData(mapType, data || {}, cleanCep);
 
         // Se já temos a latitude e longitude precisas da BrasilAPI, usamos elas
         if (lat && lon && !isNaN(lat) && !isNaN(lon)) {
@@ -5223,6 +5426,7 @@
           regInput.dataset.locationPrecision = state.regData.localizacao_precisao;
           regInput.dataset.locationAccuracy = state.regData.localizacao_precisao_metros || '';
         }
+        updateAddressSummary('reg');
         if (registerMarker && registerMap) {
           registerMarker.setLatLng([lat, lon]);
           registerMap.setView([lat, lon], 16);
@@ -5240,6 +5444,7 @@
           modalInput.dataset.locationPrecision = details.precision || 'confirmada';
           modalInput.dataset.locationAccuracy = Number.isFinite(details.accuracy) ? Math.round(details.accuracy) : '';
         }
+        updateAddressSummary('modal');
         if (modalMarker && modalMap) {
           modalMarker.setLatLng([lat, lon]);
           modalMap.setView([lat, lon], 16);
@@ -5269,10 +5474,12 @@
             state.regData.localizacao_origem = details.source || 'mapa';
             state.regData.localizacao_precisao = details.precision || 'confirmada';
             state.regData.localizacao_precisao_metros = Number.isFinite(details.accuracy) ? Math.round(details.accuracy) : null;
+            updateAddressSummary('reg');
             setLocationStatus('reg', state.regData.localizacao_precisao === 'aproximada' ? 'Localização aproximada — confirme o pino no mapa.' : 'Localização confirmada.', state.regData.localizacao_precisao === 'aproximada' ? 'approximate' : 'confirmed');
           } else if (mapType === 'modal') {
             document.getElementById('modal-lat').value = lat;
             document.getElementById('modal-lng').value = lng;
+            updateAddressSummary('modal');
             setLocationStatus('modal', details.precision === 'aproximada' ? 'Localização aproximada — confirme o pino no mapa.' : 'Localização confirmada.', details.precision === 'aproximada' ? 'approximate' : 'confirmed');
           }
         }
@@ -5842,6 +6049,8 @@
       try {
         // Inicializa listeners de autocomplete
         initAutocompleteInputs();
+        renderAddressDetailFields('reg');
+        renderAddressDetailFields('modal');
 
         // Carrega dados iniciais da API geral
         const listData = await request('/list.php');
