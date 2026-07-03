@@ -2595,6 +2595,8 @@
                     <th>Aluno</th>
                     <th>WhatsApp & E-mail</th>
                     <th>Plano Contratado</th>
+                    <th>Endereco</th>
+                    <th>Google Maps</th>
                     <th>Crédito Aulas</th>
                     <th>Ações</th>
                   </tr>
@@ -4136,13 +4138,15 @@
             aulas_usadas: item.aulas_usadas,
             plano_status: item.plano_status,
             forma_pagamento: item.forma_pagamento,
-            token_publico: item.token_publico
+            token_publico: item.token_publico,
+            aulas: []
           });
         }
+        if (item.aluno_id) alunosMap.get(item.aluno_id).aulas.push(item);
       });
 
       if (alunosMap.size === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum aluno matriculado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum aluno matriculado.</td></tr>';
         return;
       }
 
@@ -4192,13 +4196,15 @@
             aulas_usadas: item.aulas_usadas,
             plano_status: item.plano_status,
             forma_pagamento: item.forma_pagamento,
-            token_publico: item.token_publico
+            token_publico: item.token_publico,
+            aulas: []
           });
         }
+        if (item.aluno_id) alunosMap.get(item.aluno_id).aulas.push(item);
       });
 
       if (alunosMap.size === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum aluno matriculado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhum aluno matriculado.</td></tr>';
         return;
       }
 
@@ -4207,6 +4213,12 @@
         const total = Number(aluno.total_aulas || 0);
         const usadas = Number(aluno.aulas_usadas || 0);
         const percent = total > 0 ? Math.min(100, Math.round((usadas / total) * 100)) : 0;
+        const addressLesson = getStudentPrimaryAddressLesson(aluno.aulas || []);
+        const fullAddress = addressLesson ? getFullLessonAddress(addressLesson) : '';
+        const mapUrl = getGoogleMapsUrlForLesson(addressLesson);
+        const mapButton = mapUrl
+          ? `<a class="admin-btn-action" href="${mapUrl}" target="_blank" rel="noopener" title="Abrir rota no Google Maps"><i class="fa-solid fa-map-location-dot"></i></a>`
+          : `<button class="admin-btn-action" type="button" disabled title="Endereco nao informado"><i class="fa-solid fa-map-location-dot"></i></button>`;
 
         tr.innerHTML = `
           <td>
@@ -4221,6 +4233,11 @@
             <span class="teacher-cell-muted">Status: ${escapeHtml(aluno.plano_status || 'ativo')}</span>
             <span class="teacher-cell-muted"><i class="fa-solid fa-credit-card"></i> ${escapeHtml(aluno.forma_pagamento || 'Nao informado')}</span>
           </td>
+          <td>
+            <strong>${escapeHtml(fullAddress || 'Endereco nao informado')}</strong>
+            ${addressLesson?.data_aula ? `<span class="teacher-cell-muted">Aula de referencia: ${formatDateText(addressLesson.data_aula)}</span>` : ''}
+          </td>
+          <td class="admin-actions-cell">${mapButton}</td>
           <td>
             <strong>${usadas} de ${total} aulas</strong>
             <div class="aluno-plan-progress-container" style="background: var(--border); margin: 8px 0 4px;">
@@ -4379,6 +4396,49 @@
       ].filter(([, value]) => value);
       if (!detailItems.length) return '';
       return `<span class="lesson-location-details">${detailItems.map(([label, value]) => `<span>${label}: ${escapeHtml(value)}</span>`).join('')}</span>`;
+    }
+
+    function lessonAddressDetailsText(aula) {
+      return [
+        aula.endereco_numero ? `No. ${aula.endereco_numero}` : '',
+        aula.endereco_quadra ? `Quadra ${aula.endereco_quadra}` : '',
+        aula.endereco_lote ? `Lote ${aula.endereco_lote}` : '',
+        aula.endereco_predio ? `Predio ${aula.endereco_predio}` : '',
+        aula.endereco_apartamento ? `Apto ${aula.endereco_apartamento}` : '',
+        aula.endereco_complemento || ''
+      ].filter(Boolean).join(', ');
+    }
+
+    function getFullLessonAddress(aula) {
+      const parts = [
+        aula.endereco || '',
+        lessonAddressDetailsText(aula),
+        aula.cep ? `CEP ${aula.cep}` : '',
+        aula.cidade || ''
+      ].filter(Boolean);
+      return [...new Set(parts)].join(', ');
+    }
+
+    function hasLessonMapReference(aula) {
+      return Boolean((aula.latitude !== null && aula.latitude !== undefined && aula.longitude !== null && aula.longitude !== undefined) || aula.endereco);
+    }
+
+    function getStudentPrimaryAddressLesson(lessons) {
+      const withReference = lessons.filter(hasLessonMapReference);
+      if (!withReference.length) return lessons[0] || null;
+      const todayKey = new Date().toISOString().slice(0, 10);
+      const future = withReference
+        .filter(aula => String(aula.data_aula || '') >= todayKey)
+        .sort((a, b) => `${a.data_aula || ''} ${a.horario || ''}`.localeCompare(`${b.data_aula || ''} ${b.horario || ''}`));
+      return future[0] || withReference[0];
+    }
+
+    function getGoogleMapsUrlForLesson(aula) {
+      if (!aula) return '';
+      const destination = (aula.latitude !== null && aula.latitude !== undefined && aula.longitude !== null && aula.longitude !== undefined)
+        ? `${aula.latitude},${aula.longitude}`
+        : getFullLessonAddress(aula);
+      return destination ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}` : '';
     }
 
     function setLocationStatus(mapType, message, level = '') {
