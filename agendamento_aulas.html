@@ -1176,7 +1176,7 @@
     .aluno-lessons-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
       max-height: 320px;
       overflow-y: auto;
       padding-right: 4px;
@@ -1184,20 +1184,34 @@
     }
 
     .lesson-item-card {
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
-      background: var(--surface-sub);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
       transition: var(--transition);
     }
 
     .lesson-item-card:hover {
       border-color: var(--primary);
-      background: var(--surface);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .lesson-item-card.is-open {
+      border-color: rgba(119, 122, 67, 0.45);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+    }
+
+    .lesson-item-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) auto auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
     }
 
     .lesson-item-date {
@@ -1227,7 +1241,7 @@
     }
 
     .lesson-item-info {
-      flex: 1;
+      min-width: 0;
     }
 
     .lesson-item-info h4 {
@@ -1235,12 +1249,18 @@
       font-weight: 700;
       color: var(--text);
       margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .lesson-item-info p {
       font-size: 0.7rem;
       color: var(--text-muted);
       font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .lesson-status-badge {
@@ -1279,8 +1299,61 @@
     .lesson-item-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
+    }
+
+    .lesson-item-details {
+      display: none;
+      border-top: 1px solid var(--border);
+      background: var(--surface-sub);
+      padding: 14px;
+    }
+
+    .lesson-item-card.is-open .lesson-item-details {
+      display: block;
+    }
+
+    .lesson-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .lesson-detail-item {
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 10px;
+      padding: 10px;
+      min-width: 0;
+    }
+
+    .lesson-detail-item label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .lesson-detail-item span,
+    .lesson-detail-item a {
+      font-size: 0.76rem;
+      color: var(--text);
+      font-weight: 700;
+      line-height: 1.35;
+      text-decoration: none;
+    }
+
+    .lesson-detail-item a {
+      color: var(--primary);
+    }
+
+    .lesson-detail-item.full {
+      grid-column: 1 / -1;
     }
 
     /* ── PAINEL DO FOTÓGRAFO ── */
@@ -1899,13 +1972,25 @@
       }
 
       .lesson-item-card {
-        align-items: flex-start;
-        flex-wrap: wrap;
+        align-items: stretch;
+      }
+
+      .lesson-item-row {
+        grid-template-columns: 52px minmax(0, 1fr) auto;
+      }
+
+      .lesson-item-row .lesson-status-badge {
+        justify-self: end;
       }
 
       .lesson-item-actions {
+        grid-column: 2 / -1;
         width: 100%;
-        justify-content: flex-end;
+        justify-content: flex-start;
+      }
+
+      .lesson-details-grid {
+        grid-template-columns: 1fr;
       }
 
       .admin-metrics-grid {
@@ -3690,59 +3775,73 @@
         return;
       }
 
-      minhasAulas.forEach(aula => {
-        const card = document.createElement('div');
-        card.className = 'lesson-item-card';
-
-        const [year, month, day] = aula.data_aula.split('-');
-        const monthsShort = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-        const mShort = monthsShort[Number(month) - 1];
-        const valorText = aula.valor_centavos ? (Number(aula.valor_centavos) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Valor a confirmar';
-
-        const moduloText = [aula.modulo_nome, aula.assunto_titulo].filter(Boolean).join(' • ') || 'Módulo Geral';
-
-        card.innerHTML = `
-          <div class="lesson-item-date">
-            <span class="day">${day}</span>
-            <span class="month">${mShort}</span>
-          </div>
-          <div class="lesson-item-info">
-            <h4>${escapeHtml(moduloText)}</h4>
-            <p><i class="fa-solid fa-clock"></i> ${aula.horario} às ${getEndTime(aula.horario, aula.quantidade_horas)} (${aula.quantidade_horas}h) · ${escapeHtml(aula.cidade)}</p>
-          </div>
-          <span class="lesson-status-badge ${aula.status}">${(aula.status || 'pre_agendado').replace('_', ' ')}</span>
-        `;
-        let addressHtml = '';
-        if (aula.endereco) {
-          const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(aula.endereco)}`;
-          addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.endereco)} 
-            <a href="${mapLink}" target="_blank" style="color: var(--primary); font-weight: 700; margin-left: 6px; text-decoration: none;"><i class="fa-solid fa-location-arrow"></i> Como Chegar</a>
-          </p>${lessonAddressDetailsHtml(aula)}`;
-        } else {
-          addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.cidade)}</p>${lessonAddressDetailsHtml(aula)}`;
-        }
-
-        card.querySelector('.lesson-item-info').insertAdjacentHTML('beforeend', `
-          <p><i class="fa-solid fa-calendar-day"></i> ${formatDateText(aula.data_aula)} - ${escapeHtml(aula.dia_semana || '')}</p>
-          <p><i class="fa-solid fa-book-open"></i> ${escapeHtml(aula.modulo_nome || 'Modulo nao definido')}</p>
-          <p><i class="fa-solid fa-bookmark"></i> ${escapeHtml(aula.assunto_titulo || 'Assunto nao definido')}</p>
-          ${addressHtml}
-          <p><i class="fa-solid fa-money-bill-wave"></i> ${escapeHtml(valorText)}</p>
-          <p><i class="fa-solid fa-circle-info"></i> ${escapeHtml(aula.observacoes || 'Sem observacoes registradas')}</p>
-        `);
-        card.insertAdjacentHTML('beforeend', `
-          <div class="lesson-item-actions">
-            <button class="inline-action-btn" type="button" onclick="openEditLessonModal(${aula.aula_id})">
-              <i class="fa-solid fa-pen"></i> Editar
-            </button>
-            <button class="inline-action-btn" type="button" onclick="cancelStudentLesson(${aula.aula_id})" title="Excluir este agendamento" style="color:#b91c1c; border-color:#fecaca;">
-              <i class="fa-solid fa-trash"></i> Excluir
-            </button>
-          </div>
-        `);
-        container.appendChild(card);
-      });
+      renderStudentLessonsList(container, minhasAulas);
+      return;
     }
+
+    function renderStudentLessonsList(container, lessons) {
+      lessons
+        .sort((a, b) => `${a.data_aula || ''} ${a.horario || ''}`.localeCompare(`${b.data_aula || ''} ${b.horario || ''}`))
+        .forEach(aula => {
+          const card = document.createElement('div');
+          const isOpen = state.openStudentLessonId === aula.aula_id;
+          card.className = `lesson-item-card${isOpen ? ' is-open' : ''}`;
+
+          const [, month, day] = String(aula.data_aula || '').split('-');
+          const monthsShort = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+          const mShort = monthsShort[Number(month) - 1] || '';
+          const duration = Number(aula.quantidade_horas || 1);
+          const valorText = aula.valor_centavos ? (Number(aula.valor_centavos) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Valor a confirmar';
+          const moduloText = [aula.modulo_nome, aula.assunto_titulo].filter(Boolean).join(' - ') || 'Modulo Geral';
+          const status = aula.status || 'pre_agendado';
+          const statusText = status.replace('_', ' ');
+          const mapLink = aula.endereco ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(aula.endereco)}` : '';
+          const addressHtml = aula.endereco
+            ? `<span>${escapeHtml(aula.endereco)}</span><br><a href="${mapLink}" target="_blank" onclick="event.stopPropagation()"><i class="fa-solid fa-location-arrow"></i> Como chegar</a>${lessonAddressDetailsHtml(aula)}`
+            : `<span>${escapeHtml(aula.cidade || 'Local a confirmar')}</span>${lessonAddressDetailsHtml(aula)}`;
+
+          card.innerHTML = `
+            <div class="lesson-item-row" role="button" tabindex="0" onclick="toggleStudentLessonDetails(${aula.aula_id})" onkeydown="handleStudentLessonRowKey(event, ${aula.aula_id})" aria-expanded="${isOpen ? 'true' : 'false'}">
+              <div class="lesson-item-date">
+                <span class="day">${escapeHtml(day || '--')}</span>
+                <span class="month">${escapeHtml(mShort)}</span>
+              </div>
+              <div class="lesson-item-info">
+                <h4>${escapeHtml(moduloText)}</h4>
+                <p><i class="fa-solid fa-clock"></i> ${escapeHtml(aula.horario || '--:--')} as ${escapeHtml(getEndTime(aula.horario, duration))} (${duration}h) - ${escapeHtml(aula.cidade || '')}</p>
+              </div>
+              <span class="lesson-status-badge ${status}">${escapeHtml(statusText)}</span>
+              <div class="lesson-item-actions">
+                <span class="inline-action-btn" role="button" tabindex="0" onclick="event.stopPropagation(); openEditLessonModal(${aula.aula_id})"><i class="fa-solid fa-pen"></i> Editar</span>
+                <span class="inline-action-btn" role="button" tabindex="0" onclick="event.stopPropagation(); cancelStudentLesson(${aula.aula_id})" title="Excluir este agendamento" style="color:#b91c1c; border-color:#fecaca;"><i class="fa-solid fa-trash"></i> Excluir</span>
+              </div>
+            </div>
+            <div class="lesson-item-details" id="lesson-details-${aula.aula_id}">
+              <div class="lesson-details-grid">
+                <div class="lesson-detail-item"><label><i class="fa-solid fa-calendar-day"></i> Dia</label><span>${formatDateText(aula.data_aula)} - ${escapeHtml(aula.dia_semana || '')}</span></div>
+                <div class="lesson-detail-item"><label><i class="fa-solid fa-clock"></i> Horario</label><span>${escapeHtml(aula.horario || '--:--')} as ${escapeHtml(getEndTime(aula.horario, duration))} (${duration}h)</span></div>
+                <div class="lesson-detail-item"><label><i class="fa-solid fa-book-open"></i> Modulo</label><span>${escapeHtml(aula.modulo_nome || 'Modulo nao definido')}</span></div>
+                <div class="lesson-detail-item"><label><i class="fa-solid fa-bookmark"></i> Assunto</label><span>${escapeHtml(aula.assunto_titulo || 'Assunto nao definido')}</span></div>
+                <div class="lesson-detail-item"><label><i class="fa-solid fa-money-bill-wave"></i> Valor</label><span>${escapeHtml(valorText)}</span></div>
+                <div class="lesson-detail-item"><label><i class="fa-solid fa-circle-info"></i> Observacoes</label><span>${escapeHtml(aula.observacoes || 'Sem observacoes registradas')}</span></div>
+                <div class="lesson-detail-item full"><label><i class="fa-solid fa-location-dot"></i> Local da aula</label>${addressHtml}</div>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+    }
+
+    window.toggleStudentLessonDetails = function (aulaId) {
+      state.openStudentLessonId = state.openStudentLessonId === aulaId ? null : aulaId;
+      renderStudentPanelData();
+    };
+
+    window.handleStudentLessonRowKey = function (event, aulaId) {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      toggleStudentLessonDetails(aulaId);
+    };
 
     function getInitials(name) {
       return String(name || 'Aluno')
@@ -6101,3 +6200,4 @@
 </body>
 
 </html>
+
