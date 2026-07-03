@@ -274,6 +274,12 @@ function agendamento_ensure_schema(PDO $db): void {
         'latitude' => 'DECIMAL(10, 8) DEFAULT NULL',
         'longitude' => 'DECIMAL(11, 8) DEFAULT NULL',
         'cep' => 'VARCHAR(9) DEFAULT NULL',
+        'endereco_numero' => 'VARCHAR(40) DEFAULT NULL',
+        'endereco_quadra' => 'VARCHAR(80) DEFAULT NULL',
+        'endereco_lote' => 'VARCHAR(80) DEFAULT NULL',
+        'endereco_predio' => 'VARCHAR(120) DEFAULT NULL',
+        'endereco_apartamento' => 'VARCHAR(80) DEFAULT NULL',
+        'endereco_complemento' => 'VARCHAR(180) DEFAULT NULL',
         'localizacao_origem' => 'VARCHAR(20) DEFAULT NULL',
         'localizacao_precisao' => 'VARCHAR(20) DEFAULT NULL',
         'localizacao_precisao_metros' => 'INT DEFAULT NULL',
@@ -535,6 +541,12 @@ function agendamento_validate_lessons(array $lessons): array {
         $latitude = isset($lesson['latitude']) && $lesson['latitude'] !== '' ? (float)$lesson['latitude'] : null;
         $longitude = isset($lesson['longitude']) && $lesson['longitude'] !== '' ? (float)$lesson['longitude'] : null;
         $cep = preg_replace('/\D/', '', (string)($lesson['cep'] ?? ''));
+        $enderecoNumero = trim((string)($lesson['endereco_numero'] ?? ''));
+        $enderecoQuadra = trim((string)($lesson['endereco_quadra'] ?? ''));
+        $enderecoLote = trim((string)($lesson['endereco_lote'] ?? ''));
+        $enderecoPredio = trim((string)($lesson['endereco_predio'] ?? ''));
+        $enderecoApartamento = trim((string)($lesson['endereco_apartamento'] ?? ''));
+        $enderecoComplemento = trim((string)($lesson['endereco_complemento'] ?? ''));
         $origem = trim((string)($lesson['localizacao_origem'] ?? ''));
         $precisao = trim((string)($lesson['localizacao_precisao'] ?? ''));
         $precisaoMetros = isset($lesson['localizacao_precisao_metros']) ? (int)$lesson['localizacao_precisao_metros'] : null;
@@ -599,6 +611,12 @@ function agendamento_validate_lessons(array $lessons): array {
             'latitude' => $latitude,
             'longitude' => $longitude,
             'cep' => $cep ?: null,
+            'endereco_numero' => $enderecoNumero ?: null,
+            'endereco_quadra' => $enderecoQuadra ?: null,
+            'endereco_lote' => $enderecoLote ?: null,
+            'endereco_predio' => $enderecoPredio ?: null,
+            'endereco_apartamento' => $enderecoApartamento ?: null,
+            'endereco_complemento' => $enderecoComplemento ?: null,
             'localizacao_origem' => $origem ?: null,
             'localizacao_precisao' => $precisao ?: null,
             'localizacao_precisao_metros' => $precisaoMetros && $precisaoMetros > 0 ? $precisaoMetros : null,
@@ -628,6 +646,12 @@ function agendamento_fetch_board(PDO $db): array {
             a.latitude,
             a.longitude,
             a.cep,
+            a.endereco_numero,
+            a.endereco_quadra,
+            a.endereco_lote,
+            a.endereco_predio,
+            a.endereco_apartamento,
+            a.endereco_complemento,
             a.localizacao_origem,
             a.localizacao_precisao,
             a.localizacao_precisao_metros,
@@ -708,6 +732,12 @@ function agendamento_format_board(array $rows, ?string $currentToken, bool $isAd
             $item['latitude'] = isset($row['latitude']) ? (float)$row['latitude'] : null;
             $item['longitude'] = isset($row['longitude']) ? (float)$row['longitude'] : null;
             $item['cep'] = $row['cep'] ?? null;
+            $item['endereco_numero'] = $row['endereco_numero'] ?? null;
+            $item['endereco_quadra'] = $row['endereco_quadra'] ?? null;
+            $item['endereco_lote'] = $row['endereco_lote'] ?? null;
+            $item['endereco_predio'] = $row['endereco_predio'] ?? null;
+            $item['endereco_apartamento'] = $row['endereco_apartamento'] ?? null;
+            $item['endereco_complemento'] = $row['endereco_complemento'] ?? null;
             $item['localizacao_origem'] = $row['localizacao_origem'] ?? null;
             $item['localizacao_precisao'] = $row['localizacao_precisao'] ?? null;
             $item['localizacao_precisao_metros'] = isset($row['localizacao_precisao_metros']) ? (int)$row['localizacao_precisao_metros'] : null;

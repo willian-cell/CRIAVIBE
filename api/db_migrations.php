@@ -337,6 +337,16 @@ try {
     add_column_if_missing($db, 'agendamento_aulas', 'endereco', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'agendamento_aulas', 'latitude', 'DECIMAL(10, 8) DEFAULT NULL');
     add_column_if_missing($db, 'agendamento_aulas', 'longitude', 'DECIMAL(11, 8) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'cep', 'VARCHAR(9) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'endereco_numero', 'VARCHAR(40) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'endereco_quadra', 'VARCHAR(80) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'endereco_lote', 'VARCHAR(80) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'endereco_predio', 'VARCHAR(120) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'endereco_apartamento', 'VARCHAR(80) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'endereco_complemento', 'VARCHAR(180) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'localizacao_origem', 'VARCHAR(20) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'localizacao_precisao', 'VARCHAR(20) DEFAULT NULL');
+    add_column_if_missing($db, 'agendamento_aulas', 'localizacao_precisao_metros', 'INT DEFAULT NULL');
 
     try {
         if (index_exists($db, 'agendamento_alunos', 'email')) {

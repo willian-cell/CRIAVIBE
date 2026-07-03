@@ -123,11 +123,17 @@ try {
             latitude,
             longitude,
             cep,
+            endereco_numero,
+            endereco_quadra,
+            endereco_lote,
+            endereco_predio,
+            endereco_apartamento,
+            endereco_complemento,
             localizacao_origem,
             localizacao_precisao,
             localizacao_precisao_metros
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     foreach ($lessons as $lesson) {
@@ -149,6 +155,12 @@ try {
             $lesson['latitude'] ?? null,
             $lesson['longitude'] ?? null,
             $lesson['cep'] ?? null,
+            $lesson['endereco_numero'] ?? null,
+            $lesson['endereco_quadra'] ?? null,
+            $lesson['endereco_lote'] ?? null,
+            $lesson['endereco_predio'] ?? null,
+            $lesson['endereco_apartamento'] ?? null,
+            $lesson['endereco_complemento'] ?? null,
             $lesson['localizacao_origem'] ?? null,
             $lesson['localizacao_precisao'] ?? null,
             $lesson['localizacao_precisao_metros'] ?? null,

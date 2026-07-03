@@ -689,6 +689,57 @@
       color: var(--text);
     }
 
+    .location-details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .location-details-grid .form-group {
+      margin-bottom: 0;
+    }
+
+    .location-details-grid label {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      color: var(--text-muted);
+      font-weight: 800;
+    }
+
+    .location-details-grid input {
+      min-height: 40px;
+      font-size: 0.8rem;
+    }
+
+    .summary-location-note {
+      margin: 12px 0 0;
+      font-size: 0.72rem;
+      line-height: 1.35;
+      color: var(--text-muted);
+    }
+
+    .lesson-location-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .lesson-location-details span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: var(--surface);
+    }
+
     /* ── SCHEDULING INTERFACE ── */
     .horizontal-calendar {
       display: flex;
@@ -1754,7 +1805,8 @@
 
       .student-profile-grid,
       .student-plan-grid,
-      .student-inline-form {
+      .student-inline-form,
+      .location-details-grid {
         grid-template-columns: 1fr;
       }
 
@@ -2288,6 +2340,51 @@
             <div class="summary-item"><label>Data da aula</label><span id="sum-agenda-data">Selecione...</span></div>
             <div class="summary-item"><label>Horário</label><span id="sum-agenda-hora">Selecione...</span></div>
           </div>
+          <div class="location-details-grid" aria-label="Detalhes do local da aula">
+            <div class="form-group">
+              <label for="reg-address-number">Numero</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-hashtag input-icon"></i>
+                <input type="text" id="reg-address-number" placeholder="Ex: 12" oninput="syncAddressDetails('reg')">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-address-block">Quadra</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-border-all input-icon"></i>
+                <input type="text" id="reg-address-block" placeholder="Ex: 71" oninput="syncAddressDetails('reg')">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-address-lot">Lote</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-vector-square input-icon"></i>
+                <input type="text" id="reg-address-lot" placeholder="Ex: 08" oninput="syncAddressDetails('reg')">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-address-building">Predio</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-building input-icon"></i>
+                <input type="text" id="reg-address-building" placeholder="Bloco/predio" oninput="syncAddressDetails('reg')">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-address-apartment">Apartamento</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-door-closed input-icon"></i>
+                <input type="text" id="reg-address-apartment" placeholder="Ex: 204" oninput="syncAddressDetails('reg')">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-address-complement">Complemento</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-note-sticky input-icon"></i>
+                <input type="text" id="reg-address-complement" placeholder="Portao, referencia..." oninput="syncAddressDetails('reg')">
+              </div>
+            </div>
+          </div>
+          <p class="summary-location-note">Confirme ou complete estes detalhes antes de finalizar. Eles ficam visiveis para aluno e professor no painel.</p>
         </div>
 
         <div class="btn-actions-row">
@@ -2607,6 +2704,50 @@
           </div>
           <div id="modal-address-suggestions" class="address-suggestions-dropdown" style="display: none;"></div>
           <p id="modal-location-status" class="location-status" aria-live="polite">Informe o CEP, endereço ou use sua localização.</p>
+          <div class="location-details-grid" aria-label="Detalhes do local da aula">
+            <div class="form-group">
+              <label for="modal-address-number">Numero</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-hashtag input-icon"></i>
+                <input type="text" id="modal-address-number" placeholder="Ex: 12">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="modal-address-block">Quadra</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-border-all input-icon"></i>
+                <input type="text" id="modal-address-block" placeholder="Ex: 71">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="modal-address-lot">Lote</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-vector-square input-icon"></i>
+                <input type="text" id="modal-address-lot" placeholder="Ex: 08">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="modal-address-building">Predio</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-building input-icon"></i>
+                <input type="text" id="modal-address-building" placeholder="Bloco/predio">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="modal-address-apartment">Apartamento</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-door-closed input-icon"></i>
+                <input type="text" id="modal-address-apartment" placeholder="Ex: 204">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="modal-address-complement">Complemento</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-note-sticky input-icon"></i>
+                <input type="text" id="modal-address-complement" placeholder="Portao, referencia...">
+              </div>
+            </div>
+          </div>
         </div>
         <div id="modal-map-container"
           style="height: 180px; border-radius: 12px; border: 1.5px solid var(--border); margin-bottom: 15px; overflow: hidden; position: relative; z-index: 10;">
@@ -2751,7 +2892,13 @@
         plano: 'local', // 'local' ou 'out'
         forma_pagamento: 'PIX', // 'PIX', 'Dinheiro', 'Cartão de crédito'
         data_aula: '',
-        horarios: []
+        horarios: [],
+        endereco_numero: '',
+        endereco_quadra: '',
+        endereco_lote: '',
+        endereco_predio: '',
+        endereco_apartamento: '',
+        endereco_complemento: ''
       },
 
       // Dados carregados das APIs
@@ -3298,25 +3445,7 @@
     }
 
     function getStudentLessonsPayload() {
-      return state.board.filter(a => a.is_owner).map(a => ({
-        aula_id: a.aula_id,
-        dia_semana: a.dia_semana,
-        data_aula: a.data_aula,
-        horario: a.horario,
-        quantidade_horas: a.quantidade_horas,
-        cidade: a.cidade,
-        modulo_id: a.modulo_id,
-        assunto_id: a.assunto_id,
-        status: a.status,
-        observacoes: a.observacoes || '',
-        endereco: a.endereco || null,
-        latitude: a.latitude || null,
-        longitude: a.longitude || null,
-        cep: a.cep || null,
-        localizacao_origem: a.localizacao_origem || null,
-        localizacao_precisao: a.localizacao_precisao || null,
-        localizacao_precisao_metros: a.localizacao_precisao_metros || null
-      }));
+      return state.board.filter(a => a.is_owner).map(lessonToSavePayload);
     }
 
     async function saveStudentDataInline({ aluno = null, plano = null, aulas = null } = {}) {
@@ -3573,9 +3702,9 @@
           const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(aula.endereco)}`;
           addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.endereco)} 
             <a href="${mapLink}" target="_blank" style="color: var(--primary); font-weight: 700; margin-left: 6px; text-decoration: none;"><i class="fa-solid fa-location-arrow"></i> Como Chegar</a>
-          </p>`;
+          </p>${lessonAddressDetailsHtml(aula)}`;
         } else {
-          addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.cidade)}</p>`;
+          addressHtml = `<p><i class="fa-solid fa-location-dot"></i> ${escapeHtml(aula.cidade)}</p>${lessonAddressDetailsHtml(aula)}`;
         }
 
         card.querySelector('.lesson-item-info').insertAdjacentHTML('beforeend', `
@@ -3796,6 +3925,7 @@
             <a href="${mapLink}" target="_blank" style="color:var(--primary); font-weight:700; margin-left:4px; text-decoration:none;"><i class="fa-solid fa-location-arrow"></i> Mapa</a>
           </span>`;
         }
+        localDesc += lessonAddressDetailsHtml(aula);
         localDesc += `<span class="teacher-cell-muted">${escapeHtml(valorText)}</span>`;
 
         tr.innerHTML = `
@@ -4111,18 +4241,9 @@
       const aulaRef = state.board.find(a => a.aula_id === aulaId);
       if (!aulaRef) return;
 
-      const aulasDoAluno = state.board.filter(a => a.aluno_id === aulaRef.aluno_id).map(a => ({
-        aula_id: a.aula_id,
-        dia_semana: a.dia_semana,
-        data_aula: a.data_aula,
-        horario: a.horario,
-        quantidade_horas: a.quantidade_horas,
-        cidade: a.cidade,
-        modulo_id: a.modulo_id,
-        assunto_id: a.assunto_id,
-        status: a.aula_id === aulaId ? nextStatus : a.status,
-        observacoes: a.observacoes || ''
-      }));
+      const aulasDoAluno = state.board
+        .filter(a => a.aluno_id === aulaRef.aluno_id)
+        .map(a => ({ ...lessonToSavePayload(a), status: a.aula_id === aulaId ? nextStatus : a.status }));
 
       try {
         await request('/save.php', {
@@ -4214,6 +4335,52 @@
         : { address: 'modal-address-input', cep: 'modal-cep-input', suggestions: 'modal-address-suggestions', status: 'modal-location-status' };
     }
 
+    function getAddressDetailFields(mapType) {
+      const prefix = mapType === 'reg' ? 'reg' : 'modal';
+      return {
+        endereco_numero: `${prefix}-address-number`,
+        endereco_quadra: `${prefix}-address-block`,
+        endereco_lote: `${prefix}-address-lot`,
+        endereco_predio: `${prefix}-address-building`,
+        endereco_apartamento: `${prefix}-address-apartment`,
+        endereco_complemento: `${prefix}-address-complement`
+      };
+    }
+
+    function getAddressDetailsPayload(mapType) {
+      const fields = getAddressDetailFields(mapType);
+      return Object.fromEntries(Object.entries(fields).map(([key, id]) => {
+        const value = document.getElementById(id)?.value.trim() || '';
+        return [key, value || null];
+      }));
+    }
+
+    function setAddressDetailsFields(mapType, data = {}) {
+      Object.entries(getAddressDetailFields(mapType)).forEach(([key, id]) => {
+        const input = document.getElementById(id);
+        if (input) input.value = data[key] || '';
+      });
+      if (mapType === 'reg') syncAddressDetails('reg');
+    }
+
+    window.syncAddressDetails = function (mapType) {
+      if (mapType !== 'reg') return;
+      Object.assign(state.regData, getAddressDetailsPayload('reg'));
+    };
+
+    function lessonAddressDetailsHtml(aula) {
+      const detailItems = [
+        ['No.', aula.endereco_numero],
+        ['Quadra', aula.endereco_quadra],
+        ['Lote', aula.endereco_lote],
+        ['Predio', aula.endereco_predio],
+        ['Apto', aula.endereco_apartamento],
+        ['Compl.', aula.endereco_complemento]
+      ].filter(([, value]) => value);
+      if (!detailItems.length) return '';
+      return `<span class="lesson-location-details">${detailItems.map(([label, value]) => `<span>${label}: ${escapeHtml(value)}</span>`).join('')}</span>`;
+    }
+
     function setLocationStatus(mapType, message, level = '') {
       const element = document.getElementById(getLocationFields(mapType).status);
       if (!element) return;
@@ -4227,9 +4394,38 @@
       const cep = document.getElementById(fields.cep)?.value.replace(/\D/g, '') || '';
       return {
         cep: cep || null,
+        ...getAddressDetailsPayload(mapType),
         localizacao_origem: input?.dataset.locationSource || null,
         localizacao_precisao: input?.dataset.locationPrecision || null,
         localizacao_precisao_metros: input?.dataset.locationAccuracy ? Number(input.dataset.locationAccuracy) : null
+      };
+    }
+
+    function lessonToSavePayload(a) {
+      return {
+        aula_id: a.aula_id || null,
+        dia_semana: a.dia_semana,
+        data_aula: a.data_aula,
+        horario: a.horario,
+        quantidade_horas: a.quantidade_horas,
+        cidade: a.cidade,
+        modulo_id: a.modulo_id,
+        assunto_id: a.assunto_id,
+        status: a.status,
+        observacoes: a.observacoes || '',
+        endereco: a.endereco || null,
+        latitude: a.latitude || null,
+        longitude: a.longitude || null,
+        cep: a.cep || null,
+        endereco_numero: a.endereco_numero || null,
+        endereco_quadra: a.endereco_quadra || null,
+        endereco_lote: a.endereco_lote || null,
+        endereco_predio: a.endereco_predio || null,
+        endereco_apartamento: a.endereco_apartamento || null,
+        endereco_complemento: a.endereco_complemento || null,
+        localizacao_origem: a.localizacao_origem || null,
+        localizacao_precisao: a.localizacao_precisao || null,
+        localizacao_precisao_metros: a.localizacao_precisao_metros || null
       };
     }
 
@@ -5081,6 +5277,7 @@
 
       const cepInput = document.getElementById('modal-cep-input');
       if (cepInput) cepInput.value = '';
+      setAddressDetailsFields('modal', {});
 
       // Popula cidades
       const citySelect = document.getElementById('slot-city');
@@ -5137,7 +5334,8 @@
       if (timeLabel) timeLabel.textContent = 'Selecione o Horário de Início (1 horário)';
 
       const cepInput = document.getElementById('modal-cep-input');
-      if (cepInput) cepInput.value = '';
+      if (cepInput) cepInput.value = aula.cep || '';
+      setAddressDetailsFields('modal', aula);
 
       document.getElementById('slot-modal-title').textContent = 'Editar Aula';
       document.getElementById('btn-save-slot').textContent = 'Salvar Alterações';
@@ -5440,21 +5638,9 @@
 
       let payload = {};
       if (state.alunoLogado) {
-        let minhasAulas = state.board.filter(a => a.is_owner && a.aula_id !== state.modalEditingLessonId).map(a => ({
-          aula_id: a.aula_id,
-          dia_semana: a.dia_semana,
-          data_aula: a.data_aula,
-          horario: a.horario,
-          quantidade_horas: a.quantidade_horas,
-          cidade: a.cidade,
-          modulo_id: a.modulo_id,
-          assunto_id: a.assunto_id,
-          status: a.status,
-          observacoes: a.observacoes || '',
-          endereco: a.endereco || null,
-          latitude: a.latitude || null,
-          longitude: a.longitude || null
-        }));
+        let minhasAulas = state.board
+          .filter(a => a.is_owner && a.aula_id !== state.modalEditingLessonId)
+          .map(lessonToSavePayload);
 
         minhasAulas = minhasAulas.concat(newLessonsList);
 
@@ -5481,21 +5667,9 @@
             return;
           }
 
-          let aulasDoAluno = state.board.filter(a => a.aluno_id === aulaRef.aluno_id && a.aula_id !== state.modalEditingLessonId).map(a => ({
-            aula_id: a.aula_id,
-            dia_semana: a.dia_semana,
-            data_aula: a.data_aula,
-            horario: a.horario,
-            quantidade_horas: a.quantidade_horas,
-            cidade: a.cidade,
-            modulo_id: a.modulo_id,
-            assunto_id: a.assunto_id,
-            status: a.status,
-            observacoes: a.observacoes || '',
-            endereco: a.endereco || null,
-            latitude: a.latitude || null,
-            longitude: a.longitude || null
-          }));
+          let aulasDoAluno = state.board
+            .filter(a => a.aluno_id === aulaRef.aluno_id && a.aula_id !== state.modalEditingLessonId)
+            .map(lessonToSavePayload);
 
           aulasDoAluno = aulasDoAluno.concat(newLessonsList);
 
@@ -5567,18 +5741,7 @@
         return;
       }
 
-      const aulas = state.board.filter(a => a.aluno_id === alunoId).map(a => ({
-        aula_id: a.aula_id,
-        dia_semana: a.dia_semana,
-        data_aula: a.data_aula,
-        horario: a.horario,
-        quantidade_horas: a.quantidade_horas,
-        cidade: a.cidade,
-        modulo_id: a.modulo_id,
-        assunto_id: a.assunto_id,
-        status: a.status,
-        observacoes: a.observacoes || ''
-      }));
+      const aulas = state.board.filter(a => a.aluno_id === alunoId).map(lessonToSavePayload);
 
       const payload = {
         token_publico: ref.token_publico,

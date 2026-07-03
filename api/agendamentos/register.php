@@ -102,8 +102,10 @@ try {
             INSERT INTO agendamento_aulas (
                 aluno_id, plano_id, dia_semana, data_aula, horario,
                 quantidade_horas, cidade, valor_hora_centavos, valor_centavos, status,
-                endereco, latitude, longitude, cep, localizacao_origem, localizacao_precisao, localizacao_precisao_metros
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pre_agendado', ?, ?, ?, ?, ?, ?, ?)
+                endereco, latitude, longitude, cep,
+                endereco_numero, endereco_quadra, endereco_lote, endereco_predio, endereco_apartamento, endereco_complemento,
+                localizacao_origem, localizacao_precisao, localizacao_precisao_metros
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pre_agendado', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         foreach ($aulasValidadas as $aula) {
@@ -121,6 +123,12 @@ try {
                 $aula['latitude'] ?? null,
                 $aula['longitude'] ?? null,
                 $aula['cep'] ?? null,
+                $aula['endereco_numero'] ?? null,
+                $aula['endereco_quadra'] ?? null,
+                $aula['endereco_lote'] ?? null,
+                $aula['endereco_predio'] ?? null,
+                $aula['endereco_apartamento'] ?? null,
+                $aula['endereco_complemento'] ?? null,
                 $aula['localizacao_origem'] ?? null,
                 $aula['localizacao_precisao'] ?? null,
                 $aula['localizacao_precisao_metros'] ?? null

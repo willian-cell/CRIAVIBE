@@ -44,8 +44,23 @@ try {
     }
 
     $lesson = $lessons[0];
-    $insert = $db->prepare('INSERT INTO agendamento_aulas (aluno_id, plano_id, modulo_id, assunto_id, dia_semana, data_aula, horario, quantidade_horas, cidade, valor_hora_centavos, valor_centavos, status, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    $insert->execute([$studentId, $planId, $lesson['modulo_id'], $lesson['assunto_id'], $lesson['dia_semana'], $lesson['data_aula'], $lesson['horario'], $lesson['quantidade_horas'], $lesson['cidade'], $lesson['valor_hora_centavos'], $lesson['valor_centavos'], $lesson['status'], $lesson['observacoes']]);
+    $insert = $db->prepare('
+        INSERT INTO agendamento_aulas (
+            aluno_id, plano_id, modulo_id, assunto_id, dia_semana, data_aula, horario,
+            quantidade_horas, cidade, valor_hora_centavos, valor_centavos, status, observacoes,
+            endereco, latitude, longitude, cep,
+            endereco_numero, endereco_quadra, endereco_lote, endereco_predio, endereco_apartamento, endereco_complemento,
+            localizacao_origem, localizacao_precisao, localizacao_precisao_metros
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ');
+    $insert->execute([
+        $studentId, $planId, $lesson['modulo_id'], $lesson['assunto_id'], $lesson['dia_semana'], $lesson['data_aula'], $lesson['horario'],
+        $lesson['quantidade_horas'], $lesson['cidade'], $lesson['valor_hora_centavos'], $lesson['valor_centavos'], $lesson['status'], $lesson['observacoes'],
+        $lesson['endereco'] ?? null, $lesson['latitude'] ?? null, $lesson['longitude'] ?? null, $lesson['cep'] ?? null,
+        $lesson['endereco_numero'] ?? null, $lesson['endereco_quadra'] ?? null, $lesson['endereco_lote'] ?? null,
+        $lesson['endereco_predio'] ?? null, $lesson['endereco_apartamento'] ?? null, $lesson['endereco_complemento'] ?? null,
+        $lesson['localizacao_origem'] ?? null, $lesson['localizacao_precisao'] ?? null, $lesson['localizacao_precisao_metros'] ?? null
+    ]);
     $aulaId = (int)$db->lastInsertId();
     $db->prepare('UPDATE agendamento_planos SET aulas_usadas = aulas_usadas + 1 WHERE id = ?')->execute([$planId]);
     agendamento_log($db, $aulaId, $studentId, 'aula_agendada_professor', $lesson, 'fotografo', $_SESSION['agendamento_admin_email'] ?? null);
