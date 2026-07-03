@@ -1654,6 +1654,152 @@
       margin-top: 2px;
     }
 
+    .teacher-students-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 560px;
+      overflow-y: auto;
+      padding: 2px 4px 2px 0;
+      margin-bottom: 20px;
+      scrollbar-gutter: stable;
+    }
+
+    .teacher-student-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .teacher-student-card:hover,
+    .teacher-student-card.is-open {
+      border-color: rgba(119, 122, 67, 0.45);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .teacher-student-row {
+      display: grid;
+      grid-template-columns: minmax(210px, 1fr) 150px 150px auto;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+    }
+
+    .teacher-student-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .teacher-student-main strong,
+    .teacher-student-plan strong {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .teacher-student-main span,
+    .teacher-student-plan span,
+    .teacher-student-progress span {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .teacher-student-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 7px;
+    }
+
+    .teacher-student-details {
+      display: none;
+      border-top: 1px solid var(--border);
+      background: var(--surface-sub);
+      padding: 14px;
+      max-height: min(430px, 58vh);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+    }
+
+    .teacher-student-card.is-open .teacher-student-details {
+      display: block;
+    }
+
+    .teacher-student-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .teacher-student-detail-item {
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 10px;
+      padding: 10px;
+      min-width: 0;
+    }
+
+    .teacher-student-detail-item.full {
+      grid-column: 1 / -1;
+    }
+
+    .teacher-student-detail-item label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .teacher-student-detail-item span,
+    .teacher-student-detail-item a {
+      color: var(--text);
+      font-size: 0.76rem;
+      font-weight: 700;
+      line-height: 1.35;
+      text-decoration: none;
+    }
+
+    .teacher-student-detail-item a {
+      color: var(--primary);
+    }
+
+    .teacher-student-lessons {
+      display: grid;
+      gap: 8px;
+    }
+
+    .teacher-student-lesson-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 9px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
     .teacher-details-list {
       display: flex;
       flex-direction: column;
@@ -2017,6 +2163,37 @@
       .teacher-month-card { flex-basis: min(330px, 86vw); }
       .teacher-lesson-row { grid-template-columns: 1fr auto; gap: 14px; }
       .teacher-lesson-student { grid-column: 1 / -1; }
+
+      .teacher-students-list {
+        max-height: 540px;
+      }
+
+      .teacher-student-row {
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+      }
+
+      .teacher-student-plan,
+      .teacher-student-progress {
+        grid-column: 1 / -1;
+      }
+
+      .teacher-student-actions {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .teacher-student-details {
+        max-height: 340px;
+      }
+
+      .teacher-student-details-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .teacher-student-detail-item.full {
+        grid-column: auto;
+      }
 
       .or-separator {
         margin: 16px 0;
@@ -2710,7 +2887,7 @@
                 </select>
               </div>
             </div>
-            <div class="admin-table-container">
+            <div class="admin-table-container" style="display: none;">
               <table class="admin-table">
                 <thead>
                   <tr>
@@ -2731,7 +2908,8 @@
 
           <!-- TAB CONTENT: ALUNOS -->
           <div class="admin-tab-panel" id="admin-panel-alunos" style="display: none;">
-            <div class="admin-table-container">
+            <div class="teacher-students-list" id="teacher-alunos-list" aria-live="polite"></div>
+            <div class="admin-table-container" style="display: none;">
               <table class="admin-table">
                 <thead>
                   <tr>
@@ -2985,6 +3163,7 @@
       currentView: 'view-login',
       selectedMonth: null,
       teacherSelectedDate: null,
+      openTeacherStudentId: null,
 
       // Dados do formulário de cadastro (Steps)
       regData: {
@@ -4373,6 +4552,126 @@
         tbody.appendChild(tr);
       });
     }
+
+    function renderTeacherAlunosPanel() {
+      const list = document.getElementById('teacher-alunos-list');
+      const legacyTbody = document.getElementById('teacher-alunos-tbody');
+      if (legacyTbody) legacyTbody.innerHTML = '';
+      if (!list) return;
+      list.innerHTML = '';
+
+      const alunosMap = new Map();
+      state.board.forEach(item => {
+        if (item.aluno_id && !alunosMap.has(item.aluno_id)) {
+          alunosMap.set(item.aluno_id, {
+            id: item.aluno_id,
+            nome: item.aluno,
+            email: item.email,
+            telefone: item.telefone,
+            plano_nome: item.plano_nome,
+            total_aulas: item.total_aulas,
+            aulas_usadas: item.aulas_usadas,
+            plano_status: item.plano_status,
+            forma_pagamento: item.forma_pagamento,
+            token_publico: item.token_publico,
+            aulas: []
+          });
+        }
+        if (item.aluno_id) alunosMap.get(item.aluno_id).aulas.push(item);
+      });
+
+      state.teacherStudentsById = alunosMap;
+
+      if (alunosMap.size === 0) {
+        list.innerHTML = '<div class="teacher-calendar-empty">Nenhum aluno matriculado.</div>';
+        return;
+      }
+
+      [...alunosMap.values()]
+        .sort((a, b) => String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'))
+        .forEach(aluno => {
+          const card = document.createElement('div');
+          const total = Number(aluno.total_aulas || 0);
+          const usadas = Number(aluno.aulas_usadas || 0);
+          const percent = total > 0 ? Math.min(100, Math.round((usadas / total) * 100)) : 0;
+          const isOpen = state.openTeacherStudentId === aluno.id;
+          const addressLesson = getStudentPrimaryAddressLesson(aluno.aulas || []);
+          const fullAddress = addressLesson ? getFullLessonAddress(addressLesson) : '';
+          const mapUrl = getGoogleMapsUrlForLesson(addressLesson);
+          const nextLessons = (aluno.aulas || [])
+            .filter(aula => String(aula.data_aula || '') >= new Date().toISOString().slice(0, 10))
+            .sort((a, b) => `${a.data_aula || ''} ${a.horario || ''}`.localeCompare(`${b.data_aula || ''} ${b.horario || ''}`))
+            .slice(0, 3);
+          const lessonsHtml = nextLessons.length
+            ? nextLessons.map(aula => `<div class="teacher-student-lesson-line"><span>${formatDateText(aula.data_aula)} - ${escapeHtml(aula.horario || '--:--')}</span><span class="lesson-status-badge ${aula.status || 'pre_agendado'}">${escapeHtml((aula.status || 'pre_agendado').replace('_', ' '))}</span></div>`).join('')
+            : '<span>Nenhuma aula futura encontrada.</span>';
+
+          card.className = `teacher-student-card${isOpen ? ' is-open' : ''}`;
+          card.innerHTML = `
+            <div class="teacher-student-row" role="button" tabindex="0" onclick="toggleTeacherStudentDetails(${aluno.id})" onkeydown="handleTeacherStudentRowKey(event, ${aluno.id})" aria-expanded="${isOpen ? 'true' : 'false'}">
+              <div class="teacher-student-main">
+                <span class="teacher-avatar">${getInitials(aluno.nome || 'Aluno')}</span>
+                <div>
+                  <strong>${escapeHtml(aluno.nome || 'Aluno sem nome')}</strong>
+                  <span>${escapeHtml(aluno.telefone || 'Telefone nao informado')}</span>
+                </div>
+              </div>
+              <div class="teacher-student-plan">
+                <strong>${escapeHtml(aluno.plano_nome || 'Sem plano')}</strong>
+                <span>${escapeHtml(aluno.plano_status || 'ativo')} - ${escapeHtml(aluno.forma_pagamento || 'Pagamento nao informado')}</span>
+              </div>
+              <div class="teacher-student-progress">
+                <strong>${usadas} de ${total || 10} aulas</strong>
+                <div class="aluno-plan-progress-container" style="background: var(--border); margin: 7px 0 3px;">
+                  <div class="aluno-plan-progress-fill" style="width: ${percent}%; background: var(--primary);"></div>
+                </div>
+                <span>${percent}% concluido</span>
+              </div>
+              <div class="teacher-student-actions">
+                ${mapUrl ? `<a class="admin-btn-action" href="${mapUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Abrir rota no Google Maps"><i class="fa-solid fa-map-location-dot"></i></a>` : ''}
+                <button class="admin-btn-action" type="button" onclick="event.stopPropagation(); editTeacherStudentPlan(${aluno.id})" title="Editar creditos/plano"><i class="fa-solid fa-receipt"></i></button>
+                <button class="admin-btn-action danger" type="button" onclick="event.stopPropagation(); deleteTeacherStudent(${aluno.id})" title="Excluir aluno completo"><i class="fa-solid fa-user-xmark"></i></button>
+              </div>
+            </div>
+            <div class="teacher-student-details">
+              <div class="teacher-student-details-grid">
+                <div class="teacher-student-detail-item"><label><i class="fa-solid fa-user"></i> Aluno</label><span>${escapeHtml(aluno.nome || 'Aluno sem nome')}</span></div>
+                <div class="teacher-student-detail-item"><label><i class="fa-solid fa-phone"></i> WhatsApp</label><span>${escapeHtml(aluno.telefone || 'Telefone nao informado')}</span></div>
+                <div class="teacher-student-detail-item"><label><i class="fa-solid fa-envelope"></i> E-mail</label><span>${escapeHtml(aluno.email || 'E-mail nao informado')}</span></div>
+                <div class="teacher-student-detail-item"><label><i class="fa-solid fa-credit-card"></i> Pagamento</label><span>${escapeHtml(aluno.forma_pagamento || 'Nao informado')}</span></div>
+                <div class="teacher-student-detail-item"><label><i class="fa-solid fa-book-open"></i> Plano</label><span>${escapeHtml(aluno.plano_nome || 'Sem plano')} - ${escapeHtml(aluno.plano_status || 'ativo')}</span></div>
+                <div class="teacher-student-detail-item"><label><i class="fa-solid fa-chart-simple"></i> Credito aulas</label><span>${usadas} de ${total || 10} aulas - ${percent}% concluido</span></div>
+                <div class="teacher-student-detail-item full"><label><i class="fa-solid fa-location-dot"></i> Endereco principal</label><span>${escapeHtml(fullAddress || 'Endereco nao informado')}</span>${mapUrl ? `<br><a href="${mapUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i class="fa-solid fa-location-arrow"></i> Abrir rota no Google Maps</a>` : ''}</div>
+                <div class="teacher-student-detail-item full"><label><i class="fa-solid fa-calendar-days"></i> Proximas aulas</label><div class="teacher-student-lessons">${lessonsHtml}</div></div>
+              </div>
+            </div>
+          `;
+          list.appendChild(card);
+        });
+    }
+
+    window.toggleTeacherStudentDetails = function (alunoId) {
+      state.openTeacherStudentId = state.openTeacherStudentId === alunoId ? null : alunoId;
+      renderTeacherAlunosPanel();
+    };
+
+    window.handleTeacherStudentRowKey = function (event, alunoId) {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      toggleTeacherStudentDetails(alunoId);
+    };
+
+    window.editTeacherStudentPlan = function (alunoId) {
+      const aluno = state.teacherStudentsById?.get(alunoId);
+      if (!aluno) return;
+      openPlanEditModal(aluno.id, aluno.plano_nome || '', Number(aluno.total_aulas || 0), aluno.plano_status || 'ativo', aluno.forma_pagamento || '');
+    };
+
+    window.deleteTeacherStudent = function (alunoId) {
+      const aluno = state.teacherStudentsById?.get(alunoId);
+      if (!aluno) return;
+      deleteStudent(aluno.token_publico);
+    };
 
     async function quickUpdateLessonStatus(aulaId, nextStatus) {
       const aulaRef = state.board.find(a => a.aula_id === aulaId);
