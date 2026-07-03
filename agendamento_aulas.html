@@ -1308,6 +1308,10 @@
       border-top: 1px solid var(--border);
       background: var(--surface-sub);
       padding: 14px;
+      max-height: min(360px, 52vh);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
     }
 
     .lesson-item-card.is-open .lesson-item-details {
@@ -1993,6 +1997,10 @@
         grid-template-columns: 1fr;
       }
 
+      .lesson-item-details {
+        max-height: 240px;
+      }
+
       .admin-metrics-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -2603,7 +2611,7 @@
                 informado</span></div>
             <div class="student-plan-detail"><label>Status</label><span id="panel-student-plan-status">Ativo</span>
             </div>
-            <div class="student-plan-detail"><label>Total contratado</label><span id="panel-student-plan-total">0
+            <div class="student-plan-detail"><label>Complete</label><span id="panel-student-plan-total">0
                 aulas</span></div>
           </div>
           <button class="inline-action-btn"
