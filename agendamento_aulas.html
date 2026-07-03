@@ -3273,6 +3273,7 @@
       }
 
       const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+      let firstAvailableDate = null;
 
       while (dateCursor.getDate() <= lastDayOfMonth && dateCursor.getMonth() === month) {
         const dayOfWeek = dateCursor.getDay();
@@ -3290,6 +3291,9 @@
            btn.className = 'calendar-day-btn';
            const isBlocked = state.blockedDates.some(block => block.data_aula === formattedDate);
            const hasReservedSlots = state.board.some(aula => aula.data_aula === formattedDate);
+           if (!isBlocked && !firstAvailableDate) {
+             firstAvailableDate = { date: formattedDate, dayName };
+           }
            if (isBlocked) btn.classList.add('blocked');
            if (hasReservedSlots) {
              btn.classList.add('has-reserved');
@@ -3315,8 +3319,8 @@
 
       // Se nenhuma data está selecionada e há dias disponíveis, clica no primeiro para inicializar
       const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
-      if (container.firstChild && (!state.regData.data_aula || !state.regData.data_aula.startsWith(monthPrefix))) {
-        container.firstChild.click();
+      if (firstAvailableDate && (!state.regData.data_aula || !state.regData.data_aula.startsWith(monthPrefix))) {
+        selectRegDate(firstAvailableDate.date, firstAvailableDate.dayName);
       } else if (state.regData.data_aula && state.regData.data_aula.startsWith(monthPrefix)) {
         const dayOfWeek = new Date(state.regData.data_aula + 'T00:00:00').getDay();
         generateRegHours(state.regData.data_aula, DAYS_NAMES[dayOfWeek]);
