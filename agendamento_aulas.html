@@ -2611,8 +2611,7 @@
                 informado</span></div>
             <div class="student-plan-detail"><label>Status</label><span id="panel-student-plan-status">Ativo</span>
             </div>
-            <div class="student-plan-detail"><label>Complete</label><span id="panel-student-plan-total">0
-                aulas</span></div>
+            <div class="student-plan-detail"><label>Premio</label><span id="panel-student-plan-total">Complete 10 aulas para ganhar um ensaio gratis!</span></div>
           </div>
           <button class="inline-action-btn"
             style="background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.24); margin-bottom: 14px;"
@@ -3761,7 +3760,8 @@
 
       document.getElementById('panel-student-plan-pagamento').textContent = plano.forma_pagamento || 'Nao informado';
       document.getElementById('panel-student-plan-status').textContent = plano.status || 'ativo';
-      document.getElementById('panel-student-plan-total').textContent = `${total} aulas`;
+      const rewardTarget = total || 10;
+      document.getElementById('panel-student-plan-total').textContent = `Complete ${rewardTarget} aulas para ganhar um ensaio gratis!`;
       document.getElementById('student-progress-bar').style.width = percent + '%';
       document.getElementById('student-progress-text').textContent = `${usadas} de ${total} aulas utilizadas`;
       document.getElementById('student-progress-percent').textContent = `${percent}% concluído`;
@@ -6208,4 +6208,3 @@
 </body>
 
 </html>
-
