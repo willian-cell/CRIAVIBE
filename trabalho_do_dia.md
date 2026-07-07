@@ -83,6 +83,15 @@ Após a primeira entrega, foram efetuadas melhorias adicionais nas telas móveis
 - Foram adicionadas regras CSS robustas para a classe `.admin-config-card` definindo cores baseadas nos tokens do tema (`var(--text)` e `var(--surface)`).
 - As caixas de texto (`input` e `textarea`) agora contam com bordas nítidas, fundo claro, contraste ideal e efeitos suaves de sombra durante o foco.
 
+### Redesenho do Sistema de Alertas (Visualização e Tempo)
+- O sistema de alertas e avisos (`showAlert`) foi completamente redesenhado. Ao invés de uma mensagem estática no topo que podia ficar oculta com o scroll, agora ele se comporta como um modal de erro flutuante centralizado de alta visibilidade.
+- O fundo do conteúdo é ofuscado/desfocado (`backdrop-filter: blur(4px)`) para direcionar a atenção do usuário.
+- O modal inclui:
+  - Um botão de fechar (X) no canto superior direito.
+  - Um botão vermelho de confirmação "Entendi" centralizado.
+  - Um timer interno que fecha automaticamente a mensagem após 4 segundos para evitar que o fluxo fique bloqueado caso o usuário não clique.
+- O controle de exibição do popup promocional de descontos foi reajustado para ser reiniciado a cada início de fluxo de cadastro (`view-register-step1`), impedindo que testes repetitivos silenciem o modal de incentivo nas sessões consecutivas.
+
 ---
 
 ## 5. Validações e Conformidade de Sintaxe

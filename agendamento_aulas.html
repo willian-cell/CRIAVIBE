@@ -929,17 +929,15 @@
 
     /* ── ERRORS & TOASTS ── */
     .status-error-msg {
-      background: rgba(248, 113, 113, 0.08);
-      border: 1px solid rgba(248, 113, 113, 0.2);
-      color: #b91c1c;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 20px;
+      position: fixed;
+      inset: 0;
+      background: rgba(44, 46, 27, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 15000;
       display: none;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      padding: 20px;
     }
 
     /* ── PAINEL DO ALUNO ── */
@@ -2358,9 +2356,16 @@
     <main class="flow-panel">
 
       <!-- STATUS/ERROR TOAST -->
-      <div class="status-error-msg" id="status-alert">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        <span id="status-alert-text">Mensagem de erro aqui.</span>
+      <!-- STATUS/ERROR TOAST -->
+      <div class="status-error-msg" id="status-alert" onclick="if(event.target === this) hideAlert()">
+        <div class="modal-box" style="max-width: 380px; text-align: center; padding: 25px; border-radius: 20px; border: 1.5px solid rgba(239, 68, 68, 0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; align-items: center; gap: 15px; position: relative;">
+          <button type="button" class="modal-close" onclick="hideAlert()" style="position: absolute; top: 12px; right: 12px; font-size: 1.2rem; cursor: pointer; border: none; background: none; color: var(--text-muted);">&times;</button>
+          <div style="font-size: 2.5rem; color: #ef4444;">
+            <i class="fa-solid fa-circle-exclamation"></i>
+          </div>
+          <span id="status-alert-text" style="color: var(--text); font-size: 0.95rem; font-weight: 600; line-height: 1.4;">Mensagem de erro aqui.</span>
+          <button type="button" class="btn" onclick="hideAlert()" style="background: #ef4444; color: white; width: 100%; border-radius: 12px; padding: 10px 0; font-weight: 700; cursor: pointer; border: none; font-size: 0.85rem; margin-top: 5px;">Entendi</button>
+        </div>
       </div>
 
       <!-- VIEW 1: LOGIN -->
@@ -3414,6 +3419,9 @@
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
         hideAlert();
+        if (viewId === 'view-register-step1') {
+          state.hasShownDiscountPopup = false;
+        }
         if (viewId === 'view-register-step4') {
           initRegisterMap();
         }
@@ -3421,16 +3429,26 @@
     }
 
     /* ── ALERTS / TOASTS ── */
+    let alertTimeout = null;
     function showAlert(text) {
       const alertEl = document.getElementById('status-alert');
       const textEl = document.getElementById('status-alert-text');
       alertEl.style.display = 'flex';
       textEl.textContent = text;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      if (alertTimeout) clearTimeout(alertTimeout);
+      alertTimeout = setTimeout(() => {
+        hideAlert();
+      }, 4000);
     }
 
     function hideAlert() {
-      document.getElementById('status-alert').style.display = 'none';
+      const alertEl = document.getElementById('status-alert');
+      if (alertEl) alertEl.style.display = 'none';
+      if (alertTimeout) {
+        clearTimeout(alertTimeout);
+        alertTimeout = null;
+      }
     }
 
     function togglePasswordVisibility(inputId, btn) {
