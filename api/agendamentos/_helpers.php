@@ -354,6 +354,29 @@ function agendamento_ensure_schema(PDO $db): void {
     } catch (Throwable $e) {
         error_log('Nao foi possivel migrar pre_agendamento legado: ' . $e->getMessage());
     }
+
+    try {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS agendamento_config (
+                chave VARCHAR(100) PRIMARY KEY,
+                valor TEXT NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+
+        $chkConfig = $db->query("SELECT COUNT(*) FROM agendamento_config")->fetchColumn();
+        if ((int)$chkConfig === 0) {
+            $db->exec("
+                INSERT INTO agendamento_config (chave, valor) VALUES
+                ('valor_santo_antonio_centavos', '10000'),
+                ('valor_outra_cidade_centavos', '15000'),
+                ('popup_mensagem', 'Você pode selecionar até três horários no mesmo dia e terá um super desconto se forem no mesmo dia!'),
+                ('desconto_2_aulas', '10'),
+                ('desconto_3_aulas', '20')
+            ");
+        }
+    } catch (Throwable $e) {
+        error_log('Nao foi possivel inicializar tabela de configuracoes de cobranca: ' . $e->getMessage());
+    }
 }
 
 function agendamento_is_admin(): bool {
@@ -565,6 +588,24 @@ function agendamento_validate_lessons(array $lessons): array {
         json_out(['status' => 'erro', 'mensagem' => 'Selecione pelo menos uma aula na tabela.'], 400);
     }
 
+    $lessonsByDateCount = [];
+    foreach ($lessons as $lesson) {
+        $d = trim($lesson['data_aula'] ?? '');
+        if ($d) {
+            $lessonsByDateCount[$d] = ($lessonsByDateCount[$d] ?? 0) + 1;
+        }
+    }
+
+    try {
+        $db = db();
+        $configs = agendamento_get_configs($db);
+        $desc2 = (int)($configs['desconto_2_aulas'] ?? 10);
+        $desc3 = (int)($configs['desconto_3_aulas'] ?? 20);
+    } catch (Throwable $e) {
+        $desc2 = 10;
+        $desc3 = 20;
+    }
+
     $valid = [];
     foreach ($lessons as $lesson) {
         $dia = agendamento_normalize_day($lesson['dia_semana'] ?? '');
@@ -652,6 +693,12 @@ function agendamento_validate_lessons(array $lessons): array {
         }
 
         $valorHora = agendamento_valor_hora_centavos($cidade);
+        $countOnDay = $lessonsByDateCount[$data] ?? 1;
+        if ($countOnDay == 2) {
+            $valorHora = (int)round($valorHora * (1 - $desc2 / 100));
+        } else if ($countOnDay >= 3) {
+            $valorHora = (int)round($valorHora * (1 - $desc3 / 100));
+        }
         $key = $dia . '|' . $data . '|' . $horario;
         $valid[$key] = [
             'dia_semana' => $dia,
@@ -1022,11 +1069,51 @@ function agendamento_assert_no_schedule_overlap(PDO $db, array $lessons, ?int $s
 }
 
 function agendamento_valor_hora_centavos(string $cidade): int {
+    try {
+        $db = db();
+        $configs = agendamento_get_configs($db);
+        $valLocal = (int)($configs['valor_santo_antonio_centavos'] ?? 10000);
+        $valOutra = (int)($configs['valor_outra_cidade_centavos'] ?? 15000);
+    } catch (Throwable $e) {
+        $valLocal = AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS;
+        $valOutra = AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS;
+    }
+
     $normalized = strtolower(trim($cidade));
     $normalized = str_replace(['â', 'ã', 'á', 'à', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú', 'ç'], ['a', 'a', 'a', 'a', 'e', 'e', 'i', 'o', 'o', 'o', 'u', 'c'], $normalized);
     return strpos($normalized, 'santo antonio do descoberto') !== false
-        ? AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS
-        : AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS;
+        ? $valLocal
+        : $valOutra;
+}
+
+function agendamento_get_configs(PDO $db): array {
+    $defaults = [
+        'valor_santo_antonio_centavos' => 10000,
+        'valor_outra_cidade_centavos' => 15000,
+        'popup_mensagem' => 'Você pode selecionar até três horários no mesmo dia e terá um super desconto se forem no mesmo dia!',
+        'desconto_2_aulas' => 10,
+        'desconto_3_aulas' => 20
+    ];
+    try {
+        $stmt = $db->query("SELECT chave, valor FROM agendamento_config");
+        if ($stmt) {
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $key = $row['chave'];
+                $val = $row['valor'];
+                if (isset($defaults[$key])) {
+                    if (strpos($key, 'valor') !== false || strpos($key, 'desconto') !== false) {
+                        $defaults[$key] = (int)$val;
+                    } else {
+                        $defaults[$key] = $val;
+                    }
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        // Table might not exist yet
+    }
+    return $defaults;
 }
 
 function agendamento_day_from_date(string $date): string {

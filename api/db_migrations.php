@@ -186,6 +186,25 @@ try {
     ");
 
     $db->exec("
+        CREATE TABLE IF NOT EXISTS agendamento_config (
+            chave VARCHAR(100) PRIMARY KEY,
+            valor TEXT NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    $chkConfig = $db->query("SELECT COUNT(*) FROM agendamento_config")->fetchColumn();
+    if ((int)$chkConfig === 0) {
+        $db->exec("
+            INSERT INTO agendamento_config (chave, valor) VALUES
+            ('valor_santo_antonio_centavos', '10000'),
+            ('valor_outra_cidade_centavos', '15000'),
+            ('popup_mensagem', 'Você pode selecionar até três horários no mesmo dia e terá um super desconto se forem no mesmo dia!'),
+            ('desconto_2_aulas', '10'),
+            ('desconto_3_aulas', '20')
+        ");
+    }
+
+    $db->exec("
         CREATE TABLE IF NOT EXISTS agendamento_alunos (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(160) NOT NULL,

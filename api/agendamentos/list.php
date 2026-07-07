@@ -42,13 +42,18 @@ foreach ($items as $item) {
     }
 }
 
+$configs = agendamento_get_configs($db);
+
 $payload = [
     'status' => 'ok',
     'dias' => AGENDAMENTO_DIAS,
     'horarios' => AGENDAMENTO_HORARIOS,
     'horas_opcoes' => AGENDAMENTO_HORAS_OPCOES,
-    'valor_santo_antonio_centavos' => AGENDAMENTO_VALOR_SANTO_ANTONIO_CENTAVOS,
-    'valor_outra_cidade_centavos' => AGENDAMENTO_VALOR_OUTRA_CIDADE_CENTAVOS,
+    'valor_santo_antonio_centavos' => (int)($configs['valor_santo_antonio_centavos'] ?? 10000),
+    'valor_outra_cidade_centavos' => (int)($configs['valor_outra_cidade_centavos'] ?? 15000),
+    'popup_mensagem' => $configs['popup_mensagem'] ?? 'Você pode selecionar até três horários no mesmo dia e terá um super desconto se forem no mesmo dia!',
+    'desconto_2_aulas' => (int)($configs['desconto_2_aulas'] ?? 10),
+    'desconto_3_aulas' => (int)($configs['desconto_3_aulas'] ?? 20),
     'status_opcoes' => AGENDAMENTO_STATUS,
     'curso' => $course,
     'admin' => $isAdmin ? ['email' => $_SESSION['agendamento_admin_email']] : null,
