@@ -93,6 +93,8 @@ Após a primeira entrega, foram efetuadas melhorias adicionais nas telas móveis
 - O controle de exibição do popup promocional de descontos foi reajustado para ser reiniciado a cada início de fluxo de cadastro (`view-register-step1`), impedindo que testes repetitivos silenciem o modal de incentivo nas sessões consecutivas.
 - **Resolução do Popup Oculto**: Identificado que o `#discount-modal` estava inserido dentro do contêiner `<section id="view-panel-teacher">` (Painel do Professor), o que fazia com que o modal ficasse oculto via `display: none` para o aluno na tela de cadastro. O modal foi movido para o escopo global (raiz do `<body>`), garantindo sua exibição imediata quando o aluno seleciona o primeiro horário.
 - **Prevenção de Cortes no Celular**: O resumo do agendamento foi redesenhado para usar um layout flexível em lista vertical para a precificação ao invés de um grid de 3 colunas, garantindo que o desconto progressivo e o total a pagar fiquem perfeitamente visíveis em qualquer dispositivo móvel sem cortes laterais.
+- **Responsividade (Breakpoint 1024px)**: Alterado o breakpoint de CSS `@media (max-width: 900px)` para `@media (max-width: 1024px)`. Isso garante que telas médias desktop (como a proporção 900x704) empilhem verticalmente de forma adaptada, ao invés de manter o layout de duas colunas que espremia e quebrava o visual.
+- **Rolagem por Scroll do Mouse (Desktop)**: Desenvolvido um redirecionamento Javascript `bindHorizontalScrollWheel` para as listagens horizontais (calendário de datas, abas administrativas e faixa do professor). O evento de rolagem vertical da roda do mouse (`wheel`) é convertido em rolagem horizontal, permitindo que usuários de desktop naveguem pelas datas usando a roda do mouse sobre a área.
 
 ---
 
