@@ -6812,7 +6812,7 @@
       if (state.hasShownDiscountPopup) return;
       state.hasShownDiscountPopup = true;
 
-      const popupMsg = state.popupMensagem || 'Você pode selecionar até três horários no mesmo dia e terá um super desconto se forem no mesmo dia!';
+      const popupMsg = state.popupMensagem || 'Agende até 3 aulas no mesmo dia e ganhe descontos progressivos na 2ª e 3ª aula!';
       document.getElementById('discount-modal-msg').textContent = popupMsg;
 
       const priceLocal = (state.valorSantoAntonioCentavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -6828,17 +6828,17 @@
       const priceOut3 = ((state.valorOutraCidadeCentavos / 100) * (1 - desc3 / 100)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
       const detailsHtml = `
-        <div style="margin-bottom: 8px;"><strong>Santo Antônio do Descoberto - GO:</strong></div>
-        <ul style="margin-left: 15px; margin-bottom: 12px; list-style: disc;">
-          <li>1 Aula: ${priceLocal}</li>
-          <li>2 Aulas (no mesmo dia): <strong>${priceLocal2}</strong> cada (${desc2}% de desconto)</li>
-          <li>3 Aulas (no mesmo dia): <strong>${priceLocal3}</strong> cada (${desc3}% de desconto)</li>
+        <div style="margin-bottom: 8px;"><strong>Aulas no mesmo dia em Santo Antônio:</strong></div>
+        <ul style="margin-left: 5px; margin-bottom: 16px; list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 4px;">
+          <li>• 1ª Aula: <strong>${priceLocal}</strong> (valor cheio)</li>
+          <li>• 2ª Aula: <strong>${priceLocal2}</strong> (com ${desc2}% de desconto)</li>
+          <li>• 3ª Aula: <strong>${priceLocal3}</strong> (com ${desc3}% de desconto)</li>
         </ul>
-        <div style="margin-bottom: 8px;"><strong>Outras Localidades:</strong></div>
-        <ul style="margin-left: 15px; list-style: disc;">
-          <li>1 Aula: ${priceOut}</li>
-          <li>2 Aulas (no mesmo dia): <strong>${priceOut2}</strong> cada (${desc2}% de desconto)</li>
-          <li>3 Aulas (no mesmo dia): <strong>${priceOut3}</strong> cada (${desc3}% de desconto)</li>
+        <div style="margin-bottom: 8px;"><strong>Aulas no mesmo dia em Outras Localidades:</strong></div>
+        <ul style="margin-left: 5px; list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 4px;">
+          <li>• 1ª Aula: <strong>${priceOut}</strong> (valor cheio)</li>
+          <li>• 2ª Aula: <strong>${priceOut2}</strong> (com ${desc2}% de desconto)</li>
+          <li>• 3ª Aula: <strong>${priceOut3}</strong> (com ${desc3}% de desconto)</li>
         </ul>
       `;
 
