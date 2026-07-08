@@ -3920,6 +3920,18 @@
       updateStep4Summary();
     }
 
+    function getDiscountedRate(index, rateCentavos) {
+      const desc2 = state.desconto2Aulas || 10;
+      const desc3 = state.desconto3Aulas || 20;
+      let discountPercent = 0;
+      if (index === 1) {
+        discountPercent = desc2;
+      } else if (index >= 2) {
+        discountPercent = desc3;
+      }
+      return Math.round(rateCentavos * (1 - discountPercent / 100));
+    }
+
     function updateStep4Summary() {
       const dateText = state.regData.data_aula ? formatDateText(state.regData.data_aula) : 'Selecione...';
       const hourText = state.regData.horarios?.length ? state.regData.horarios.join(', ') : 'Selecione...';
@@ -3941,14 +3953,11 @@
       const baseRateCentavos = state.regData.plano === 'local' ? state.valorSantoAntonioCentavos : state.valorOutraCidadeCentavos;
       const baseTotalCentavos = baseRateCentavos * slotCount;
 
-      let discountPercent = 0;
-      if (slotCount === 2) {
-        discountPercent = state.desconto2Aulas || 10;
-      } else if (slotCount >= 3) {
-        discountPercent = state.desconto3Aulas || 20;
+      let discountValueCentavos = 0;
+      for (let i = 0; i < slotCount; i++) {
+        const discountedRate = getDiscountedRate(i, baseRateCentavos);
+        discountValueCentavos += (baseRateCentavos - discountedRate);
       }
-
-      const discountValueCentavos = Math.round(baseTotalCentavos * (discountPercent / 100));
       const finalTotalCentavos = baseTotalCentavos - discountValueCentavos;
 
       const formatBRL = (val) => (val / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -3965,10 +3974,18 @@
           </div>
       `;
 
-      if (discountPercent > 0) {
+      if (discountValueCentavos > 0) {
+        const desc2 = state.desconto2Aulas || 10;
+        const desc3 = state.desconto3Aulas || 20;
+        let descLabel = '';
+        if (slotCount === 2) {
+          descLabel = `Super Desconto (2ª aula com ${desc2}%)`;
+        } else {
+          descLabel = `Super Desconto (2ª com ${desc2}% + 3ª com ${desc3}%)`;
+        }
         html += `
           <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--primary);">
-            <span>Super Desconto (${discountPercent}%):</span>
+            <span>${descLabel}:</span>
             <strong>-${formatBRL(discountValueCentavos)}</strong>
           </div>
         `;
@@ -4031,23 +4048,26 @@
 
       const minhasAulas = getStudentLessonsPayload();
 
-      state.regData.horarios.forEach(horario => minhasAulas.push({
-        dia_semana: dayOfWeek,
-        data_aula: state.regData.data_aula,
-        horario,
-        quantidade_horas: 1,
-        cidade: cidade,
-        modulo_id: null,
-        assunto_id: null,
-        status: 'pre_agendado',
-        observacoes: '',
-        valor_hora_centavos: rateCentavos,
-        valor_centavos: rateCentavos,
-        endereco: state.regData.endereco || null,
-        latitude: state.regData.latitude || null,
-        longitude: state.regData.longitude || null,
-        ...getLocationPayload('reg')
-      }));
+      state.regData.horarios.forEach((horario, index) => {
+        const lessonRateCentavos = getDiscountedRate(index, rateCentavos);
+        minhasAulas.push({
+          dia_semana: dayOfWeek,
+          data_aula: state.regData.data_aula,
+          horario,
+          quantidade_horas: 1,
+          cidade: cidade,
+          modulo_id: null,
+          assunto_id: null,
+          status: 'pre_agendado',
+          observacoes: '',
+          valor_hora_centavos: lessonRateCentavos,
+          valor_centavos: lessonRateCentavos,
+          endereco: state.regData.endereco || null,
+          latitude: state.regData.latitude || null,
+          longitude: state.regData.longitude || null,
+          ...getLocationPayload('reg')
+        });
+      });
 
       try {
         await saveStudentDataInline({
@@ -6530,7 +6550,8 @@
       let newLessonsList = [];
 
       if (isNew) {
-        state.modalSelectedTimes.forEach(hora => {
+        state.modalSelectedTimes.forEach((hora, index) => {
+          const lessonRateCentavos = state.alunoLogado ? getDiscountedRate(index, rateCentavos) : rateCentavos;
           newLessonsList.push({
             aula_id: null,
             dia_semana: dayOfWeekName,
@@ -6542,8 +6563,8 @@
             assunto_id: assuntoId,
             status: state.adminLogado ? status : 'pre_agendado',
             observacoes: state.adminLogado ? observacoes : '',
-            valor_hora_centavos: rateCentavos,
-            valor_centavos: rateCentavos * 1,
+            valor_hora_centavos: lessonRateCentavos,
+            valor_centavos: lessonRateCentavos * 1,
             endereco: enderecoVal || null,
             latitude: latVal ? Number(latVal) : null,
             longitude: lngVal ? Number(lngVal) : null,
