@@ -3059,6 +3059,11 @@
 
         </div>
 
+      </section>
+
+    </main>
+  </div>
+
   <!-- ── MODAL: INFORMAÇÃO DE DESCONTO PROGRESSIVO (STUDENT) ── -->
   <div class="modal-overlay" id="discount-modal">
     <div class="modal-box" style="max-width: 450px; text-align: center;">
@@ -3076,10 +3081,6 @@
         Entendi!
       </button>
     </div>
-  </div>
-      </section>
-
-    </main>
   </div>
 
   <!-- ── MODAL: DETALHES / AGENDAMENTO DE NOVA AULA (ALUNO/ADMIN) ── -->
@@ -3930,19 +3931,31 @@
       const formatBRL = (val) => (val / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
       let html = `
-        <div class="summary-grid" style="margin-top: 8px;">
-          <div class="summary-item"><label>Aulas selecionadas</label><span>${slotCount} aula${slotCount > 1 ? 's' : ''}</span></div>
-          <div class="summary-item"><label>Valor base</label><span>${formatBRL(baseTotalCentavos)}</span></div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+            <span>Aulas selecionadas:</span>
+            <strong>${slotCount} aula${slotCount > 1 ? 's' : ''}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+            <span>Valor base:</span>
+            <strong>${formatBRL(baseTotalCentavos)}</strong>
+          </div>
       `;
 
       if (discountPercent > 0) {
         html += `
-          <div class="summary-item" style="color: var(--primary);"><label>Super Desconto (${discountPercent}%)</label><strong>-${formatBRL(discountValueCentavos)}</strong></div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--primary);">
+            <span>Super Desconto (${discountPercent}%):</span>
+            <strong>-${formatBRL(discountValueCentavos)}</strong>
+          </div>
         `;
       }
 
       html += `
-          <div class="summary-item" style="border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px;"><label><strong>Total a pagar</strong></label><strong><span style="color: var(--primary); font-size: 1.1rem;">${formatBRL(finalTotalCentavos)}</span></strong></div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.95rem; color: var(--text); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px;">
+            <span><strong>Total a pagar:</strong></span>
+            <strong style="color: var(--primary); font-size: 1.15rem;">${formatBRL(finalTotalCentavos)}</strong>
+          </div>
         </div>
       `;
 
