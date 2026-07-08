@@ -1998,7 +1998,7 @@
     }
 
     /* ── RESPONSIVIDADE ── */
-    @media (max-width: 900px) {
+    @media (max-width: 1024px) {
       body {
         padding: 0;
         background: var(--bg-gradient);
@@ -6755,6 +6755,9 @@
           changeView('view-login');
         }
 
+        // Bind horizontal mouse wheel scrolling
+        bindHorizontalScrollWheel();
+
       } catch (err) {
         console.warn('Erro ao inicializar agendamento:', err);
         changeView('view-login');
@@ -6851,6 +6854,18 @@
       } catch (err) {
         alert('Erro ao salvar configurações: ' + err.message);
       }
+    }
+
+    function bindHorizontalScrollWheel() {
+      const scrollContainers = document.querySelectorAll('.horizontal-calendar, .admin-tabs, .teacher-calendar-strip');
+      scrollContainers.forEach(container => {
+        container.addEventListener('wheel', (evt) => {
+          if (evt.deltaY !== 0) {
+            evt.preventDefault();
+            container.scrollLeft += evt.deltaY * 0.85; // Natural smooth speed ratio
+          }
+        }, { passive: false });
+      });
     }
 
     function escapeHtml(value) {
