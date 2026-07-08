@@ -832,6 +832,8 @@
       padding: 5px 0 15px;
       scrollbar-width: none;
       margin-bottom: 20px;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .horizontal-calendar::-webkit-scrollbar {
@@ -890,9 +892,10 @@
 
     .hours-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 8px;
       margin-bottom: 25px;
+      max-width: 100%;
     }
 
     .hour-btn {
@@ -6799,8 +6802,8 @@
           changeView('view-login');
         }
 
-        // Bind horizontal mouse wheel scrolling
-        bindHorizontalScrollWheel();
+        // Bind horizontal mouse wheel and drag-to-scroll scrolling
+        bindHorizontalScrolls();
 
       } catch (err) {
         console.warn('Erro ao inicializar agendamento:', err);
@@ -6900,15 +6903,48 @@
       }
     }
 
-    function bindHorizontalScrollWheel() {
+    function bindHorizontalScrolls() {
       const scrollContainers = document.querySelectorAll('.horizontal-calendar, .admin-tabs, .teacher-calendar-strip');
       scrollContainers.forEach(container => {
+        // 1. Mouse wheel redirection
         container.addEventListener('wheel', (evt) => {
           if (evt.deltaY !== 0) {
             evt.preventDefault();
-            container.scrollLeft += evt.deltaY * 0.85; // Natural smooth speed ratio
+            container.scrollLeft += evt.deltaY * 0.85;
           }
         }, { passive: false });
+
+        // 2. Drag-to-scroll for calendar strips
+        if (container.classList.contains('horizontal-calendar') || container.id === 'teacher-calendar-strip') {
+          let isDown = false;
+          let startX;
+          let scrollLeftVal;
+
+          container.addEventListener('mousedown', (e) => {
+            isDown = true;
+            container.style.cursor = 'grabbing';
+            startX = e.pageX - container.offsetLeft;
+            scrollLeftVal = container.scrollLeft;
+          });
+
+          container.addEventListener('mouseleave', () => {
+            isDown = false;
+            container.style.cursor = 'default';
+          });
+
+          container.addEventListener('mouseup', () => {
+            isDown = false;
+            container.style.cursor = 'default';
+          });
+
+          container.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - container.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            container.scrollLeft = scrollLeftVal - walk;
+          });
+        }
       });
     }
 
