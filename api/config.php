@@ -69,11 +69,23 @@ define('WORKER_POLL_TIMEOUT', (int)env_val('WORKER_POLL_TIMEOUT', '5'));
 // Feature flags
 define('FORCE_DIRECT_UPLOAD', (env_val('FORCE_DIRECT_UPLOAD', '0') === '1'));
 
-// Conta unica com acesso ao painel administrativo do sistema.
-define('ADMIN_EMAIL', strtolower(env_val('ADMIN_EMAIL', 'willianb.o.1993@gmail.com')));
+// Contas com acesso ao painel administrativo do sistema.
+//
+// A fonte da verdade e ADMIN_EMAILS (lista separada por virgula). ADMIN_EMAIL
+// NAO e usado aqui de proposito: ela ja existia no projeto com outro
+// significado (a conta de bootstrap), e reaproveita-la trancaria o dono do
+// sistema para fora do painel. Sem ADMIN_EMAILS definida, vale o padrao.
+define('ADMIN_EMAILS', array_values(array_unique(array_filter(array_map(
+    static fn($e) => strtolower(trim($e)),
+    explode(',', env_val('ADMIN_EMAILS', 'willianb.o.1993@gmail.com'))
+)))));
+
+// Primeiro e-mail da lista, para mensagens e comparacoes de exibicao.
+define('ADMIN_EMAIL', ADMIN_EMAILS[0] ?? '');
 
 function is_super_admin(?array $u): bool {
-    return $u && strtolower(trim((string)($u['email'] ?? ''))) === ADMIN_EMAIL;
+    if (!$u) return false;
+    return in_array(strtolower(trim((string)($u['email'] ?? ''))), ADMIN_EMAILS, true);
 }
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';

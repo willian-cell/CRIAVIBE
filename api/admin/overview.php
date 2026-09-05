@@ -92,7 +92,7 @@ foreach ($usuarios as $u) { if ((int)$u['bloqueado'] === 1) $bloqueados++; }
 
 json_out([
     'status' => 'ok',
-    'admin_email' => ADMIN_EMAIL,
+    'admin_emails' => ADMIN_EMAILS,
     'resumo' => [
         'fotografos'      => count($usuarios),
         'bloqueados'      => $bloqueados,

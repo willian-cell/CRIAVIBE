@@ -22,8 +22,8 @@ $stmt->execute([$id]);
 $alvo = $stmt->fetch();
 if (!$alvo) json_out(['status' => 'erro', 'mensagem' => 'Fotografo nao encontrado.'], 404);
 
-if (strtolower(trim($alvo['email'])) === strtolower(trim(ADMIN_EMAIL))) {
-    json_out(['status' => 'erro', 'mensagem' => 'Voce ja esta nesta conta.'], 400);
+if (is_super_admin($alvo)) {
+    json_out(['status' => 'erro', 'mensagem' => 'Nao e possivel entrar como outra conta administradora.'], 400);
 }
 
 error_log("Admin {$admin['email']} entrou como {$alvo['email']}.");

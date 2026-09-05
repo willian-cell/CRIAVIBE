@@ -417,25 +417,11 @@ try {
         error_log('Erro ao atualizar valores antigos de agendamento nas tabelas: ' . $e->getMessage());
     }
 
-    try {
-        $emailAdmin = 'dougdouglas04@outlook.com';
-        $senhaAdmin = 'd19581958';
-        $nomeAdmin = 'Douglas Admin';
-        $hashAdmin = password_hash($senhaAdmin, PASSWORD_DEFAULT);
-
-        $chkUser = $db->prepare("SELECT id FROM usuarios WHERE email = ? LIMIT 1");
-        $chkUser->execute([$emailAdmin]);
-        $user = $chkUser->fetch();
-        if ($user) {
-            $updUser = $db->prepare("UPDATE usuarios SET senha = ?, tipo = 'admin' WHERE id = ?");
-            $updUser->execute([$hashAdmin, $user['id']]);
-        } else {
-            $insUser = $db->prepare("INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, 'admin')");
-            $insUser->execute([$nomeAdmin, $emailAdmin, $hashAdmin]);
-        }
-    } catch (Throwable $e) {
-        error_log('Erro ao assegurar administrador dougdouglas04 no banco: ' . $e->getMessage());
-    }
+    // Removido: bloco que recriava uma conta admin com e-mail e senha fixos no
+    // codigo a cada execucao das migracoes. Credencial versionada no
+    // repositorio, restaurada mesmo apos exclusao pelo painel, e disparavel por
+    // qualquer fotografo autenticado. Contas administrativas passam a ser
+    // gerenciadas pelo painel em /admin.html.
 
     json_out(['status' => 'ok', 'mensagem' => 'Banco verificado e schema preparado com sucesso.']);
 } catch (Throwable $e) {

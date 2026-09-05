@@ -11,8 +11,7 @@
 function require_super_admin(): array {
     $u = require_auth();
 
-    $email = strtolower(trim((string)($u['email'] ?? '')));
-    if ($email === '' || $email !== strtolower(trim(ADMIN_EMAIL))) {
+    if (!is_super_admin($u)) {
         json_out(['status' => 'erro', 'mensagem' => 'Area restrita ao administrador do sistema.'], 403);
     }
 
@@ -38,10 +37,10 @@ function admin_ensure_schema(): void {
  * deixaria o sistema sem nenhuma conta capaz de abrir este painel.
  */
 function admin_bloquear_auto_alvo(array $alvo): void {
-    if (strtolower(trim((string)($alvo['email'] ?? ''))) === strtolower(trim(ADMIN_EMAIL))) {
+    if (is_super_admin($alvo)) {
         json_out([
             'status' => 'erro',
-            'mensagem' => 'Esta e a conta administradora do sistema e nao pode ser bloqueada nem excluida por aqui.'
+            'mensagem' => 'Esta e uma conta administradora do sistema e nao pode ser bloqueada nem excluida por aqui.'
         ], 400);
     }
 }

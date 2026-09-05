@@ -723,7 +723,7 @@
 
     function cardFotografo(f) {
       const bloqueado = Number(f.bloqueado) === 1;
-      const ehAdmin = String(f.email).toLowerCase() === String(dados.admin_email).toLowerCase();
+      const ehAdmin = (dados.admin_emails || []).includes(String(f.email).toLowerCase());
       const foto = f.foto_perfil
         ? `<img class="card-foto" src="${esc(midia(f.foto_perfil))}" alt="">`
         : `<span class="card-foto">${esc(iniciais(f.nome))}</span>`;
