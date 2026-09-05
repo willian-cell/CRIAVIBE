@@ -1721,8 +1721,20 @@
         const amostra = nomes.slice(0, 3).join(', ');
         const resto = nomes.length > 3 ? ` e mais ${nomes.length - 3}` : '';
 
-        txt.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Enviadas ${totalOk} de ${totalFiles}. Nao entraram: ${amostra}${resto}.`;
-        showToast(`${problemas} foto(s) nao foram enviadas. Veja a lista acima.`, 'error');
+        // Sem o motivo na tela, uma falha em massa obriga a abrir o DevTools
+        // para descobrir se foi credencial, CORS, rede ou arquivo invalido.
+        const motivos = [...new Set([
+          ...falhados.values(),
+          ...ignorados.map(ig => ig.motivo),
+        ])].filter(Boolean);
+
+        const explicacao = motivos.length
+          ? `<br><small>Motivo: ${motivos[0]}${motivos.length > 1 ? ` (e mais ${motivos.length - 1} tipo(s) de erro)` : ''}</small>`
+          : '';
+
+        txt.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Enviadas ${totalOk} de ${totalFiles}. Nao entraram: ${amostra}${resto}.${explicacao}`;
+        console.error('Falhas do upload:', [...falhados.entries()].map(([f, m]) => `${f.name}: ${m}`));
+        showToast(`${problemas} foto(s) nao foram enviadas. Veja o motivo acima.`, 'error');
       } else {
         txt.innerHTML = `<i class="fa-solid fa-check"></i> Upload concluido! (${totalOk}/${totalFiles})`;
         showToast('Fotos enviadas com sucesso.');
