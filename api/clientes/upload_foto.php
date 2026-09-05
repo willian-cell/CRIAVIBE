@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/../config.php';
+require_once __DIR__.'/../lib/Storage.php';
 
 $u = require_fotografo();
 
@@ -41,27 +42,7 @@ if (($file['size'] ?? 0) > 5 * 1024 * 1024) {
 }
 
 $filename = 'cliente_'.$cliente_id.'_'.bin2hex(random_bytes(6)).'.'.$allowed[$type];
-$caminho = '';
-
-if (R2_ACCESS_KEY && R2_SECRET_KEY && R2_BUCKET && R2_ENDPOINT && R2_PUBLIC_URL) {
-    require_once __DIR__.'/../lib/R2Storage.php';
-    $r2Path = 'clientes/'.$cliente_id.'/'.$filename;
-    $r2 = new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
-    if (!$r2->upload($file['tmp_name'], $r2Path, $type)) {
-        json_out(['status'=>'erro','mensagem'=>'Falha ao salvar a imagem no armazenamento.'], 500);
-    }
-    $caminho = rtrim(R2_PUBLIC_URL, '/').'/'.$r2Path;
-} else {
-    $uploadDir = __DIR__.'/../../uploads/clientes/';
-    if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
-
-    $dest = $uploadDir.$filename;
-    $caminho = 'uploads/clientes/'.$filename;
-
-    if (!move_uploaded_file($file['tmp_name'], $dest)) {
-        json_out(['status'=>'erro','mensagem'=>'Falha ao salvar a imagem no servidor.'], 500);
-    }
-}
+$caminho = storage_put_upload($file['tmp_name'], 'clientes/'.$cliente_id.'/'.$filename, $type);
 
 $stmt = db()->prepare("UPDATE clientes SET foto_cliente = ? WHERE id = ? AND fotografo_email = ?");
 $stmt->execute([$caminho, $cliente_id, $u['email']]);

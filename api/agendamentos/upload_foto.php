@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../lib/Storage.php';
 require_once __DIR__ . '/_helpers.php';
 
 $token = trim($_POST['token_publico'] ?? $_SESSION['agendamento_aluno_token'] ?? '');
@@ -63,29 +64,7 @@ if (($file['size'] ?? 0) > 5 * 1024 * 1024) {
 }
 
 $filename = 'aluno_' . $studentId . '_' . bin2hex(random_bytes(6)) . '.' . $allowed[$type];
-$caminho = '';
-
-if (R2_ACCESS_KEY && R2_SECRET_KEY && R2_BUCKET && R2_ENDPOINT && R2_PUBLIC_URL) {
-    require_once __DIR__ . '/../lib/R2Storage.php';
-    $r2Path = 'alunos/' . $studentId . '/' . $filename;
-    $r2 = new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
-    if (!$r2->upload($file['tmp_name'], $r2Path, $type)) {
-        json_out(['status' => 'erro', 'mensagem' => 'Falha ao salvar a imagem no Cloudflare R2.'], 500);
-    }
-    $caminho = rtrim(R2_PUBLIC_URL, '/') . '/' . $r2Path;
-} else {
-    $uploadDir = __DIR__ . '/../../uploads/alunos/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0775, true);
-    }
-
-    $dest = $uploadDir . $filename;
-    $caminho = 'uploads/alunos/' . $filename;
-
-    if (!move_uploaded_file($file['tmp_name'], $dest)) {
-        json_out(['status' => 'erro', 'mensagem' => 'Falha ao salvar a imagem no servidor.'], 500);
-    }
-}
+$caminho = storage_put_upload($file['tmp_name'], 'alunos/' . $studentId . '/' . $filename, $type);
 
 // Salva o caminho no cadastro do aluno
 $upd = $db->prepare("UPDATE agendamento_alunos SET foto_url = ? WHERE id = ?");

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/../config.php';
+require_once __DIR__.'/../lib/Storage.php';
 $u = require_fotografo();
 
 $galeria_id = (int)($_POST['galeria_id'] ?? 0);
@@ -53,25 +54,7 @@ if ($file) {
 
     $ext = $allowed[$type];
     $filename = 'mus_'.$galeria_id.'_'.bin2hex(random_bytes(8)).'.'.$ext;
-    $caminho = '';
-
-    if (R2_ACCESS_KEY && R2_SECRET_KEY && R2_BUCKET && R2_ENDPOINT && R2_PUBLIC_URL) {
-        require_once __DIR__.'/../lib/R2Storage.php';
-        $r2Path = 'musicas/'.$galeria_id.'/'.$filename;
-        $r2 = new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
-        if (!$r2->upload($file['tmp_name'], $r2Path, $type)) {
-            json_out(['status'=>'erro','mensagem'=>'Falha ao salvar a musica no armazenamento.'], 500);
-        }
-        $caminho = rtrim(R2_PUBLIC_URL, '/').'/'.$r2Path;
-    } else {
-        $dir = __DIR__.'/../../uploads/musicas/';
-        if (!is_dir($dir)) mkdir($dir, 0775, true);
-        $dest = $dir.$filename;
-        if (!move_uploaded_file($file['tmp_name'], $dest)) {
-            json_out(['status'=>'erro','mensagem'=>'Falha ao salvar a musica no servidor.'], 500);
-        }
-        $caminho = 'uploads/musicas/'.$filename;
-    }
+    $caminho = storage_put_upload($file['tmp_name'], 'musicas/'.$galeria_id.'/'.$filename, $type);
 
     $ord = db()->prepare("SELECT COALESCE(MAX(ordem),0)+1 FROM musicas WHERE galeria_id=?");
     $ord->execute([$galeria_id]);

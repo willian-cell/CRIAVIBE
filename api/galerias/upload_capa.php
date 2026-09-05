@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/../config.php';
+require_once __DIR__.'/../lib/Storage.php';
 $u = require_fotografo();
 
 $galeria_id = (int)($_POST['galeria_id'] ?? 0);
@@ -42,22 +43,26 @@ if (isset($_POST['foto_id'])) {
         json_out(['status'=>'erro','mensagem'=>'Nenhum arquivo ou foto enviado (tente uma imagem menor).'], 400);
     }
 
-    $uploadDir = __DIR__.'/../../uploads/capas/';
-    if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
+    $allowed = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/webp' => 'webp',
+        'image/gif'  => 'gif',
+    ];
 
-    $allowed = ['image/jpeg','image/png','image/webp','image/gif'];
-    if (!in_array($file['type'], $allowed)) {
-        json_out(['status'=>'erro','mensagem'=>'Tipo de arquivo não permitido. Aceito: JPEG, PNG, WEBP.'], 400);
+    $type = '';
+    if (class_exists('finfo')) {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $type = $finfo->file($file['tmp_name']) ?: '';
+    }
+    if (!$type) $type = $file['type'] ?? '';
+
+    if (!isset($allowed[$type])) {
+        json_out(['status'=>'erro','mensagem'=>'Tipo de arquivo não permitido. Aceito: JPEG, PNG, WEBP ou GIF.'], 400);
     }
 
-    $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    $filename = uniqid('capa_', true).'.'.$ext;
-    $dest     = $uploadDir.$filename;
-    $caminho  = 'uploads/capas/'.$filename;
-
-    if (!move_uploaded_file($file['tmp_name'], $dest)) {
-        json_out(['status'=>'erro','mensagem'=>'Falha ao salvar a imagem no servidor.'], 500);
-    }
+    $filename = uniqid('capa_', true).'.'.$allowed[$type];
+    $caminho  = storage_put_upload($file['tmp_name'], "galerias/{$galeria_id}/capas/{$filename}", $type);
     $caminhoPreview = $caminho;
 
     // Atualizar o banco de dados (Capa da Galeria)

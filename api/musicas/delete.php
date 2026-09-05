@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/../config.php';
+require_once __DIR__.'/../lib/Storage.php';
 $u = require_fotografo();
 $body = body();
 $id = (int)($body['id'] ?? 0);
@@ -11,7 +12,7 @@ $m = $chk->fetch();
 if (!$m || $m['usuario_email'] !== $u['email'])
     json_out(['status'=>'erro','mensagem'=>'Música não encontrada.'], 404);
 
-$path = __DIR__.'/../../'.$m['caminho_arquivo'];
-if (file_exists($path)) unlink($path);
+// Links do YouTube nao tem objeto no bucket - storage_delete_url ignora esses casos.
+storage_delete_url($m['caminho_arquivo']);
 db()->prepare("DELETE FROM musicas WHERE id=?")->execute([$id]);
 json_out(['status'=>'ok']);

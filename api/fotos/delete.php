@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/../config.php';
+require_once __DIR__.'/../lib/Storage.php';
 $u = require_fotografo();
 $body = body();
 $id = (int)($body['id'] ?? 0);
@@ -11,8 +12,8 @@ $img = $stmt->fetch();
 if (!$img || $img['usuario_email'] !== $u['email'])
     json_out(['status'=>'erro','mensagem'=>'Imagem não encontrada.'], 404);
 
-$path = __DIR__.'/../../'.$img['caminho_arquivo'];
-if (file_exists($path)) unlink($path);
+// Remove o original e os derivados do R2 antes de apagar o registro.
+storage_delete_imagem($img);
 db()->prepare("DELETE FROM imagens WHERE id=?")->execute([$id]);
 
 json_out(['status'=>'ok']);
