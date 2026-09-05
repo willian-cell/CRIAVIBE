@@ -15,5 +15,13 @@ Thumbs.db
 Thumbs.db:encdata
 *.log
 
+# Capturas de tela avulsas (nome automatico do Windows).
+# Imagens de documentacao com nome proprio continuam versionadas normalmente.
+Captura de tela *.png
+Captura de Tela *.png
+Screenshot *.png
+Screenshot_*.png
+image (*).png
+
 # Deploy
 deploy_ftp.ps1
