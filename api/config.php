@@ -69,6 +69,13 @@ define('WORKER_POLL_TIMEOUT', (int)env_val('WORKER_POLL_TIMEOUT', '5'));
 // Feature flags
 define('FORCE_DIRECT_UPLOAD', (env_val('FORCE_DIRECT_UPLOAD', '0') === '1'));
 
+// Conta unica com acesso ao painel administrativo do sistema.
+define('ADMIN_EMAIL', strtolower(env_val('ADMIN_EMAIL', 'willianb.o.1993@gmail.com')));
+
+function is_super_admin(?array $u): bool {
+    return $u && strtolower(trim((string)($u['email'] ?? ''))) === ADMIN_EMAIL;
+}
+
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
 header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");

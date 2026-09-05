@@ -302,6 +302,10 @@ try {
 
     add_column_if_missing($db, 'usuarios', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'usuarios', 'foto_perfil', 'VARCHAR(512) DEFAULT NULL');
+    add_column_if_missing($db, 'usuarios', 'bloqueado', 'TINYINT(1) NOT NULL DEFAULT 0');
+    add_column_if_missing($db, 'usuarios', 'telefone', 'VARCHAR(40) DEFAULT NULL');
+    add_column_if_missing($db, 'usuarios', 'cidade', 'VARCHAR(120) DEFAULT NULL');
+    add_column_if_missing($db, 'usuarios', 'ultimo_acesso', 'TIMESTAMP NULL DEFAULT NULL');
     add_column_if_missing($db, 'clientes', 'criado_em', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
     add_column_if_missing($db, 'clientes', 'foto_cliente', 'VARCHAR(512) DEFAULT NULL');
     add_column_if_missing($db, 'galerias', 'cliente_id', 'INT DEFAULT NULL');

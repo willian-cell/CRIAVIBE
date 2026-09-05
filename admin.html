@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administração - CriaVibe</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .admin-page { max-width: 1400px; }
+
+    /* ── Cabeçalho da seção ── */
+    .sec-hero {
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+
+    .sec-icon {
+      width: 46px; height: 46px; border-radius: 13px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      color: var(--primary); font-size: 1.15rem; flex: 0 0 46px;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, .14);
+    }
+
+    .sec-tit { flex: 1; min-width: 200px; }
+    .sec-tit h2 { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
+    .sec-tit p { font-size: .85rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── KPIs ── */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px; margin-bottom: 20px;
+    }
+
+    .kpi {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow);
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .kpi-ico {
+      width: 44px; height: 44px; border-radius: 12px; flex: 0 0 44px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.05rem;
+    }
+
+    .kpi-ico.roxo   { background: #eef2ff; color: #4f46e5; }
+    .kpi-ico.verde  { background: #dcfce7; color: #16a34a; }
+    .kpi-ico.vermelho { background: #fee2e2; color: #dc2626; }
+    .kpi-ico.lilas  { background: #f3e8ff; color: #9333ea; }
+    .kpi-ico.ambar  { background: #fef3c7; color: #d97706; }
+    .kpi-ico.azul   { background: #dbeafe; color: #2563eb; }
+
+    .kpi-num { font-size: 1.55rem; font-weight: 700; line-height: 1.05; }
+    .kpi-txt { font-size: .78rem; color: var(--muted); margin-top: 1px; }
+
+    /* ── Filtros ── */
+    .filtros {
+      display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+
+    .filtros .search-bar { flex: 1; min-width: 240px; }
+    .filtros .search-bar input { width: 100%; }
+
+    .select-filtro {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 9px 14px;
+      font-family: inherit; font-size: .825rem; color: var(--text);
+      cursor: pointer; min-width: 170px;
+    }
+
+    .select-filtro:focus { outline: none; border-color: var(--primary); }
+
+    /* ── Cards de fotógrafo ── */
+    .cards-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 16px;
+    }
+
+    .card-pessoa {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px; box-shadow: var(--shadow);
+      transition: var(--tr); display: flex; flex-direction: column;
+    }
+
+    .card-pessoa:hover { box-shadow: var(--shadow-md); border-color: var(--border-2); }
+    .card-pessoa.bloqueado { background: #fffbfb; border-color: #fecaca; }
+
+    .card-topo { display: flex; gap: 14px; margin-bottom: 14px; }
+
+    .card-foto {
+      width: 82px; height: 82px; border-radius: 12px; flex: 0 0 82px;
+      object-fit: cover; background: var(--primary-lt); color: var(--primary-dk);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.5rem;
+    }
+
+    .card-info { min-width: 0; flex: 1; }
+
+    .card-nome {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .card-nome strong { font-size: 1rem; font-weight: 700; }
+    .card-id { font-size: .78rem; color: var(--muted); margin-bottom: 6px; }
+
+    .card-dado {
+      display: flex; align-items: center; gap: 7px;
+      font-size: .8rem; color: var(--muted); margin-top: 3px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .card-dado i { width: 13px; text-align: center; color: var(--light); flex: 0 0 13px; }
+
+    .card-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 12px 0; margin-bottom: 10px;
+    }
+
+    .card-stat { text-align: center; border-right: 1px solid var(--border); }
+    .card-stat:last-child { border-right: none; }
+    .card-stat b { display: block; font-size: 1.05rem; font-weight: 700; }
+    .card-stat span { font-size: .72rem; color: var(--muted); }
+
+    .card-acesso { font-size: .76rem; color: var(--muted); margin-bottom: 12px; }
+
+    .card-botoes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: auto; }
+
+    .bt {
+      border: 1px solid var(--border); background: var(--surface);
+      border-radius: var(--radius-sm); padding: 8px 4px; cursor: pointer;
+      font-family: inherit; font-size: .74rem; font-weight: 600; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      transition: var(--tr);
+    }
+
+    .bt:hover { border-color: var(--border-2); background: var(--surface-2); color: var(--text); }
+    .bt-entrar { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .bt-entrar:hover { background: var(--primary-dk); border-color: var(--primary-dk); color: #fff; }
+    .bt-galerias { background: var(--primary-lt); border-color: var(--primary-lt); color: var(--primary-dk); }
+    .bt-galerias:hover { background: #c7d2fe; border-color: #c7d2fe; color: var(--primary-dk); }
+    .bt-excluir { background: #fee2e2; border-color: #fee2e2; color: #dc2626; }
+    .bt-excluir:hover { background: #fecaca; border-color: #fecaca; color: #b91c1c; }
+    .bt:disabled { opacity: .45; cursor: not-allowed; }
+
+    .badge-bloqueado { background: #fee2e2; color: #b91c1c; }
+    .badge-admin { background: #ede9fe; color: #6d28d9; }
+    .badge-orfao { background: #ffedd5; color: #c2410c; }
+
+    /* ── Tabelas (galerias e clientes) ── */
+    .admin-table { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); }
+    .admin-table .table-responsive { overflow-x: auto; }
+    .admin-table table { width: 100%; border-collapse: collapse; min-width: 900px; }
+
+    .admin-table thead th {
+      padding: 12px 16px; text-align: left;
+      font-size: .7rem; font-weight: 700; letter-spacing: .06em;
+      color: var(--light); text-transform: uppercase;
+      background: var(--surface-2); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .admin-table tbody tr { border-bottom: 1px solid var(--border); }
+    .admin-table tbody tr:last-child { border-bottom: none; }
+    .admin-table tbody tr:hover { background: var(--surface-2); }
+    .admin-table td { padding: 12px 16px; vertical-align: middle; font-size: .84rem; }
+    .admin-table td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    .cel-principal { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+    .avatar-mini {
+      width: 34px; height: 34px; border-radius: 50%; flex: 0 0 34px;
+      object-fit: cover; background: var(--primary-lt); color: var(--primary-dk);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .78rem;
+    }
+
+    .cel-nome { font-weight: 600; }
+    .cel-sub { font-size: .74rem; color: var(--muted); }
+
+    .acoes { display: flex; gap: 6px; justify-content: flex-end; }
+
+    .icon-btn {
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); width: 31px; height: 31px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: var(--tr); font-size: .78rem;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    .icon-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-lt); }
+    .icon-btn.perigo:hover { border-color: var(--danger); color: var(--danger); background: #fee2e2; }
+
+    /* ── Rodapé / paginação ── */
+    .rodape {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; margin-top: 18px;
+      font-size: .8rem; color: var(--muted);
+    }
+
+    .paginacao { display: flex; gap: 5px; align-items: center; }
+
+    .pag-bt {
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); min-width: 32px; height: 32px; padding: 0 9px;
+      border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
+      font-size: .78rem; font-weight: 600; transition: var(--tr);
+    }
+
+    .pag-bt:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+    .pag-bt.ativo { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .pag-bt:disabled { opacity: .4; cursor: not-allowed; }
+
+    .vazio { text-align: center; padding: 50px 20px; color: var(--muted); }
+    .vazio i { font-size: 2.2rem; color: var(--border-2); margin-bottom: 12px; display: block; }
+
+    .aviso-perigo {
+      background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+      border-radius: var(--radius-sm); padding: 12px 14px;
+      font-size: .82rem; line-height: 1.55; margin-bottom: 16px;
+    }
+
+    .aviso-info {
+      background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af;
+      border-radius: var(--radius-sm); padding: 12px 14px;
+      font-size: .82rem; line-height: 1.55; margin-bottom: 16px;
+    }
+
+    .secao { display: none; }
+    .secao.ativa { display: block; }
+
+    @media (max-width: 560px) {
+      .card-botoes { grid-template-columns: repeat(2, 1fr); }
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <button class="topnav-toggle" onclick="document.body.classList.toggle('sidebar-open')">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="topnav-logo">
+      <i class="fa-solid fa-images"></i> <span>CriaVibe</span>
+    </div>
+    <div class="topnav-spacer"></div>
+    <div class="topnav-user">
+      <span class="topnav-avatar" id="nav-avatar"><i class="fa-solid fa-user-circle" style="font-size:1.2rem"></i></span>
+      <span>Olá, <strong id="nav-nome">...</strong></span>
+      <button class="topnav-logout" onclick="logout()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+      </button>
+    </div>
+  </nav>
+
+  <div class="painel-layout">
+    <div class="sidebar-overlay" onclick="document.body.classList.remove('sidebar-open')"></div>
+
+    <aside class="painel-sidebar">
+      <h3>Administração</h3>
+      <a href="#" class="sidebar-link" data-secao="dashboard" onclick="irPara('dashboard', event)"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="#" class="sidebar-link active" data-secao="fotografos" onclick="irPara('fotografos', event)"><i class="fa-solid fa-users"></i> Fotógrafos</a>
+      <a href="#" class="sidebar-link" data-secao="galerias" onclick="irPara('galerias', event)"><i class="fa-solid fa-images"></i> Galerias</a>
+      <a href="#" class="sidebar-link" data-secao="clientes" onclick="irPara('clientes', event)"><i class="fa-solid fa-user-group"></i> Clientes</a>
+      <h3 style="margin-top:20px">Menu</h3>
+      <a href="/painel.html" class="sidebar-link"><i class="fa-solid fa-arrow-left"></i> Voltar ao painel</a>
+      <a href="/configuracoes.html" class="sidebar-link"><i class="fa-solid fa-gear"></i> Configurações da Conta</a>
+    </aside>
+
+    <main class="painel-main">
+      <div class="admin-page">
+
+        <!-- ══ DASHBOARD ══ -->
+        <section class="secao" id="sec-dashboard">
+          <div class="sec-hero">
+            <span class="sec-icon"><i class="fa-solid fa-house"></i></span>
+            <div class="sec-tit">
+              <h2>Dashboard</h2>
+              <p>Retrato do sistema inteiro em tempo real</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="carregar(true)">
+              <i class="fa-solid fa-rotate"></i> Atualizar
+            </button>
+          </div>
+          <div class="kpi-grid" id="kpis-dash"></div>
+          <div id="painel-orfaos"></div>
+        </section>
+
+        <!-- ══ FOTÓGRAFOS ══ -->
+        <section class="secao ativa" id="sec-fotografos">
+          <div class="sec-hero">
+            <span class="sec-icon"><i class="fa-solid fa-users"></i></span>
+            <div class="sec-tit">
+              <h2>Fotógrafos</h2>
+              <p>Gerencie os fotógrafos cadastrados na plataforma</p>
+            </div>
+            <button class="btn btn-primary" onclick="abrirNovoFotografo()">
+              <i class="fa-solid fa-plus"></i> Novo Fotógrafo
+            </button>
+          </div>
+
+          <div class="kpi-grid" id="kpis-fot"></div>
+
+          <div class="filtros">
+            <div class="search-bar">
+              <i class="fa-solid fa-magnifying-glass" style="color:var(--light)"></i>
+              <input id="busca-fot" type="text" placeholder="Buscar fotógrafo por nome, e-mail ou ID..."
+                     autocomplete="off" oninput="pagFot = 1; renderFotografos()">
+            </div>
+            <select class="select-filtro" id="filtro-status" onchange="pagFot = 1; renderFotografos()">
+              <option value="">Todos os status</option>
+              <option value="ativo">Somente ativos</option>
+              <option value="bloqueado">Somente bloqueados</option>
+              <option value="admin">Somente admins</option>
+            </select>
+            <button class="btn btn-secondary" onclick="limparFiltros()">
+              <i class="fa-solid fa-filter-circle-xmark"></i> Limpar filtros
+            </button>
+          </div>
+
+          <div class="cards-grid" id="grid-fotografos"></div>
+          <div class="rodape">
+            <span id="rodape-fot"></span>
+            <div class="paginacao" id="pag-fot"></div>
+          </div>
+        </section>
+
+        <!-- ══ GALERIAS ══ -->
+        <section class="secao" id="sec-galerias">
+          <div class="sec-hero">
+            <span class="sec-icon"><i class="fa-solid fa-images"></i></span>
+            <div class="sec-tit">
+              <h2>Galerias</h2>
+              <p id="sub-galerias">Todas as galerias do sistema</p>
+            </div>
+          </div>
+
+          <div class="filtros">
+            <div class="search-bar">
+              <i class="fa-solid fa-magnifying-glass" style="color:var(--light)"></i>
+              <input id="busca-gal" type="text" placeholder="Buscar por nome, fotógrafo, cliente ou ID..."
+                     autocomplete="off" oninput="pagGal = 1; renderGalerias()">
+            </div>
+            <select class="select-filtro" id="filtro-dono" onchange="pagGal = 1; renderGalerias()"></select>
+            <button class="btn btn-secondary" onclick="limparFiltros()">
+              <i class="fa-solid fa-filter-circle-xmark"></i> Limpar filtros
+            </button>
+          </div>
+
+          <div class="admin-table">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="num">#</th>
+                    <th>Galeria</th>
+                    <th>Fotógrafo</th>
+                    <th>Cliente</th>
+                    <th>Privacidade</th>
+                    <th class="num">Fotos</th>
+                    <th class="num">Tamanho</th>
+                    <th>Criada</th>
+                    <th style="text-align:right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tb-galerias"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="rodape">
+            <span id="rodape-gal"></span>
+            <div class="paginacao" id="pag-gal"></div>
+          </div>
+        </section>
+
+        <!-- ══ CLIENTES ══ -->
+        <section class="secao" id="sec-clientes">
+          <div class="sec-hero">
+            <span class="sec-icon"><i class="fa-solid fa-user-group"></i></span>
+            <div class="sec-tit">
+              <h2>Clientes</h2>
+              <p>Clientes cadastrados por todos os fotógrafos</p>
+            </div>
+          </div>
+
+          <div class="filtros">
+            <div class="search-bar">
+              <i class="fa-solid fa-magnifying-glass" style="color:var(--light)"></i>
+              <input id="busca-cli" type="text" placeholder="Buscar por nome, e-mail, telefone ou fotógrafo..."
+                     autocomplete="off" oninput="pagCli = 1; renderClientes()">
+            </div>
+            <button class="btn btn-secondary" onclick="limparFiltros()">
+              <i class="fa-solid fa-filter-circle-xmark"></i> Limpar filtros
+            </button>
+          </div>
+
+          <div class="admin-table">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="num">#</th>
+                    <th>Cliente</th>
+                    <th>Contato</th>
+                    <th>Fotógrafo</th>
+                    <th class="num">Galerias</th>
+                    <th>Cadastro</th>
+                    <th style="text-align:right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tb-clientes"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="rodape">
+            <span id="rodape-cli"></span>
+            <div class="paginacao" id="pag-cli"></div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: NOVO / EDITAR FOTÓGRAFO -->
+  <div class="modal-backdrop" id="modal-fotografo" onclick="if(event.target===this)fecharModal('modal-fotografo')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="titulo-modal-fot"><i class="fa-solid fa-user-pen" style="color:var(--primary)"></i> Editar fotógrafo</h3>
+        <button class="modal-close" onclick="fecharModal('modal-fotografo')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="f-id">
+        <div class="form-group">
+          <label>Nome</label>
+          <input class="form-control" id="f-nome" type="text" maxlength="160">
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input class="form-control" id="f-email" type="email" maxlength="190" autocomplete="off">
+          <div class="form-hint" id="hint-email">O e-mail liga galerias e clientes à conta e não muda depois de criada.</div>
+        </div>
+        <div class="form-group" id="grupo-senha">
+          <label>Senha de acesso</label>
+          <input class="form-control" id="f-senha" type="text" autocomplete="new-password" placeholder="mínimo 6 caracteres">
+        </div>
+        <div class="form-group">
+          <label>Telefone</label>
+          <input class="form-control" id="f-telefone" type="text" maxlength="40" placeholder="(00) 00000-0000">
+        </div>
+        <div class="form-group">
+          <label>Cidade</label>
+          <input class="form-control" id="f-cidade" type="text" maxlength="120" placeholder="Cidade - UF">
+        </div>
+        <div class="form-group">
+          <label>Tipo de conta</label>
+          <select class="form-control" id="f-tipo">
+            <option value="fotografo">Fotógrafo</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-salvar-fot" onclick="salvarFotografo()">
+          <i class="fa-solid fa-check"></i> Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR GALERIA -->
+  <div class="modal-backdrop" id="modal-galeria" onclick="if(event.target===this)fecharModal('modal-galeria')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-pen-to-square" style="color:var(--primary)"></i> Editar galeria</h3>
+        <button class="modal-close" onclick="fecharModal('modal-galeria')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="g-id">
+        <div class="form-group">
+          <label>Nome da galeria</label>
+          <input class="form-control" id="g-nome" type="text" maxlength="180">
+        </div>
+        <div class="form-group">
+          <label>Privacidade</label>
+          <select class="form-control" id="g-privacidade">
+            <option value="privada">Privada</option>
+            <option value="publica">Pública</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fotógrafo dono</label>
+          <select class="form-control" id="g-dono"></select>
+          <div class="form-hint">Transferir move a galeria, as fotos e a seleção do cliente para outra conta.</div>
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-salvar-gal" onclick="salvarGaleria()">
+          <i class="fa-solid fa-check"></i> Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EXCLUIR FOTÓGRAFO -->
+  <div class="modal-backdrop" id="modal-excluir" onclick="if(event.target===this)fecharModal('modal-excluir')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Excluir fotógrafo</h3>
+        <button class="modal-close" onclick="fecharModal('modal-excluir')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="x-id">
+        <div class="aviso-perigo" id="x-resumo"></div>
+        <div class="form-group">
+          <label>Para confirmar, digite o e-mail exato da conta</label>
+          <input class="form-control" id="x-confirmacao" type="text" autocomplete="off" placeholder="email@exemplo.com">
+        </div>
+        <button class="btn btn-danger btn-block" id="btn-excluir-fot" onclick="excluirFotografo()">
+          <i class="fa-solid fa-trash"></i> Excluir definitivamente
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script>
+    let dados = { resumo: {}, fotografos: [], galerias: [], clientes: [] };
+    let pagFot = 1, pagGal = 1, pagCli = 1;
+    const PorPagina = 6, PorPaginaTabela = 15;
+
+    // ── Init ────────────────────────────────────────────────────────────────
+    (async () => {
+      const u = await requireAuth();
+      if (!u) return;
+      if (!u.is_admin) {
+        // O backend recusa de todo jeito; isto evita exibir uma tela quebrada.
+        window.location.href = '/painel.html';
+        return;
+      }
+      document.getElementById('nav-nome').textContent = u.nome;
+      aplicarFotoPerfil(u.foto_perfil);
+      await carregar();
+    })();
+
+    function aplicarFotoPerfil(caminho) {
+      const alvo = document.getElementById('nav-avatar');
+      if (!alvo || !caminho) return;
+      alvo.innerHTML = `<img src="${esc(midia(caminho))}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    }
+
+    // ── Utilidades ──────────────────────────────────────────────────────────
+    function esc(v) {
+      return String(v ?? '').replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+      ));
+    }
+
+    function midia(p) {
+      if (!p) return '';
+      return /^https?:\/\//i.test(p) ? p : '/' + String(p).replace(/^\/+/, '');
+    }
+
+    function bytes(b) {
+      b = Number(b || 0);
+      if (b <= 0) return '—';
+      const un = ['B', 'KB', 'MB', 'GB', 'TB'];
+      let i = 0;
+      while (b >= 1024 && i < un.length - 1) { b /= 1024; i++; }
+      return b.toFixed(b >= 100 || i === 0 ? 0 : 1).replace('.', ',') + ' ' + un[i];
+    }
+
+    function num(v) { return Number(v || 0).toLocaleString('pt-BR'); }
+
+    function data(v) {
+      if (!v) return null;
+      const d = new Date(String(v).replace(' ', 'T'));
+      return isNaN(d) ? null : d;
+    }
+
+    function dataCurta(v) {
+      const d = data(v);
+      return d ? d.toLocaleDateString('pt-BR') : '—';
+    }
+
+    function acessoRelativo(v) {
+      const d = data(v);
+      if (!d) return 'Nunca acessou';
+      const hoje = new Date();
+      const hm = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const mesmoDia = (a, b) => a.toDateString() === b.toDateString();
+      if (mesmoDia(d, hoje)) return `Último acesso: Hoje às ${hm}`;
+      const ontem = new Date(hoje); ontem.setDate(hoje.getDate() - 1);
+      if (mesmoDia(d, ontem)) return `Último acesso: Ontem às ${hm}`;
+      return `Último acesso: ${d.toLocaleDateString('pt-BR')} às ${hm}`;
+    }
+
+    function iniciais(nome) {
+      return String(nome || '?').trim().split(/\s+/).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+    }
+
+    function idFtg(id) { return '#FTG-' + String(id).padStart(4, '0'); }
+
+    function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+    function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+
+    function combina(termo, ...campos) {
+      if (!termo) return true;
+      return campos.some(c => String(c ?? '').toLowerCase().includes(termo));
+    }
+
+    function irPara(secao, ev) {
+      if (ev) ev.preventDefault();
+      document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
+      document.getElementById('sec-' + secao).classList.add('ativa');
+      document.querySelectorAll('.sidebar-link[data-secao]').forEach(l =>
+        l.classList.toggle('active', l.dataset.secao === secao));
+      document.body.classList.remove('sidebar-open');
+      window.scrollTo({ top: 0 });
+    }
+
+    function limparFiltros() {
+      ['busca-fot', 'busca-gal', 'busca-cli'].forEach(id => { document.getElementById(id).value = ''; });
+      document.getElementById('filtro-status').value = '';
+      document.getElementById('filtro-dono').value = '';
+      document.getElementById('sub-galerias').textContent = 'Todas as galerias do sistema';
+      pagFot = pagGal = pagCli = 1;
+      renderTudo();
+    }
+
+    // ── Carregamento ────────────────────────────────────────────────────────
+    async function carregar(avisar = false) {
+      try {
+        dados = await API.get('/admin/overview.php');
+        preencherFiltroDono();
+        renderTudo();
+        if (avisar) showToast('Dados atualizados.');
+      } catch (e) {
+        showToast('Falha ao carregar: ' + e.message, 'error');
+      }
+    }
+
+    function renderTudo() {
+      renderKpis();
+      renderFotografos();
+      renderGalerias();
+      renderClientes();
+      renderOrfaos();
+    }
+
+    function preencherFiltroDono() {
+      const sel = document.getElementById('filtro-dono');
+      const atual = sel.value;
+      sel.innerHTML = '<option value="">Todos os fotógrafos</option>' +
+        (dados.fotografos || []).map(f =>
+          `<option value="${esc(f.email)}">${esc(f.nome)}</option>`).join('');
+      sel.value = atual;
+    }
+
+    // ── KPIs ────────────────────────────────────────────────────────────────
+    function renderKpis() {
+      const r = dados.resumo || {};
+      const ativos = Number(r.fotografos || 0) - Number(r.bloqueados || 0);
+      const orfaos = Number(r.galerias_orfas || 0) + Number(r.clientes_orfaos || 0);
+
+      const kpi = (ico, cor, valor, txt) => `
+        <div class="kpi">
+          <span class="kpi-ico ${cor}"><i class="fa-solid ${ico}"></i></span>
+          <div>
+            <div class="kpi-num">${valor}</div>
+            <div class="kpi-txt">${txt}</div>
+          </div>
+        </div>`;
+
+      document.getElementById('kpis-fot').innerHTML =
+        kpi('fa-users', 'roxo', r.fotografos ?? 0, 'Fotógrafos cadastrados') +
+        kpi('fa-user-check', 'verde', ativos, 'Ativos') +
+        kpi('fa-user-lock', 'vermelho', r.bloqueados ?? 0, 'Bloqueados') +
+        kpi('fa-images', 'lilas', r.galerias ?? 0, 'Total de galerias') +
+        kpi('fa-photo-film', 'ambar', num(r.fotos), 'Total de fotos');
+
+      document.getElementById('kpis-dash').innerHTML =
+        kpi('fa-users', 'roxo', r.fotografos ?? 0, 'Fotógrafos cadastrados') +
+        kpi('fa-images', 'lilas', r.galerias ?? 0, 'Galerias no sistema') +
+        kpi('fa-user-group', 'azul', r.clientes ?? 0, 'Clientes cadastrados') +
+        kpi('fa-photo-film', 'ambar', num(r.fotos), 'Fotos registradas') +
+        kpi('fa-database', 'verde', bytes(r.bytes), 'Armazenamento usado') +
+        kpi('fa-link-slash', orfaos ? 'vermelho' : 'verde', orfaos, 'Registros sem dono');
+    }
+
+    // ── Fotógrafos ──────────────────────────────────────────────────────────
+    function filtrarFotografos() {
+      const termo = document.getElementById('busca-fot').value.trim().toLowerCase();
+      const status = document.getElementById('filtro-status').value;
+      return (dados.fotografos || []).filter(f => {
+        if (!combina(termo, f.nome, f.email, f.id, idFtg(f.id))) return false;
+        if (status === 'ativo' && Number(f.bloqueado) === 1) return false;
+        if (status === 'bloqueado' && Number(f.bloqueado) !== 1) return false;
+        if (status === 'admin' && f.tipo !== 'admin') return false;
+        return true;
+      });
+    }
+
+    function renderFotografos() {
+      const lista = filtrarFotografos();
+      const total = lista.length;
+      const paginas = Math.max(1, Math.ceil(total / PorPagina));
+      if (pagFot > paginas) pagFot = paginas;
+      const fatia = lista.slice((pagFot - 1) * PorPagina, pagFot * PorPagina);
+
+      const grid = document.getElementById('grid-fotografos');
+      if (!fatia.length) {
+        grid.innerHTML = `<div class="vazio" style="grid-column:1/-1">
+          <i class="fa-solid fa-users"></i>Nenhum fotógrafo encontrado com esses filtros.</div>`;
+      } else {
+        grid.innerHTML = fatia.map(cardFotografo).join('');
+      }
+
+      document.getElementById('rodape-fot').innerHTML =
+        total ? `Mostrando <strong>${fatia.length}</strong> de ${total} fotógrafo(s)` : '';
+      renderPaginacao('pag-fot', pagFot, paginas, p => { pagFot = p; renderFotografos(); });
+    }
+
+    function cardFotografo(f) {
+      const bloqueado = Number(f.bloqueado) === 1;
+      const ehAdmin = String(f.email).toLowerCase() === String(dados.admin_email).toLowerCase();
+      const foto = f.foto_perfil
+        ? `<img class="card-foto" src="${esc(midia(f.foto_perfil))}" alt="">`
+        : `<span class="card-foto">${esc(iniciais(f.nome))}</span>`;
+
+      return `
+        <div class="card-pessoa ${bloqueado ? 'bloqueado' : ''}">
+          <div class="card-topo">
+            ${foto}
+            <div class="card-info">
+              <div class="card-nome">
+                <strong>${esc(f.nome)}</strong>
+                ${bloqueado
+                  ? '<span class="badge badge-bloqueado"><i class="fa-solid fa-lock"></i> Bloqueado</span>'
+                  : '<span class="badge badge-ativo"><i class="fa-solid fa-circle-check"></i> Ativo</span>'}
+                ${f.tipo === 'admin' ? '<span class="badge badge-admin">Admin</span>' : ''}
+              </div>
+              <div class="card-id">ID: ${idFtg(f.id)}</div>
+              <div class="card-dado" title="${esc(f.email)}"><i class="fa-solid fa-envelope"></i> ${esc(f.email)}</div>
+              ${f.telefone ? `<div class="card-dado"><i class="fa-solid fa-phone"></i> ${esc(f.telefone)}</div>` : ''}
+              ${f.cidade ? `<div class="card-dado"><i class="fa-solid fa-location-dot"></i> ${esc(f.cidade)}</div>` : ''}
+            </div>
+          </div>
+
+          <div class="card-stats">
+            <div class="card-stat"><b>${num(f.total_galerias)}</b><span>Galerias</span></div>
+            <div class="card-stat"><b>${num(f.total_fotos)}</b><span>Fotos</span></div>
+            <div class="card-stat"><b>${num(f.total_clientes)}</b><span>Clientes</span></div>
+          </div>
+
+          <div class="card-acesso">
+            <i class="fa-regular fa-clock"></i> ${esc(acessoRelativo(f.ultimo_acesso))}
+            · ${bytes(f.bytes)}
+          </div>
+
+          <div class="card-botoes">
+            <button class="bt bt-entrar" onclick="entrarComo(${f.id})" ${ehAdmin ? 'disabled title="Você já está nesta conta"' : ''}>
+              <i class="fa-solid fa-eye"></i> Entrar
+            </button>
+            <button class="bt bt-galerias" onclick="verGalerias(${f.id})">
+              <i class="fa-solid fa-images"></i> Galerias
+            </button>
+            <button class="bt" onclick="abrirEditarFotografo(${f.id})">
+              <i class="fa-solid fa-pen"></i> Editar
+            </button>
+            <button class="bt bt-excluir" onclick="abrirExcluirFotografo(${f.id})" ${ehAdmin ? 'disabled title="A conta administradora não pode ser excluída"' : ''}>
+              <i class="fa-solid fa-trash"></i> Excluir
+            </button>
+          </div>
+        </div>`;
+    }
+
+    // ── Galerias ────────────────────────────────────────────────────────────
+    function verGalerias(id) {
+      const f = (dados.fotografos || []).find(x => Number(x.id) === Number(id));
+      if (!f) return;
+      irPara('galerias');
+      document.getElementById('filtro-dono').value = f.email;
+      document.getElementById('sub-galerias').textContent = `Galerias de ${f.nome}`;
+      pagGal = 1;
+      renderGalerias();
+    }
+
+    function renderGalerias() {
+      const termo = document.getElementById('busca-gal').value.trim().toLowerCase();
+      const dono = document.getElementById('filtro-dono').value;
+      const lista = (dados.galerias || []).filter(g => {
+        if (dono && g.usuario_email !== dono) return false;
+        return combina(termo, g.nome, g.usuario_email, g.cliente_nome, g.id);
+      });
+
+      const total = lista.length;
+      const paginas = Math.max(1, Math.ceil(total / PorPaginaTabela));
+      if (pagGal > paginas) pagGal = paginas;
+      const fatia = lista.slice((pagGal - 1) * PorPaginaTabela, pagGal * PorPaginaTabela);
+
+      const tb = document.getElementById('tb-galerias');
+      tb.innerHTML = fatia.length ? fatia.map(g => `
+        <tr>
+          <td class="num">${g.id}</td>
+          <td>
+            <div class="cel-nome">${esc(g.nome)}</div>
+            <div class="cel-sub">${g.total_musicas} música(s) · ${g.total_selecionadas} selecionada(s)</div>
+          </td>
+          <td>
+            ${esc(g.usuario_email)}
+            ${Number(g.dono_existe) ? '' : '<span class="badge badge-orfao" style="margin-left:4px">sem dono</span>'}
+          </td>
+          <td>${g.cliente_nome ? esc(g.cliente_nome) : '<span class="cel-sub">—</span>'}</td>
+          <td>
+            <span class="badge ${g.privacidade === 'publica' ? 'badge-ativo' : 'badge-inativo'}">
+              ${g.privacidade === 'publica' ? 'Pública' : 'Privada'}
+            </span>
+          </td>
+          <td class="num">${num(g.total_fotos)}</td>
+          <td class="num">${bytes(g.bytes)}</td>
+          <td>${dataCurta(g.criado_em)}</td>
+          <td>
+            <div class="acoes">
+              <a class="icon-btn" href="/galeria.html?id=${g.id}" title="Abrir"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              <button class="icon-btn" onclick="abrirEditarGaleria(${g.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+              <button class="icon-btn perigo" onclick="excluirGaleria(${g.id})" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>`).join('')
+        : `<tr><td colspan="9"><div class="vazio"><i class="fa-solid fa-images"></i>Nenhuma galeria encontrada.</div></td></tr>`;
+
+      document.getElementById('rodape-gal').innerHTML =
+        total ? `Mostrando <strong>${fatia.length}</strong> de ${total} galeria(s)` : '';
+      renderPaginacao('pag-gal', pagGal, paginas, p => { pagGal = p; renderGalerias(); });
+    }
+
+    // ── Clientes ────────────────────────────────────────────────────────────
+    function renderClientes() {
+      const termo = document.getElementById('busca-cli').value.trim().toLowerCase();
+      const lista = (dados.clientes || []).filter(c =>
+        combina(termo, c.nome, c.email, c.telefone, c.fotografo_email, c.id));
+
+      const total = lista.length;
+      const paginas = Math.max(1, Math.ceil(total / PorPaginaTabela));
+      if (pagCli > paginas) pagCli = paginas;
+      const fatia = lista.slice((pagCli - 1) * PorPaginaTabela, pagCli * PorPaginaTabela);
+
+      const tb = document.getElementById('tb-clientes');
+      tb.innerHTML = fatia.length ? fatia.map(c => `
+        <tr>
+          <td class="num">${c.id}</td>
+          <td>
+            <div class="cel-principal">
+              ${c.foto_cliente
+                ? `<img class="avatar-mini" src="${esc(midia(c.foto_cliente))}" alt="">`
+                : `<span class="avatar-mini">${esc(iniciais(c.nome))}</span>`}
+              <div class="cel-nome">${esc(c.nome)}</div>
+            </div>
+          </td>
+          <td>
+            ${c.email ? esc(c.email) : '<span class="cel-sub">—</span>'}
+            <div class="cel-sub">${c.telefone ? esc(c.telefone) : ''}</div>
+          </td>
+          <td>
+            ${esc(c.fotografo_email)}
+            ${Number(c.dono_existe) ? '' : '<span class="badge badge-orfao" style="margin-left:4px">sem dono</span>'}
+          </td>
+          <td class="num">${c.total_galerias}</td>
+          <td>${dataCurta(c.criado_em)}</td>
+          <td>
+            <div class="acoes">
+              <button class="icon-btn perigo" onclick="excluirCliente(${c.id})" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>`).join('')
+        : `<tr><td colspan="7"><div class="vazio"><i class="fa-solid fa-user-group"></i>Nenhum cliente encontrado.</div></td></tr>`;
+
+      document.getElementById('rodape-cli').innerHTML =
+        total ? `Mostrando <strong>${fatia.length}</strong> de ${total} cliente(s)` : '';
+      renderPaginacao('pag-cli', pagCli, paginas, p => { pagCli = p; renderClientes(); });
+    }
+
+    // ── Órfãos (no dashboard) ───────────────────────────────────────────────
+    function renderOrfaos() {
+      const gals = (dados.galerias || []).filter(g => !Number(g.dono_existe));
+      const clis = (dados.clientes || []).filter(c => !Number(c.dono_existe));
+      const alvo = document.getElementById('painel-orfaos');
+
+      if (!gals.length && !clis.length) {
+        alvo.innerHTML = `<div class="aviso-info">
+          <i class="fa-solid fa-circle-check"></i> Nenhum registro sem dono. Todas as galerias e clientes
+          apontam para contas que existem.</div>`;
+        return;
+      }
+
+      alvo.innerHTML = `
+        <div class="aviso-perigo">
+          <strong>Registros sem dono.</strong> Galerias e clientes cujo e-mail de fotógrafo não corresponde
+          a nenhuma conta existente — normalmente sobra de conta removida direto no banco.
+          Você pode transferir a galeria para um fotógrafo atual ou excluí-la.
+        </div>
+        <div class="admin-table">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tipo</th><th class="num">#</th><th>Nome</th>
+                  <th>E-mail do dono (inexistente)</th><th class="num">Fotos</th>
+                  <th style="text-align:right">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${gals.map(g => `
+                  <tr>
+                    <td><span class="badge badge-orfao">Galeria</span></td>
+                    <td class="num">${g.id}</td>
+                    <td>${esc(g.nome)}</td>
+                    <td>${esc(g.usuario_email)}</td>
+                    <td class="num">${num(g.total_fotos)}</td>
+                    <td><div class="acoes">
+                      <button class="icon-btn" onclick="abrirEditarGaleria(${g.id})" title="Transferir"><i class="fa-solid fa-right-left"></i></button>
+                      <button class="icon-btn perigo" onclick="excluirGaleria(${g.id})" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                    </div></td>
+                  </tr>`).join('')}
+                ${clis.map(c => `
+                  <tr>
+                    <td><span class="badge badge-orfao">Cliente</span></td>
+                    <td class="num">${c.id}</td>
+                    <td>${esc(c.nome)}</td>
+                    <td>${esc(c.fotografo_email)}</td>
+                    <td class="num">—</td>
+                    <td><div class="acoes">
+                      <button class="icon-btn perigo" onclick="excluirCliente(${c.id})" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                    </div></td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+
+    // ── Paginação ───────────────────────────────────────────────────────────
+    function renderPaginacao(alvoId, atual, paginas, aoIr) {
+      const alvo = document.getElementById(alvoId);
+      if (paginas <= 1) { alvo.innerHTML = ''; return; }
+
+      const nums = [];
+      for (let p = 1; p <= paginas; p++) {
+        if (p === 1 || p === paginas || Math.abs(p - atual) <= 1) nums.push(p);
+        else if (nums[nums.length - 1] !== '…') nums.push('…');
+      }
+
+      alvo.innerHTML =
+        `<button class="pag-bt" ${atual === 1 ? 'disabled' : ''} data-ir="${atual - 1}">‹ Anterior</button>` +
+        nums.map(p => p === '…'
+          ? '<span style="padding:0 4px">…</span>'
+          : `<button class="pag-bt ${p === atual ? 'ativo' : ''}" data-ir="${p}">${p}</button>`).join('') +
+        `<button class="pag-bt" ${atual === paginas ? 'disabled' : ''} data-ir="${atual + 1}">Próximo ›</button>`;
+
+      alvo.querySelectorAll('[data-ir]').forEach(b =>
+        b.onclick = () => aoIr(Number(b.dataset.ir)));
+    }
+
+    // ── Ações: fotógrafo ────────────────────────────────────────────────────
+    function abrirNovoFotografo() {
+      document.getElementById('titulo-modal-fot').innerHTML =
+        '<i class="fa-solid fa-user-plus" style="color:var(--primary)"></i> Novo fotógrafo';
+      document.getElementById('f-id').value = '';
+      ['f-nome', 'f-email', 'f-senha', 'f-telefone', 'f-cidade'].forEach(id =>
+        document.getElementById(id).value = '');
+      document.getElementById('f-tipo').value = 'fotografo';
+      document.getElementById('f-email').disabled = false;
+      document.getElementById('grupo-senha').style.display = '';
+      document.getElementById('hint-email').textContent =
+        'Este e-mail será o login da conta e a chave que liga as galerias a ela.';
+      abrirModal('modal-fotografo');
+    }
+
+    function abrirEditarFotografo(id) {
+      const f = (dados.fotografos || []).find(x => Number(x.id) === Number(id));
+      if (!f) return;
+      document.getElementById('titulo-modal-fot').innerHTML =
+        '<i class="fa-solid fa-user-pen" style="color:var(--primary)"></i> Editar fotógrafo';
+      document.getElementById('f-id').value = f.id;
+      document.getElementById('f-nome').value = f.nome || '';
+      document.getElementById('f-email').value = f.email || '';
+      document.getElementById('f-email').disabled = true;
+      document.getElementById('f-telefone').value = f.telefone || '';
+      document.getElementById('f-cidade').value = f.cidade || '';
+      document.getElementById('f-tipo').value = f.tipo || 'fotografo';
+      document.getElementById('grupo-senha').style.display = 'none';
+      document.getElementById('hint-email').textContent =
+        'O e-mail liga galerias e clientes à conta e não muda depois de criada.';
+      abrirModal('modal-fotografo');
+    }
+
+    async function salvarFotografo() {
+      const btn = document.getElementById('btn-salvar-fot');
+      const original = btn.innerHTML;
+      const id = document.getElementById('f-id').value;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+      try {
+        const base = {
+          nome: document.getElementById('f-nome').value.trim(),
+          tipo: document.getElementById('f-tipo').value,
+          telefone: document.getElementById('f-telefone').value.trim(),
+          cidade: document.getElementById('f-cidade').value.trim(),
+        };
+        if (id) {
+          await API.post('/admin/usuario_salvar.php', { id: Number(id), ...base });
+        } else {
+          await API.post('/admin/usuario_criar.php', {
+            ...base,
+            email: document.getElementById('f-email').value.trim(),
+            senha: document.getElementById('f-senha').value,
+          });
+        }
+        fecharModal('modal-fotografo');
+        showToast(id ? 'Fotógrafo atualizado.' : 'Fotógrafo cadastrado.');
+        await carregar();
+      } catch (e) {
+        showToast(e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+      }
+    }
+
+    async function entrarComo(id) {
+      const f = (dados.fotografos || []).find(x => Number(x.id) === Number(id));
+      if (!f) return;
+      const msg = `Entrar no sistema como ${f.nome}?\n\n`
+        + `Você passa a navegar com essa conta e tudo que fizer ficará registrado como ação dela.\n`
+        + `Uma faixa no rodapé mostra o aviso e traz o botão para voltar à sua conta de administrador.`;
+      if (!confirm(msg)) return;
+      try {
+        await API.post('/admin/impersonar.php', { id });
+        window.location.href = '/painel.html';
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    function abrirExcluirFotografo(id) {
+      const f = (dados.fotografos || []).find(x => Number(x.id) === Number(id));
+      if (!f) return;
+      document.getElementById('x-id').value = f.id;
+      document.getElementById('x-confirmacao').value = '';
+      document.getElementById('x-resumo').innerHTML = `
+        Isto remove <strong>${esc(f.nome)}</strong> e todo o conteúdo dessa conta:
+        <strong>${num(f.total_galerias)} galeria(s)</strong>,
+        <strong>${num(f.total_fotos)} foto(s)</strong> (${bytes(f.bytes)} no Cloudflare R2)
+        e <strong>${num(f.total_clientes)} cliente(s)</strong>.
+        Os arquivos saem do bucket e <strong>não há como desfazer</strong>.
+        Se a intenção é só tirar o acesso, edite a conta e bloqueie em vez disto.`;
+      abrirModal('modal-excluir');
+    }
+
+    async function excluirFotografo() {
+      const btn = document.getElementById('btn-excluir-fot');
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Excluindo...';
+      try {
+        const r = await API.post('/admin/usuario_excluir.php', {
+          id: Number(document.getElementById('x-id').value),
+          confirmacao: document.getElementById('x-confirmacao').value.trim(),
+        });
+        fecharModal('modal-excluir');
+        const rm = r.removidos || {};
+        showToast(`Removido: ${rm.galerias || 0} galeria(s), ${rm.fotos || 0} foto(s), ${rm.clientes || 0} cliente(s).`);
+        await carregar();
+      } catch (e) {
+        showToast(e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+      }
+    }
+
+    // ── Ações: galeria ──────────────────────────────────────────────────────
+    function abrirEditarGaleria(id) {
+      const g = (dados.galerias || []).find(x => Number(x.id) === Number(id));
+      if (!g) return;
+      document.getElementById('g-id').value = g.id;
+      document.getElementById('g-nome').value = g.nome || '';
+      document.getElementById('g-privacidade').value = g.privacidade || 'privada';
+
+      const sel = document.getElementById('g-dono');
+      sel.innerHTML = (dados.fotografos || [])
+        .map(f => `<option value="${esc(f.email)}">${esc(f.nome)} (${esc(f.email)})</option>`).join('');
+      if ([...sel.options].some(o => o.value === g.usuario_email)) {
+        sel.value = g.usuario_email;
+      } else {
+        sel.insertAdjacentHTML('afterbegin',
+          `<option value="">— dono atual (${esc(g.usuario_email)}) não existe mais —</option>`);
+        sel.value = '';
+      }
+      abrirModal('modal-galeria');
+    }
+
+    async function salvarGaleria() {
+      const btn = document.getElementById('btn-salvar-gal');
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+      try {
+        const payload = {
+          id: Number(document.getElementById('g-id').value),
+          nome: document.getElementById('g-nome').value.trim(),
+          privacidade: document.getElementById('g-privacidade').value,
+        };
+        const dono = document.getElementById('g-dono').value;
+        if (dono) payload.usuario_email = dono;
+
+        await API.post('/admin/galeria_salvar.php', payload);
+        fecharModal('modal-galeria');
+        showToast('Galeria atualizada.');
+        await carregar();
+      } catch (e) {
+        showToast(e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+      }
+    }
+
+    async function excluirGaleria(id) {
+      const g = (dados.galerias || []).find(x => Number(x.id) === Number(id));
+      if (!g) return;
+      const msg = `Excluir a galeria "${g.nome}" (#${g.id})?\n\n`
+        + `${num(g.total_fotos)} foto(s) · ${bytes(g.bytes)} serão apagadas do Cloudflare R2.\n`
+        + `Esta ação não pode ser desfeita.`;
+      if (!confirm(msg)) return;
+      try {
+        const r = await API.post('/admin/galeria_excluir.php', { id });
+        const rm = r.removidos || {};
+        showToast(`Galeria excluída (${rm.fotos_removidas || 0} foto(s) removida(s) do R2).`);
+        await carregar();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    // ── Ações: cliente ──────────────────────────────────────────────────────
+    async function excluirCliente(id) {
+      const c = (dados.clientes || []).find(x => Number(x.id) === Number(id));
+      if (!c) return;
+      const aviso = Number(c.total_galerias)
+        ? `\n\n${c.total_galerias} galeria(s) ficarão sem cliente vinculado — as fotos não são apagadas.`
+        : '';
+      if (!confirm(`Excluir o cliente "${c.nome}"?${aviso}`)) return;
+      try {
+        const r = await API.post('/admin/cliente_excluir.php', { id });
+        showToast(r.mensagem || 'Cliente removido.');
+        await carregar();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>
