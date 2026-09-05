@@ -36,8 +36,36 @@ Railway - Servico CRIAVIBE
 ## Storage
 
 - Provedor: Cloudflare R2.
-- Uso: armazenamento de fotos, capas e arquivos de galeria.
-- Integracao: `api/lib/R2Storage.php`.
+- Bucket: `criavibe-galeria`.
+- Uso: **todo** arquivo enviado pelo sistema. Nada e gravado em disco local,
+  porque o filesystem do container Railway e efemero e some a cada deploy.
+- Integracao: `api/lib/Storage.php` (camada unica, sem fallback local),
+  `api/lib/R2Storage.php` (protocolo S3) e `api/lib/R2Presigner.php`
+  (URLs assinadas para upload direto do navegador).
+
+### Organizacao do bucket
+
+```text
+galerias/{id}/                  fotos originais
+galerias/{id}/derivados/        miniaturas geradas
+galerias/{id}/capas/            capa de apresentacao
+musicas/{galeria_id}/           trilhas da galeria
+clientes/{cliente_id}/          foto do cliente
+perfis/{usuario_id}/            foto de perfil do fotografo
+alunos/{aluno_id}/              foto do aluno (modulo de agendamento)
+```
+
+### Requisitos de configuracao
+
+Tres coisas precisam estar simultaneamente corretas para o upload funcionar:
+
+1. **R2 habilitado na conta.** Se estiver desabilitado, toda operacao responde
+   `403 NotEntitled`.
+2. **Acesso publico (`r2.dev`) habilitado.** Sem ele as fotos nao carregam e
+   `api/fotos/process_thumbs.php` nao consegue baixar o original para gerar
+   miniatura. Teste: objeto inexistente deve responder `404`, nao `403`.
+3. **Politica de CORS com a origem do frontend.** A lista e literal; ver
+   README e `documentacao/trabalho/trabalho_05_09_2026.md`.
 
 ## Variaveis Necessarias
 
@@ -49,7 +77,18 @@ R2_PUBLIC_URL=
 R2_ACCESS_KEY_ID=
 R2_SECRET_KEY=
 SECRET_KEY=
+
+# Conta com acesso ao painel administrativo (/admin.html).
+# Lista separada por virgula. Sem definir, vale o padrao em api/config.php.
+ADMIN_EMAILS=
+
+# Enfileiramento de miniaturas no Redis. Manter 0 enquanto nao houver um
+# servico worker consumindo a fila, senao os jobs se acumulam indefinidamente.
+ENABLE_IMAGE_QUEUE=0
 ```
+
+`ADMIN_EMAIL` e `ADMIN_SENHA` aparecem em arquivos `.env` antigos mas nao sao
+lidas por nenhum ponto do runtime atual. `SECRET_KEY` tambem nao e usada hoje.
 
 ## Bootstrap do Banco
 

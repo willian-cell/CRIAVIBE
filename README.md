@@ -156,13 +156,26 @@ railway run php api/db_migrations.php
 ## R2 CORS necessário para uploads diretos
 
 O bucket Cloudflare R2 deve permitir o `OPTIONS` de preflight e retornar `Access-Control-Allow-Origin` para o domínio do frontend.
-Configure o CORS do bucket com:
-- Origem: `https://criavibe-production.up.railway.app`
-- Métodos: `PUT`, `OPTIONS`, `GET`
+
+Política aplicada e validada em 05/09/2026:
+
+- Origens: `https://criavibe-production.up.railway.app`, `http://criavibe-production.up.railway.app`, `https://criavibe.com.br`, `https://www.criavibe.com.br`
+- Métodos: `GET`, `PUT`, `POST`, `HEAD`
 - Headers permitidos: `Content-Type`, `Authorization`, `X-Amz-Date`, `X-Amz-Algorithm`, `X-Amz-Credential`, `X-Amz-SignedHeaders`, `X-Amz-Signature`, `X-Amz-Content-Sha256`
 - Expor headers: `ETag`, `x-amz-request-id`
+- `MaxAgeSeconds`: 86400
 
-Sem essa configuração, o navegador bloqueará o `PUT` direto mesmo que a URL assinada esteja correta.
+Sem essa configuração, o navegador bloqueará o `PUT` direto mesmo que a URL assinada esteja correta — o erro que aparece é `Failed to fetch`.
+
+**A lista de origens é literal.** `http` e `https` são origens distintas, `www` é uma origem distinta, e qualquer endereço fora da lista tem o preflight recusado com `403`. Ao trocar o domínio do frontend, atualize esta política junto.
+
+O XML completo e o histórico do diagnóstico estão em [`documentacao/trabalho/trabalho_05_09_2026.md`](documentacao/trabalho/trabalho_05_09_2026.md).
+
+### Acesso público do bucket
+
+O acesso público (`r2.dev`) precisa estar **habilitado**. Sem ele as fotos não carregam para o cliente e a geração de miniaturas falha, porque `api/fotos/process_thumbs.php` baixa o arquivo original por essa URL.
+
+Teste rápido: um objeto inexistente na URL pública deve responder `404`. Se responder `403`, o acesso público está desligado.
 
 ## Como validar logs do worker no Railway
 
