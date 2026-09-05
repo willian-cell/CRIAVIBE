@@ -100,6 +100,7 @@ try {
 
     // Enfileirar jobs de processamento de imagens (thumbnails/derivados)
     try {
+        if (!ENABLE_IMAGE_QUEUE) throw new RuntimeException('fila de imagens desativada');
         require_once __DIR__ . '/../lib/Queue.php';
         $q = new Queue();
         // Prepare jobs: use publicUrls paired with finalRows via ordem match
@@ -119,7 +120,8 @@ try {
             $q->push(WORKER_QUEUE_NAME, $job);
         }
     } catch (Throwable $e) {
-        error_log('Falha ao enfileirar jobs: '.$e->getMessage());
+        // Sem worker a fila e opcional: o upload nao pode falhar por causa dela.
+        if (ENABLE_IMAGE_QUEUE) error_log('Falha ao enfileirar jobs: '.$e->getMessage());
     }
 
     json_out(['status'=>'ok','registradas'=>$registradas]);

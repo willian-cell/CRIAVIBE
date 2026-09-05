@@ -69,6 +69,12 @@ define('WORKER_POLL_TIMEOUT', (int)env_val('WORKER_POLL_TIMEOUT', '5'));
 // Feature flags
 define('FORCE_DIRECT_UPLOAD', (env_val('FORCE_DIRECT_UPLOAD', '0') === '1'));
 
+// Enfileiramento de miniaturas no Redis. Desligado por padrao: sem um servico
+// worker consumindo a fila, os jobs se acumulam indefinidamente. A geracao sob
+// demanda em api/fotos/process_thumbs.php cobre o caso hoje. Ligue com
+// ENABLE_IMAGE_QUEUE=1 quando houver worker no ar.
+define('ENABLE_IMAGE_QUEUE', (env_val('ENABLE_IMAGE_QUEUE', '0') === '1'));
+
 // Contas com acesso ao painel administrativo do sistema.
 //
 // A fonte da verdade e ADMIN_EMAILS (lista separada por virgula). ADMIN_EMAIL

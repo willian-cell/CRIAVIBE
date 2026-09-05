@@ -75,6 +75,16 @@ $extensionMap = [
 $presigner = new R2Presigner(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
 $uploads = [];
 
+// Arquivos recusados aqui voltam para o cliente em vez de sumirem calados:
+// sem isso a barra de progresso trava abaixo de 100% e o usuario recebe
+// mensagem de sucesso mesmo tendo perdido fotos.
+$ignorados = [];
+
+// Validade maxima aceita pelo R2. As URLs de um lote sao assinadas todas de
+// uma vez, mas so algumas sobem em paralelo: com arquivos grandes e envio
+// lento, as ultimas da fila expiravam antes da vez e devolviam HTTP 403.
+$validadeSegundos = 3600;
+
 foreach ($files as $idx => $file) {
     $name = trim((string)($file['name'] ?? ''));
     $type = strtolower(trim((string)($file['type'] ?? '')));
@@ -89,6 +99,15 @@ foreach ($files as $idx => $file) {
     }
 
     if (!$name || $size <= 0 || !isset($allowed[$type])) {
+        $ignorados[] = [
+            'client_id' => (string)$idx,
+            'nome' => $name !== '' ? $name : 'arquivo sem nome',
+            'motivo' => !$name
+                ? 'Arquivo sem nome.'
+                : ($size <= 0
+                    ? 'Arquivo vazio.'
+                    : 'Formato nao suportado' . ($type !== '' ? " ({$type})" : '') . '.'),
+        ];
         continue;
     }
 
@@ -109,10 +128,18 @@ foreach ($files as $idx => $file) {
         'orientacao' => $orientacao,
         'r2_path' => $r2Path,
         'public_url' => R2_PUBLIC_URL . '/' . $r2Path,
-        'upload_url' => $presigner->signedPutUrl($r2Path, 900, $type),
+        'upload_url' => $presigner->signedPutUrl($r2Path, $validadeSegundos, $type),
+        'expira_em' => time() + $validadeSegundos,
     ];
 }
 
-if (!$uploads) json_out(['status'=>'erro','mensagem'=>'Nenhum arquivo valido para upload.'], 400);
+if (!$uploads) {
+    $detalhe = $ignorados ? ' ' . $ignorados[0]['motivo'] : '';
+    json_out([
+        'status' => 'erro',
+        'mensagem' => 'Nenhum arquivo valido para upload.' . $detalhe,
+        'ignorados' => $ignorados,
+    ], 400);
+}
 
-json_out(['status'=>'ok','uploads'=>$uploads]);
+json_out(['status'=>'ok','uploads'=>$uploads,'ignorados'=>$ignorados]);

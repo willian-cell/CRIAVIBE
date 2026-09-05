@@ -1169,9 +1169,10 @@
       return /^https?:\/\//i.test(path) ? path : '/' + path.replace(/^\/+/, '');
     }
 
+    // Cai para o original quando a miniatura ainda nao foi gerada.
     function capaPreviewSrcFromFoto(f) {
       if (!f) return '';
-      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
+      return mediaSrc(f.caminho_thumb_small) || mediaSrc(f.caminho_arquivo) || FOTO_PLACEHOLDER;
     }
 
     function aplicarPreviewCapa(src) {
@@ -1324,12 +1325,15 @@
     document.addEventListener('pointerup', finalizarCropDrag);
     document.addEventListener('pointercancel', finalizarCropDrag);
 
+    // A miniatura e so uma otimizacao: quando ela ainda nao existe, mostrar o
+    // original e melhor do que esconder uma foto que esta la.
     function fotoGridSrc(f) {
-      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
+      return mediaSrc(f.caminho_thumb_small) || mediaSrc(f.caminho_arquivo) || FOTO_PLACEHOLDER;
     }
 
+    // Ampliar a foto deve mostrar o original, nao a miniatura de 360px.
     function fotoLightboxSrc(f) {
-      return mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
+      return mediaSrc(f.caminho_arquivo) || mediaSrc(f.caminho_thumb_small) || FOTO_PLACEHOLDER;
     }
 
     function orientacaoPorDimensoes(largura, altura) {
@@ -1342,23 +1346,36 @@
 
     function medirImagemLocal(file) {
       return new Promise(resolve => {
+        const semMedida = { largura: null, altura: null, orientacao: null };
+
         if (!file || !file.type || !file.type.startsWith('image/')) {
-          resolve({ largura: null, altura: null, orientacao: null });
+          resolve(semMedida);
           return;
         }
 
         const img = new Image();
         const url = URL.createObjectURL(file);
-        img.onload = () => {
+        let encerrado = false;
+
+        // Alguns formatos e arquivos muito grandes nao disparam nem onload nem
+        // onerror em certos navegadores. Sem este limite a Promise ficava
+        // pendente para sempre e o upload inteiro parava sem mensagem alguma.
+        const limite = setTimeout(() => finalizar(semMedida), 8000);
+
+        function finalizar(resultado) {
+          if (encerrado) return;
+          encerrado = true;
+          clearTimeout(limite);
           URL.revokeObjectURL(url);
+          resolve(resultado);
+        }
+
+        img.onload = () => {
           const largura = img.naturalWidth || null;
           const altura = img.naturalHeight || null;
-          resolve({ largura, altura, orientacao: orientacaoPorDimensoes(largura, altura) || null });
+          finalizar({ largura, altura, orientacao: orientacaoPorDimensoes(largura, altura) || null });
         };
-        img.onerror = () => {
-          URL.revokeObjectURL(url);
-          resolve({ largura: null, altura: null, orientacao: null });
-        };
+        img.onerror = () => finalizar(semMedida);
         img.src = url;
       });
     }
@@ -1501,18 +1518,19 @@
     async function uploadFotosDiretoR2(files) {
       if (!files || !files.length) return;
 
-      // Resumable support: session id and progress persisted in localStorage
-      const sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
-      const storageKey = `upload_progress_${galeriaId}_${sessionId}`;
-      const persisted = JSON.parse(localStorage.getItem(storageKey) || '{}');
-
-      const prepareBatchSize = 50;
+      // Lotes menores encurtam a distancia entre assinar a URL e usa-la, e
+      // limitam o estrago quando um lote da problema.
+      const prepareBatchSize = 20;
       const concurrency = 4;
-      const totalFiles = files.length;
       const filesArray = Array.from(files);
+      const totalFiles = filesArray.length;
       const totalBatches = Math.ceil(totalFiles / prepareBatchSize);
-      let done = 0;
-      let failed = 0;
+
+      // Guardar os proprios objetos File evita contar a mesma foto duas vezes
+      // quando um lote falha depois de ja ter enviado parte dele.
+      const enviados = new Set();
+      const falhados = new Map();
+      const ignorados = [];
 
       const progBg = document.getElementById('prog-bg');
       const progFill = document.getElementById('prog-fill');
@@ -1521,66 +1539,92 @@
       progBg.style.display = '';
       progFill.style.width = '0%';
 
-      /* Este bloco de código jamais podera ser excluido pois ele faz parte de testes visuais de uploads do sistema:
-      function debugR2UploadInfo(upload, file) {
-        try {
-          const host = new URL(upload.upload_url).host;
-          let debugBox = document.getElementById('upload-debug-info');
-          if (!debugBox) {
-            debugBox = document.createElement('pre');
-            debugBox.id = 'upload-debug-info';
-            debugBox.style.position = 'fixed';
-            debugBox.style.bottom = '120px';
-            debugBox.style.right = '30px';
-            debugBox.style.maxWidth = '420px';
-            debugBox.style.padding = '12px';
-            debugBox.style.background = 'rgba(0,0,0,0.78)';
-            debugBox.style.color = '#fff';
-            debugBox.style.fontSize = '0.85rem';
-            debugBox.style.borderRadius = '12px';
-            debugBox.style.zIndex = '10001';
-            debugBox.style.whiteSpace = 'pre-wrap';
-            debugBox.style.boxShadow = '0 10px 25px rgba(0,0,0,0.4)';
-            debugBox.style.fontFamily = 'monospace';
-            document.body.appendChild(debugBox);
-          }
-          debugBox.textContent = `Upload debug:\nOrigin: ${window.location.origin}\nR2 host: ${host}\nFile: ${file.name}\nContent-Type: ${upload.mime_type || file.type || 'application/octet-stream'}`;
-        } catch (e) {
-          console.warn('Falha ao montar debug de upload R2', e);
-        }
+      function atualizarProgresso() {
+        const processados = enviados.size + falhados.size + ignorados.length;
+        progFill.style.width = `${Math.min(100, (processados / totalFiles) * 100)}%`;
+        txt.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Enviando direto ao R2... (${processados}/${totalFiles})`;
       }
-      */
+
+      // Mede as dimensoes em paralelo, mas com limite: decodificar 50 fotos
+      // grandes de uma vez consome memoria demais no navegador.
+      async function medirLote(batch, limite = 6) {
+        const medidas = new Array(batch.length);
+        let cursor = 0;
+
+        async function worker() {
+          while (cursor < batch.length) {
+            const idx = cursor++;
+            medidas[idx] = await medirImagemLocal(batch[idx]);
+          }
+        }
+
+        await Promise.all(Array.from({ length: Math.min(limite, batch.length) }, worker));
+        return medidas;
+      }
+
+      function payloadDe(file, medida) {
+        return {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          largura: medida.largura,
+          altura: medida.altura,
+          orientacao: medida.orientacao,
+        };
+      }
+
+      // Uma URL assinada vale por tempo limitado. Se expirar enquanto a foto
+      // esperava a vez na fila, repetir a mesma URL nunca funciona: e preciso
+      // pedir outra.
+      async function reassinar(file) {
+        const medida = await medirImagemLocal(file);
+        const prep = await API.post('/fotos/direct_prepare.php', {
+          galeria_id: parseInt(galeriaId),
+          files: [payloadDe(file, medida)],
+        });
+        if (!prep.uploads || !prep.uploads.length) {
+          throw new Error('Nao foi possivel gerar uma nova URL de envio.');
+        }
+        return prep.uploads[0];
+      }
 
       async function putR2(upload, file) {
-        let lastError = null;
-        for (let attempt = 1; attempt <= 3; attempt++) {
+        let atual = upload;
+        let ultimoErro = null;
+
+        for (let tentativa = 1; tentativa <= 3; tentativa++) {
           try {
-            // debugR2UploadInfo(upload, file);
-            const res = await fetch(upload.upload_url, {
+            const res = await fetch(atual.upload_url, {
               method: 'PUT',
-              headers: { 'Content-Type': upload.mime_type || file.type || 'application/octet-stream' },
+              headers: { 'Content-Type': atual.mime_type || file.type || 'application/octet-stream' },
               body: file,
             });
-            if (res.ok) return true;
-            const detail = await res.text().catch(() => '');
-            lastError = new Error(`R2 respondeu ${res.status}${detail ? ': ' + detail.slice(0, 160) : ''}`);
+            if (res.ok) return atual;
+
+            const detalhe = await res.text().catch(() => '');
+            if (res.status === 403 && tentativa < 3) {
+              atual = await reassinar(file);
+              continue;
+            }
+            ultimoErro = new Error(`R2 respondeu ${res.status}${detalhe ? ': ' + detalhe.slice(0, 160) : ''}`);
           } catch (err) {
             try {
               console.error('R2 upload debug', {
                 origin: window.location.origin,
-                uploadUrl: upload.upload_url,
-                uploadHost: new URL(upload.upload_url).host,
-                mimeType: upload.mime_type || file.type || 'application/octet-stream',
+                uploadUrl: atual.upload_url,
+                uploadHost: new URL(atual.upload_url).host,
+                mimeType: atual.mime_type || file.type || 'application/octet-stream',
                 error: err,
               });
             } catch (debugErr) {
               console.error('R2 upload debug falhou', debugErr);
             }
-            lastError = err;
+            ultimoErro = err;
           }
-          await new Promise(resolve => setTimeout(resolve, attempt * 800));
+          await new Promise(resolve => setTimeout(resolve, tentativa * 800));
         }
-        throw lastError || new Error('Falha no upload direto para R2.');
+
+        throw ultimoErro || new Error('Falha no upload direto para R2.');
       }
 
       async function uploadPool(jobs) {
@@ -1589,19 +1633,15 @@
 
         async function worker() {
           while (cursor < jobs.length) {
-            const current = jobs[cursor++];
+            const atual = jobs[cursor++];
             try {
-              await putR2(current.upload, current.file);
-              ok.push(current.upload);
-              done++;
+              ok.push(await putR2(atual.upload, atual.file));
+              enviados.add(atual.file);
             } catch (err) {
-              console.error('Falha no upload direto:', current.file.name, err);
-              failed++;
+              console.error('Falha no upload direto:', atual.file.name, err);
+              falhados.set(atual.file, err.message || 'falha no envio');
             }
-
-            const processed = done + failed;
-            progFill.style.width = `${Math.min(100, (processed / totalFiles) * 100)}%`;
-            txt.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Enviando direto ao R2... (${processed}/${totalFiles})`;
+            atualizarProgresso();
           }
         }
 
@@ -1616,35 +1656,25 @@
         txt.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Preparando lote <b>${batchNum} de ${totalBatches}</b>...`;
 
         try {
-          const medidas = await Promise.all(batch.map(medirImagemLocal));
-          const payload = batch.map((file, idx) => ({
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            largura: medidas[idx].largura,
-            altura: medidas[idx].altura,
-            orientacao: medidas[idx].orientacao,
-          }));
-          // Save progress
-          persisted.currentBatch = batchNum;
-          persisted.totalBatches = totalBatches;
-          localStorage.setItem(storageKey, JSON.stringify(persisted));
-
+          const medidas = await medirLote(batch);
           const prep = await API.post('/fotos/direct_prepare.php', {
             galeria_id: parseInt(galeriaId),
-            files: payload,
+            files: batch.map((file, idx) => payloadDe(file, medidas[idx])),
           });
 
-          const jobs = prep.uploads.map(upload => ({
-            upload,
-            file: batch[Number(upload.client_id)],
-          })).filter(job => job.file);
+          // Arquivos que o servidor recusou. Antes sumiam calados e a barra
+          // de progresso nunca chegava a 100%.
+          (prep.ignorados || []).forEach(ig => {
+            const file = batch[Number(ig.client_id)];
+            if (file) ignorados.push({ nome: file.name, motivo: ig.motivo });
+          });
+
+          const jobs = (prep.uploads || [])
+            .map(upload => ({ upload, file: batch[Number(upload.client_id)] }))
+            .filter(job => job.file);
 
           const uploaded = await uploadPool(jobs);
-
-          // mark uploaded in persisted state
-          persisted.uploaded = (persisted.uploaded || 0) + uploaded.length;
-          localStorage.setItem(storageKey, JSON.stringify(persisted));
+          atualizarProgresso();
 
           if (uploaded.length) {
             const confirm = await API.post('/fotos/direct_confirm.php', {
@@ -1659,23 +1689,42 @@
               })),
             });
 
-            if (Number(confirm.registradas || 0) !== uploaded.length) {
-              throw new Error(`Banco confirmou ${confirm.registradas || 0} de ${uploaded.length} fotos.`);
+            // O confirm e idempotente: ele ignora fotos que ja constavam na
+            // galeria. Registrar menos do que foi enviado e resultado normal,
+            // nao erro - tratar como erro cancelava envios bem-sucedidos.
+            const registradas = Number(confirm.registradas || 0);
+            if (registradas < uploaded.length) {
+              console.info(`Lote ${batchNum}: ${uploaded.length - registradas} foto(s) ja constavam na galeria.`);
             }
           }
         } catch (e) {
+          // Um lote com problema nao pode cancelar os lotes seguintes.
           console.error(`Falha no lote ${batchNum}:`, e);
           showToast(`Erro no lote ${batchNum}: ${e.message}`, 'error');
-          failed += batch.length;
-          break;
+          batch.forEach(file => {
+            const jaContado = enviados.has(file) || falhados.has(file)
+              || ignorados.some(ig => ig.nome === file.name);
+            if (!jaContado) falhados.set(file, e.message || 'falha no lote');
+          });
+          atualizarProgresso();
         }
       }
 
-      if (failed) {
-        txt.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Upload finalizado com falhas (${done}/${totalFiles}).`;
-        showToast(`${failed} foto(s) nao foram enviadas.`, 'error');
+      const totalOk = enviados.size;
+      const problemas = falhados.size + ignorados.length;
+
+      if (problemas) {
+        const nomes = [
+          ...[...falhados.keys()].map(f => f.name),
+          ...ignorados.map(ig => `${ig.nome} (${ig.motivo})`),
+        ];
+        const amostra = nomes.slice(0, 3).join(', ');
+        const resto = nomes.length > 3 ? ` e mais ${nomes.length - 3}` : '';
+
+        txt.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Enviadas ${totalOk} de ${totalFiles}. Nao entraram: ${amostra}${resto}.`;
+        showToast(`${problemas} foto(s) nao foram enviadas. Veja a lista acima.`, 'error');
       } else {
-        txt.innerHTML = `<i class="fa-solid fa-check"></i> Upload concluido! (${done}/${totalFiles})`;
+        txt.innerHTML = `<i class="fa-solid fa-check"></i> Upload concluido! (${totalOk}/${totalFiles})`;
         showToast('Fotos enviadas com sucesso.');
       }
 
@@ -1690,7 +1739,7 @@
         progBg.style.display = 'none';
         txt.textContent = '';
         progFill.style.width = '0%';
-      }, 5000);
+      }, problemas ? 15000 : 5000);
     }
 
     uploadFotos = uploadFotosDiretoR2;

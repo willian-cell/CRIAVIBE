@@ -6,6 +6,18 @@ require_once __DIR__ . '/../lib/R2Storage.php';
 @ini_set('memory_limit', '512M');
 @set_time_limit(180);
 
+/**
+ * Marca mais uma tentativa frustrada de gerar a miniatura desta foto, para que
+ * a proxima chamada priorize outras e a galeria nao fique presa na mesma foto.
+ */
+function registrar_falha_thumb(PDO $db, int $imagemId, string $motivo): void {
+    try {
+        $db->prepare("UPDATE imagens SET thumb_tentativas = thumb_tentativas + 1 WHERE id = ?")
+           ->execute([$imagemId]);
+    } catch (Exception $e) {}
+    error_log("Miniatura da imagem #{$imagemId} falhou ({$motivo}).");
+}
+
 $galeria_id = (int)($_GET['galeria_id'] ?? 0);
 if (!$galeria_id) {
     json_out(['status' => 'erro', 'mensagem' => 'galeria_id obrigatório.'], 400);
@@ -14,11 +26,21 @@ if (!$galeria_id) {
 try {
     $db = db();
     
-    // Busca até 3 fotos da galeria que ainda estejam com a miniatura medium nula ou vazia
+    // Contador de tentativas por foto. Sem ele, a consulta abaixo devolvia
+    // sempre as mesmas 3 primeiras fotos sem miniatura: bastava uma falhar de
+    // forma permanente (arquivo corrompido, formato que o servidor nao
+    // decodifica) para travar a geracao de miniaturas da galeria inteira.
+    try { $db->exec("ALTER TABLE imagens ADD COLUMN thumb_tentativas INT NOT NULL DEFAULT 0"); } catch (Exception $e) {}
+
+    // Fotos sem miniatura, priorizando as que ainda nao falharam. Depois de
+    // 3 tentativas a foto sai da fila e a galeria segue adiante.
     $stmt = $db->prepare("
-        SELECT id, galeria_id, nome_arquivo, caminho_arquivo 
-        FROM imagens 
-        WHERE galeria_id = ? AND (caminho_thumb_small IS NULL OR caminho_thumb_small = '')
+        SELECT id, galeria_id, nome_arquivo, caminho_arquivo
+        FROM imagens
+        WHERE galeria_id = ?
+          AND (caminho_thumb_small IS NULL OR caminho_thumb_small = '')
+          AND thumb_tentativas < 3
+        ORDER BY thumb_tentativas ASC, id ASC
         LIMIT 3
     ");
     $stmt->execute([$galeria_id]);
@@ -55,7 +77,8 @@ try {
         
         if ($content === false) {
             @unlink($tmp);
-            continue; // Falha no download, pula para a próxima
+            registrar_falha_thumb($db, (int)$foto['id'], 'download do original falhou');
+            continue;
         }
         
         file_put_contents($tmp, $content);
@@ -121,6 +144,10 @@ try {
         
         @unlink($tmp);
         
+        if (!$sucesso || empty($urls_thumbs)) {
+            registrar_falha_thumb($db, (int)$foto['id'], 'geracao ou envio do derivado falhou');
+        }
+
         if ($sucesso && !empty($urls_thumbs)) {
             // Atualiza o banco de dados
             $upd = $db->prepare("
@@ -142,11 +169,14 @@ try {
         }
     }
     
-    // Conta quantas fotos ainda restam sem miniaturas nesta galeria
+    // Restantes que ainda vale a pena tentar. Fotos que estouraram o limite de
+    // tentativas ficam de fora para o cliente parar de repetir chamadas.
     $restantes_stmt = $db->prepare("
-        SELECT COUNT(*) 
-        FROM imagens 
-        WHERE galeria_id = ? AND (caminho_thumb_small IS NULL OR caminho_thumb_small = '')
+        SELECT COUNT(*)
+        FROM imagens
+        WHERE galeria_id = ?
+          AND (caminho_thumb_small IS NULL OR caminho_thumb_small = '')
+          AND thumb_tentativas < 3
     ");
     $restantes_stmt->execute([$galeria_id]);
     $restantes = (int)$restantes_stmt->fetchColumn();
