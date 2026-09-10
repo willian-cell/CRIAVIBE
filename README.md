@@ -183,7 +183,24 @@ Quando um upload falhar, abra `/api/admin/diagnostico_r2.php` no navegador **log
 
 O endpoint percorre o mesmo caminho de um upload real — `PUT` assinado, `HEAD` assinado, leitura pela URL pública e `DELETE` — e devolve o código HTTP e a causa concreta de cada etapa. Ele grava e apaga um PNG de 70 bytes em `diagnostico/` e não altera mais nada.
 
-É o caminho mais curto para separar as quatro camadas que já derrubaram o upload: R2 desabilitado na conta, credencial inválida, token sem permissão de escrita e acesso público desligado. As mesmas causas agora também chegam ao navegador na mensagem de erro do upload, em vez do texto genérico antigo.
+É o caminho mais curto para separar as camadas que já derrubaram o upload: `R2_ACCOUNT_ID` de outra conta, R2 desabilitado, credencial inválida, token sem permissão de escrita e acesso público desligado. As mesmas causas agora também chegam ao navegador na mensagem de erro do upload, em vez do texto genérico antigo.
+
+### `R2_ACCOUNT_ID` errado não parece erro de configuração
+
+O account id monta o hostname do endpoint (`https://<account_id>.r2.cloudflarestorage.com/<bucket>`). Se ele for de outra conta, a Cloudflare **recusa o handshake TLS** — não responde erro HTTP. O que chega é:
+
+- no servidor: `TLS connect error: ... ssl/tls alert handshake failure`;
+- no navegador: `Failed to fetch` no upload direto, porque a URL assinada usa o mesmo host.
+
+Nenhum dos dois lembra "variável errada", e trocar credencial não resolve: a falha acontece uma camada abaixo da autenticação. Foi a causa da parada de 09/09/2026 — o registro completo está em [`documentacao/trabalho/trabalho_09_09_2026.md`](documentacao/trabalho/trabalho_09_09_2026.md).
+
+Teste de 5 segundos, sem precisar de credencial:
+
+```bash
+curl -o /dev/null -w "%{http_code}\n" https://SEU_ACCOUNT_ID.r2.cloudflarestorage.com/
+```
+
+`400` significa que a conta existe e o TLS fecha. Erro de conexão (`000`, exit 35) significa account id errado.
 
 ## Como validar logs do worker no Railway
 

@@ -57,20 +57,42 @@ alunos/{aluno_id}/              foto do aluno (modulo de agendamento)
 
 ### Requisitos de configuracao
 
-Tres coisas precisam estar simultaneamente corretas para o upload funcionar:
+Quatro coisas precisam estar simultaneamente corretas para o upload funcionar:
 
-1. **R2 habilitado na conta.** Se estiver desabilitado, toda operacao responde
+1. **`R2_ACCOUNT_ID` da conta certa.** Ele monta o hostname do endpoint
+   (`https://<account_id>.r2.cloudflarestorage.com/<bucket>`). Um id de outra
+   conta tambem tem 32 hexadecimais e passa em qualquer validacao de formato, mas
+   a Cloudflare **recusa o handshake TLS** para um subdominio de conta
+   inexistente — nao responde erro HTTP. O sintoma que chega e
+   `ssl/tls alert handshake failure` no servidor e `Failed to fetch` no
+   navegador, nenhum dos dois lembrando a causa. Foi a falha de 09/09/2026.
+2. **R2 habilitado na conta.** Se estiver desabilitado, toda operacao responde
    `403 NotEntitled`.
-2. **Acesso publico (`r2.dev`) habilitado.** Sem ele as fotos nao carregam e
+3. **Acesso publico (`r2.dev`) habilitado.** Sem ele as fotos nao carregam e
    `api/fotos/process_thumbs.php` nao consegue baixar o original para gerar
    miniatura. Teste: objeto inexistente deve responder `404`, nao `403`.
-3. **Politica de CORS com a origem do frontend.** A lista e literal; ver
+4. **Politica de CORS com a origem do frontend.** A lista e literal; ver
    README e `documentacao/trabalho/trabalho_05_09_2026.md`.
+
+As cinco variaveis `R2_*` precisam ser **da mesma conta Cloudflare**. Misturar o
+account id de uma com a credencial de outra e o modo mais rapido de produzir um
+erro que nao aponta para lugar nenhum.
+
+### Diagnostico
+
+`/api/admin/diagnostico_r2.php`, aberto no navegador logado como administrador do
+sistema, percorre o caminho completo de um upload real (formato do account id,
+handshake TLS em cinco variantes de transporte, `PUT`, `HEAD`, leitura publica e
+`DELETE`) e devolve o codigo HTTP e a causa concreta de cada etapa. E o caminho
+mais curto para separar os quatro requisitos acima.
 
 ## Variaveis Necessarias
 
 ```env
 MYSQL_URL=${{MySQL.MYSQL_URL}}
+
+# As cinco abaixo tem de ser da mesma conta Cloudflare. O account id monta o
+# hostname do endpoint: errado, a conexao morre no handshake TLS.
 R2_ACCOUNT_ID=
 R2_BUCKET_NAME=
 R2_PUBLIC_URL=
