@@ -28,10 +28,9 @@ function registrar_falha_thumb(PDO $db, int $imagemId, string $motivo): void {
  */
 function baixar_original(string $url): array {
     $ch = curl_init($url);
-    curl_setopt_array($ch, [
+    curl_setopt_array($ch, storage_opcoes_transporte() + [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_TIMEOUT        => 120,
     ]);
     $conteudo = curl_exec($ch);

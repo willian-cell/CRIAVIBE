@@ -33,6 +33,30 @@ class R2Storage {
     public function lastStatus(): int { return $this->lastStatus; }
 
     /**
+     * Opcoes de curl comuns a toda chamada ao R2.
+     *
+     * As tres travas de transporte existem por causa de um `alert handshake
+     * failure` visto no container do Railway enquanto a mesma requisicao, com o
+     * mesmo codigo e as mesmas credenciais, funcionava de fora. Elas eliminam as
+     * variaveis que o ambiente do container pode negociar errado:
+     *
+     * - TLS 1.2 como minimo, em vez de deixar a stack escolher;
+     * - HTTP/1.1, evitando a negociacao de HTTP/2 via ALPN;
+     * - IPv4, porque um IPv6 de saida sem rota valida derruba a conexao antes
+     *   de qualquer resposta.
+     */
+    private static function opcoesTransporte(): array {
+        return [
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_SSLVERSION     => CURL_SSLVERSION_TLSv1_2,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_IPRESOLVE      => CURL_IPRESOLVE_V4,
+            CURLOPT_CONNECTTIMEOUT => 10,
+        ];
+    }
+
+    /**
      * Upload de arquivo para o R2.
      *
      * O corpo vai em streaming a partir do descritor do arquivo: carregar a foto
@@ -63,27 +87,45 @@ class R2Storage {
             return $this->falharLocal("Nao foi possivel abrir o arquivo temporario ($filePath).");
         }
 
-        $headers = $this->signedHeaders('PUT', $r2Path, $payloadHash);
-        $headers[] = 'Content-Type: ' . $mimeType;
-        // Sem isso o curl anuncia Expect: 100-continue e espera a resposta
-        // intermediaria antes de mandar o corpo, somando latencia a cada arquivo.
-        $headers[] = 'Expect:';
+        // Falha de transporte (TLS, DNS, conexao recusada) costuma atingir um no
+        // de borda especifico, entao uma segunda tentativa tem chance real de
+        // pegar outro. Erro de HTTP nao e repetido: 401 e 403 nao melhoram com
+        // insistencia.
+        $tentativas = 2;
+        $response = false;
+        $curlError = '';
 
-        $ch = curl_init($this->objectUrl($r2Path));
-        curl_setopt_array($ch, [
-            CURLOPT_UPLOAD         => true,
-            CURLOPT_INFILE         => $fh,
-            CURLOPT_INFILESIZE     => $size,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_TIMEOUT        => 180,
-        ]);
+        for ($i = 1; $i <= $tentativas; $i++) {
+            rewind($fh);
 
-        $response = curl_exec($ch);
-        $this->lastStatus = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
+            $headers = $this->signedHeaders('PUT', $r2Path, $payloadHash);
+            $headers[] = 'Content-Type: ' . $mimeType;
+            // Sem isso o curl anuncia Expect: 100-continue e espera a resposta
+            // intermediaria antes de mandar o corpo, somando latencia a cada arquivo.
+            $headers[] = 'Expect:';
+
+            $ch = curl_init($this->objectUrl($r2Path));
+            curl_setopt_array($ch, self::opcoesTransporte() + [
+                CURLOPT_UPLOAD         => true,
+                CURLOPT_INFILE         => $fh,
+                CURLOPT_INFILESIZE     => $size,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HTTPHEADER     => $headers,
+                CURLOPT_TIMEOUT        => 180,
+            ]);
+
+            $response = curl_exec($ch);
+            $this->lastStatus = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+
+            if ($response !== false && $this->lastStatus !== 0) break;
+
+            if ($i < $tentativas) {
+                error_log("R2Storage: tentativa $i de enviar $r2Path falhou no transporte ($curlError). Repetindo.");
+                usleep(500000);
+            }
+        }
+
         fclose($fh);
 
         return $this->avaliarResposta('enviar', $r2Path, $response, $curlError);
@@ -100,12 +142,10 @@ class R2Storage {
         $payloadHash = hash('sha256', '');
 
         $ch = curl_init($this->objectUrl($r2Path));
-        curl_setopt_array($ch, [
+        curl_setopt_array($ch, self::opcoesTransporte() + [
             CURLOPT_CUSTOMREQUEST  => 'DELETE',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER     => $this->signedHeaders('DELETE', $r2Path, $payloadHash),
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT        => 60,
         ]);
 
@@ -128,13 +168,11 @@ class R2Storage {
         $payloadHash = hash('sha256', '');
 
         $ch = curl_init($this->objectUrl($r2Path));
-        curl_setopt_array($ch, [
+        curl_setopt_array($ch, self::opcoesTransporte() + [
             CURLOPT_NOBODY         => true,
             CURLOPT_CUSTOMREQUEST  => 'HEAD',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER     => $this->signedHeaders('HEAD', $r2Path, $payloadHash),
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT        => 30,
         ]);
 

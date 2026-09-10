@@ -31,5 +31,10 @@ json_out([
     'r2_ok'   => $diag['ok'],
     'resumo'  => $resumo,
     'configuracao' => $diag['configuracao'],
+    // Versoes de PHP/curl/OpenSSL do container e o resultado do handshake TLS em
+    // cinco combinacoes de transporte. Quando "padrao" falha e alguma outra
+    // passa, a que passou diz qual trava resolve o problema neste ambiente.
+    'ambiente'   => $diag['ambiente'] ?? null,
+    'transporte' => $diag['transporte'] ?? null,
     'etapas'  => $diag['etapas'],
 ]);

@@ -155,6 +155,9 @@ function storage_diagnostico(): array {
         return $resultado;
     }
 
+    $resultado['ambiente'] = storage_ambiente();
+    $resultado['transporte'] = storage_probes_tls(R2_ENDPOINT);
+
     $chave = 'diagnostico/checagem_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.png';
     $tmp = tempnam(sys_get_temp_dir(), 'r2diag');
     // PNG 1x1 valido, ~70 bytes.
@@ -205,16 +208,100 @@ function storage_diagnostico(): array {
 }
 
 /**
+ * Versoes que decidem como o container negocia TLS.
+ *
+ * Um `alert handshake failure` contra a Cloudflare quase sempre se explica por
+ * uma destas linhas, e nenhuma delas e visivel de fora do container.
+ */
+function storage_ambiente(): array {
+    $curl = function_exists('curl_version') ? curl_version() : [];
+
+    return [
+        'php'          => PHP_VERSION,
+        'curl'         => $curl['version'] ?? null,
+        'ssl_do_curl'  => $curl['ssl_version'] ?? null,
+        'openssl'      => defined('OPENSSL_VERSION_TEXT') ? OPENSSL_VERSION_TEXT : null,
+        'protocolos'   => isset($curl['protocols']) ? implode(',', array_slice($curl['protocols'], 0, 12)) : null,
+    ];
+}
+
+/**
+ * Sonda o endpoint S3 do R2 com quatro combinacoes de transporte.
+ *
+ * Nao autentica nada: interessa apenas saber se o TLS fecha. Um codigo HTTP
+ * qualquer (o R2 responde 400 a um GET sem assinatura) significa handshake bem
+ * sucedido; um erro de curl sem codigo significa que a conexao morreu antes.
+ *
+ * Quando a linha "padrao" falha e alguma das outras passa, a que passou aponta
+ * exatamente qual trava resolve o problema no ambiente.
+ */
+function storage_probes_tls(string $endpoint): array {
+    $base = [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_NOBODY         => true,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT        => 20,
+    ];
+
+    $variantes = [
+        'padrao'            => [],
+        'forcando IPv4'     => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4],
+        'forcando TLS 1.2'  => [CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2],
+        'IPv4 + TLS 1.2 + HTTP/1.1 (o que o app usa)' => [
+            CURLOPT_IPRESOLVE    => CURL_IPRESOLVE_V4,
+            CURLOPT_SSLVERSION   => CURL_SSLVERSION_TLSv1_2,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        ],
+        'sem verificar o certificado' => [CURLOPT_SSL_VERIFYPEER => false],
+    ];
+
+    $saida = [];
+    foreach ($variantes as $nome => $extra) {
+        $ch = curl_init($endpoint . '/');
+        curl_setopt_array($ch, $extra + $base);
+        curl_exec($ch);
+        $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $erro = curl_error($ch);
+
+        $saida[] = [
+            'variante'  => $nome,
+            'tls_ok'    => $http > 0,
+            'http'      => $http,
+            'ip'        => curl_getinfo($ch, CURLINFO_PRIMARY_IP) ?: null,
+            'detalhe'   => $http > 0 ? 'Handshake TLS concluido.' : ($erro !== '' ? $erro : 'Conexao falhou sem mensagem.'),
+        ];
+    }
+
+    return $saida;
+}
+
+/**
  * Codigo HTTP de um GET simples. 0 quando a requisicao nem completa.
  */
 function storage_http_status(string $url): int {
     $ch = curl_init($url);
-    curl_setopt_array($ch, [
+    curl_setopt_array($ch, storage_opcoes_transporte() + [
         CURLOPT_NOBODY         => true,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_TIMEOUT        => 30,
     ]);
     curl_exec($ch);
     return (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+}
+
+/**
+ * Travas de transporte para qualquer chamada a um host da Cloudflare, incluindo
+ * a URL publica do bucket. Espelha R2Storage::opcoesTransporte(): a URL publica
+ * fica no mesmo edge e falha do mesmo jeito.
+ */
+function storage_opcoes_transporte(): array {
+    return [
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_SSLVERSION     => CURL_SSLVERSION_TLSv1_2,
+        CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+        CURLOPT_IPRESOLVE      => CURL_IPRESOLVE_V4,
+        CURLOPT_CONNECTTIMEOUT => 10,
+    ];
 }
