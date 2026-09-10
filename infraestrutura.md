@@ -26,6 +26,25 @@ Railway - Servico CRIAVIBE
 - Comando: `php -S 0.0.0.0:${PORT:-8080} router.php`.
 - Porta: fornecida pelo Railway via `PORT`.
 
+### O que o router entrega
+
+O servidor embutido do PHP entrega **qualquer arquivo que exista no diretorio**, e
+a imagem carrega o repositorio inteiro. Por isso `router.php` recusa
+explicitamente arquivos ocultos, travessia de diretorio, as pastas internas
+(`documentacao/`, `DOCUMENTATION/`, `scripts/`, `agente-willianbo/`), os nomes de
+configuracao (`Dockerfile`, `Procfile`, `docker-compose.yml`, `router.php`,
+`env_example.txt`) e as extensoes de documentacao e configuracao.
+
+**Ao adicionar um arquivo novo na raiz do projeto, considere se ele deve ser
+publico.** Sem entrada na lista de bloqueio, ele sera servido.
+
+### Sessoes e deploy
+
+As sessoes do PHP ficam no filesystem do container, que e efemero. **Todo deploy
+reinicia o container e apaga todas as sessoes ativas** — quem estava logado
+recebe `Nao autenticado.` na acao seguinte. Um `401` logo depois de um deploy
+quase sempre e isso, e nao um problema de permissao.
+
 ## Banco de Dados
 
 - Tipo: MySQL.
