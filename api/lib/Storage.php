@@ -175,6 +175,21 @@ function storage_diagnostico(): array {
 
     $resultado['transporte'] = storage_probes_tls(R2_ENDPOINT);
 
+    // Um account id de 32 hexadecimais pode passar no teste de formato e ainda
+    // assim ser de outra conta. Nesse caso o host nao existe e nenhuma variante
+    // de transporte fecha o handshake - sintoma que nao se confunde com problema
+    // de rede, porque a Cloudflare responderia a qualquer conta valida.
+    if (!in_array(true, array_column($resultado['transporte'], 'tls_ok'), true)) {
+        $resultado['etapas'][] = [
+            'etapa' => 'o endpoint responde?',
+            'ok' => false,
+            'detalhe' => 'Nenhuma das variantes de transporte fechou o handshake TLS com '
+                . R2_ENDPOINT . '. A Cloudflare recusa o handshake para subdominio de conta'
+                . ' inexistente, entao o valor mais provavel de estar errado e o R2_ACCOUNT_ID'
+                . ' - mesmo tendo 32 caracteres hexadecimais, ele pode ser de outra conta.',
+        ];
+    }
+
     $chave = 'diagnostico/checagem_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.png';
     $tmp = tempnam(sys_get_temp_dir(), 'r2diag');
     // PNG 1x1 valido, ~70 bytes.
