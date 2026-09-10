@@ -67,9 +67,12 @@ if (!empty($g['capa_apresentacao'])) {
     ");
     $stmtCapa->execute([$g['id'], $g['capa_apresentacao']]);
     $capa = $stmtCapa->fetch();
-    if (!empty($capa['capa_preview'])) {
-        $g['capa_preview'] = $capa['capa_preview'];
-    }
+    // A capa avulsa (enviada pela zona "Capa de Apresentacao") nao tem linha em
+    // `imagens` e portanto nao tem miniatura: nesse caso a previa e o proprio
+    // arquivo. Sem esta linha o campo voltava nulo e a capa sumia ao recarregar.
+    $g['capa_preview'] = !empty($capa['capa_preview'])
+        ? $capa['capa_preview']
+        : $g['capa_apresentacao'];
 } else {
     $stmtCapa = db()->prepare("
         SELECT caminho_thumb_small AS capa_preview

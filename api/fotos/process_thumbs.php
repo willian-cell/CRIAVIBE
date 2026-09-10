@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../lib/R2Storage.php';
+require_once __DIR__ . '/../lib/Storage.php';
 
 // Eleva limites para o processamento de imagens
 @ini_set('memory_limit', '512M');
@@ -16,6 +16,42 @@ function registrar_falha_thumb(PDO $db, int $imagemId, string $motivo): void {
            ->execute([$imagemId]);
     } catch (Exception $e) {}
     error_log("Miniatura da imagem #{$imagemId} falhou ({$motivo}).");
+}
+
+/**
+ * Baixa o original pela URL publica do bucket.
+ *
+ * Devolve [conteudo, ''] no sucesso e [null, motivo] na falha. Antes isto era um
+ * file_get_contents com @ na frente: o `false` de retorno nao distinguia
+ * allow_url_fopen desligado, acesso publico do bucket fechado (403) e objeto
+ * inexistente (404) - tres problemas com solucoes completamente diferentes.
+ */
+function baixar_original(string $url): array {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT        => 120,
+    ]);
+    $conteudo = curl_exec($ch);
+    $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $erro = curl_error($ch);
+
+    if ($conteudo === false || $http === 0) {
+        return [null, 'nao foi possivel baixar o original' . ($erro !== '' ? ": $erro" : '')];
+    }
+    if ($http === 403) {
+        return [null, 'a URL publica do bucket respondeu 403 - o acesso publico (r2.dev) esta desligado'];
+    }
+    if ($http !== 200) {
+        return [null, "a URL publica do bucket respondeu HTTP $http"];
+    }
+    if ($conteudo === '') {
+        return [null, 'o original no bucket esta vazio (0 bytes)'];
+    }
+
+    return [$conteudo, ''];
 }
 
 $galeria_id = (int)($_GET['galeria_id'] ?? 0);
@@ -50,14 +86,12 @@ try {
         json_out(['status' => 'ok', 'processadas' => 0, 'fotos_atualizadas' => [], 'restantes' => 0]);
     }
     
-    $r2 = new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
-    $arrContextOptions = [
-        "ssl" => [
-            "verify_peer" => false,
-            "verify_peer_name" => false,
-        ],
-    ];
-    
+    // Sem R2 configurado nao ha para onde mandar as miniaturas: melhor dizer isso
+    // uma vez do que falhar tres vezes por foto ate zerar o contador de tentativas.
+    storage_require_config();
+
+    $r2 = storage_client();
+
     $sizes = ['small' => 360];
     $qualities = ['small' => 68];
     
@@ -65,27 +99,33 @@ try {
     
     foreach ($fotos as $foto) {
         $public_url = $foto['caminho_arquivo'];
-        $r2_path = $public_url;
-        
-        if (R2_PUBLIC_URL && strpos($public_url, rtrim(R2_PUBLIC_URL, '/') . '/') === 0) {
-            $r2_path = substr($public_url, strlen(rtrim(R2_PUBLIC_URL, '/')) + 1);
-        }
-        
-        // Baixa o arquivo original
-        $tmp = tempnam(sys_get_temp_dir(), 'cv_process_');
-        $content = @file_get_contents($public_url, false, stream_context_create($arrContextOptions));
-        
-        if ($content === false) {
-            @unlink($tmp);
-            registrar_falha_thumb($db, (int)$foto['id'], 'download do original falhou');
+        $r2_path = storage_key_from_url($public_url);
+
+        // Registros legados apontam para uploads/ no disco do container, que e
+        // efemero e ja nao tem os arquivos. Sem esta guarda o caminho derivado
+        // saia deformado ("https:/uploads/...") e a foto voltava para a fila em
+        // toda chamada ate estourar as tres tentativas.
+        if ($r2_path === null) {
+            registrar_falha_thumb($db, (int)$foto['id'], 'o arquivo original nao esta no bucket R2 (registro antigo)');
             continue;
         }
-        
+
+        // Baixa o arquivo original pela URL publica do bucket.
+        $tmp = tempnam(sys_get_temp_dir(), 'cv_process_');
+        [$content, $motivoDownload] = baixar_original($public_url);
+
+        if ($content === null) {
+            @unlink($tmp);
+            registrar_falha_thumb($db, (int)$foto['id'], $motivoDownload);
+            continue;
+        }
+
         file_put_contents($tmp, $content);
         
         $urls_thumbs = [];
         $sucesso = true;
-        
+        $motivoFalha = 'geracao ou envio do derivado falhou';
+
         // Gera cada derivado
         foreach ($sizes as $label => $w) {
             $base = pathinfo($r2_path, PATHINFO_FILENAME);
@@ -108,6 +148,7 @@ try {
                     $img->destroy();
                 } catch (Throwable $e) {
                     $sucesso = false;
+                    $motivoFalha = 'Imagick nao decodificou a imagem: ' . $e->getMessage();
                 }
             } else {
                 // GD Fallback
@@ -119,23 +160,28 @@ try {
                     $nh = intval($sh * ($nw / $sw));
                     $dst = imagecreatetruecolor($nw, $nh);
                     imagecopyresampled($dst, $src, 0,0,0,0,$nw,$nh,$sw,$sh);
-                    if (!function_exists('imagewebp')) { $sucesso = false; }
+                    if (!function_exists('imagewebp')) {
+                        $sucesso = false;
+                        $motivoFalha = 'o PHP do servidor esta sem suporte a WEBP (imagewebp ausente na extensao GD)';
+                    }
                     else imagewebp($dst, $outTmp, (int)($qualities[$label] ?? 68));
                     imagedestroy($dst);
                     imagedestroy($src);
                 } else {
                     $sucesso = false;
+                    $motivoFalha = 'a GD nao decodificou a imagem (formato nao suportado ou arquivo corrompido)';
                 }
             }
-            
+
             if ($sucesso) {
                 // Upload para R2
                 $mtype = 'image/webp';
                 $ok = $r2->upload($outTmp, $derPath, $mtype);
                 if ($ok) {
-                    $urls_thumbs[$label] = rtrim(R2_PUBLIC_URL, '/') . '/' . ltrim($derPath, '/');
+                    $urls_thumbs[$label] = storage_public_url($derPath);
                 } else {
                     $sucesso = false;
+                    $motivoFalha = 'envio da miniatura ao R2 falhou - ' . ($r2->lastError() ?: 'motivo nao identificado');
                 }
             }
             
@@ -145,7 +191,7 @@ try {
         @unlink($tmp);
         
         if (!$sucesso || empty($urls_thumbs)) {
-            registrar_falha_thumb($db, (int)$foto['id'], 'geracao ou envio do derivado falhou');
+            registrar_falha_thumb($db, (int)$foto['id'], $motivoFalha);
         }
 
         if ($sucesso && !empty($urls_thumbs)) {

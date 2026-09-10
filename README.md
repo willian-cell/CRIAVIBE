@@ -177,6 +177,14 @@ O acesso público (`r2.dev`) precisa estar **habilitado**. Sem ele as fotos não
 
 Teste rápido: um objeto inexistente na URL pública deve responder `404`. Se responder `403`, o acesso público está desligado.
 
+### Diagnóstico do R2 pelo próprio app
+
+Quando um upload falhar, abra `/api/admin/diagnostico_r2.php` no navegador **logado como administrador do sistema** (a conta em `ADMIN_EMAILS`).
+
+O endpoint percorre o mesmo caminho de um upload real — `PUT` assinado, `HEAD` assinado, leitura pela URL pública e `DELETE` — e devolve o código HTTP e a causa concreta de cada etapa. Ele grava e apaga um PNG de 70 bytes em `diagnostico/` e não altera mais nada.
+
+É o caminho mais curto para separar as quatro camadas que já derrubaram o upload: R2 desabilitado na conta, credencial inválida, token sem permissão de escrita e acesso público desligado. As mesmas causas agora também chegam ao navegador na mensagem de erro do upload, em vez do texto genérico antigo.
+
 ## Como validar logs do worker no Railway
 
 ### Logs via Railway UI

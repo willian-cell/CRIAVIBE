@@ -37,15 +37,32 @@ function storage_require_config(): void {
 }
 
 /**
+ * Cliente R2 ja configurado. Assume que storage_require_config() passou.
+ */
+function storage_client(): R2Storage {
+    return new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
+}
+
+/**
  * URL publica de um caminho dentro do bucket.
+ *
+ * O caminho e percent-encoded preservando as barras: uma chave com espaco ou
+ * acento gravada crua no banco vira uma URL invalida no <img> do navegador.
+ * Para as chaves geradas por uniqid() a codificacao nao muda nada, entao os
+ * registros antigos continuam validos.
  */
 function storage_public_url(string $r2Path): string {
-    return rtrim(R2_PUBLIC_URL, '/') . '/' . ltrim($r2Path, '/');
+    $partes = explode('/', ltrim($r2Path, '/'));
+    return rtrim(R2_PUBLIC_URL, '/') . '/' . implode('/', array_map('rawurlencode', $partes));
 }
 
 /**
  * Envia um arquivo recebido via upload HTTP para o R2 e devolve a URL publica.
  * Encerra a requisicao com erro caso a configuracao falte ou o envio falhe.
+ *
+ * A mensagem devolvida ao navegador carrega o motivo real da recusa do R2. Antes
+ * ela era sempre "verifique as credenciais e o bucket", o que apontava para o
+ * lugar errado em tres das quatro causas possiveis.
  */
 function storage_put_upload(string $tmpPath, string $r2Path, string $mimeType): string {
     storage_require_config();
@@ -54,13 +71,15 @@ function storage_put_upload(string $tmpPath, string $r2Path, string $mimeType): 
         json_out(['status' => 'erro', 'mensagem' => 'Arquivo temporario invalido.'], 400);
     }
 
-    $r2 = new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
+    $r2 = storage_client();
     if (!$r2->upload($tmpPath, $r2Path, $mimeType)) {
-        error_log("Falha ao enviar $r2Path para o R2.");
+        $motivo = $r2->lastError() ?: 'motivo nao identificado.';
+        error_log("Falha ao enviar $r2Path para o R2: $motivo");
         json_out([
             'status' => 'erro',
-            'mensagem' => 'Falha ao salvar o arquivo no Cloudflare R2. Verifique as credenciais e o bucket.'
-        ], 500);
+            'mensagem' => 'Falha ao salvar o arquivo no Cloudflare R2. ' . $motivo,
+            'r2_status' => $r2->lastStatus(),
+        ], 502);
     }
 
     return storage_public_url($r2Path);
@@ -79,7 +98,7 @@ function storage_key_from_url(?string $url): ?string {
     if (strpos($url, $base) !== 0) return null;
 
     $key = substr($url, strlen($base));
-    return $key !== '' ? $key : null;
+    return $key !== '' ? rawurldecode($key) : null;
 }
 
 /**
@@ -91,8 +110,7 @@ function storage_delete_url(?string $url): bool {
     $key = storage_key_from_url($url);
     if ($key === null || storage_missing_config()) return false;
 
-    $r2 = new R2Storage(R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT);
-    return $r2->delete($key);
+    return storage_client()->delete($key);
 }
 
 /**
@@ -103,4 +121,100 @@ function storage_delete_imagem(array $img): void {
     foreach (['caminho_thumb_small', 'caminho_thumb_medium', 'caminho_thumb_large'] as $campo) {
         if (!empty($img[$campo])) storage_delete_url($img[$campo]);
     }
+}
+
+/**
+ * Round-trip completo contra o bucket: grava um objeto minusculo, confirma que
+ * ele existe pela API S3 e pela URL publica, e apaga em seguida.
+ *
+ * Existe para responder de uma vez, com evidencia, a pergunta que sempre volta
+ * quando um upload falha: o problema esta na credencial, na permissao do token,
+ * no nome do bucket, no acesso publico ou na rede do container?
+ */
+function storage_diagnostico(): array {
+    $faltando = storage_missing_config();
+    $resultado = [
+        'configuracao' => [
+            'bucket'           => R2_BUCKET ?: null,
+            'endpoint'         => R2_ENDPOINT ?: null,
+            'url_publica'      => R2_PUBLIC_URL ?: null,
+            'access_key_id'    => R2_ACCESS_KEY ? substr(R2_ACCESS_KEY, 0, 6) . '...' : null,
+            'secret_definido'  => R2_SECRET_KEY ? true : false,
+            'variaveis_faltando' => $faltando,
+        ],
+        'etapas' => [],
+        'ok' => false,
+    ];
+
+    if ($faltando) {
+        $resultado['etapas'][] = [
+            'etapa' => 'configuracao',
+            'ok' => false,
+            'detalhe' => 'Variaveis ausentes: ' . implode(', ', $faltando),
+        ];
+        return $resultado;
+    }
+
+    $chave = 'diagnostico/checagem_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.png';
+    $tmp = tempnam(sys_get_temp_dir(), 'r2diag');
+    // PNG 1x1 valido, ~70 bytes.
+    file_put_contents($tmp, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='));
+
+    $r2 = storage_client();
+
+    $enviou = $r2->upload($tmp, $chave, 'image/png');
+    $resultado['etapas'][] = [
+        'etapa' => 'gravar objeto (PUT assinado)',
+        'ok' => $enviou,
+        'http' => $r2->lastStatus(),
+        'detalhe' => $enviou ? 'Objeto gravado em ' . $chave : $r2->lastError(),
+    ];
+
+    if ($enviou) {
+        $existe = $r2->exists($chave);
+        $resultado['etapas'][] = [
+            'etapa' => 'confirmar objeto (HEAD assinado)',
+            'ok' => $existe,
+            'http' => $r2->lastStatus(),
+            'detalhe' => $existe ? 'Objeto encontrado no bucket.' : $r2->lastError(),
+        ];
+
+        $publico = storage_http_status(storage_public_url($chave));
+        $resultado['etapas'][] = [
+            'etapa' => 'ler pela URL publica',
+            'ok' => $publico === 200,
+            'http' => $publico,
+            'detalhe' => $publico === 200
+                ? 'Acesso publico do bucket esta ligado.'
+                : 'Esperado 200 e veio ' . $publico . '. Em 403 o acesso publico (r2.dev) esta desligado; sem ele o cliente nao ve as fotos e as miniaturas nao sao geradas.',
+        ];
+
+        $apagou = $r2->delete($chave);
+        $resultado['etapas'][] = [
+            'etapa' => 'apagar objeto de teste',
+            'ok' => $apagou,
+            'http' => $r2->lastStatus(),
+            'detalhe' => $apagou ? 'Objeto de teste removido.' : $r2->lastError(),
+        ];
+    }
+
+    @unlink($tmp);
+
+    $resultado['ok'] = !in_array(false, array_column($resultado['etapas'], 'ok'), true);
+    return $resultado;
+}
+
+/**
+ * Codigo HTTP de um GET simples. 0 quando a requisicao nem completa.
+ */
+function storage_http_status(string $url): int {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_NOBODY         => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT        => 30,
+    ]);
+    curl_exec($ch);
+    return (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 }

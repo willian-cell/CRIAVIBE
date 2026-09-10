@@ -791,22 +791,22 @@
               ondragleave="dragLeaveCapa()" ondrop="dropCapa(event)">
               <i class="fa-solid fa-image" style="color: #b8860b"></i>
               <p><strong style="color: #b8860b">Capa de Apresentação</strong></p>
-              <p>Exibida no topo p/ o cliente</p>
+              <p>Exibida no topo p/ o cliente · JPG, PNG, WEBP ou GIF</p>
               <p id="prog-txt-capa" style="font-size:.75rem;margin-top:6px;color:#b8860b"></p>
               <div class="cover-preview-frame" id="preview-capa-frame" style="display:none">
                 <img id="preview-capa" class="cover-preview-img" alt="Previa da capa"
-                  onerror="mostrarPreviewCapaVazio()">
+                  onerror="mostrarPreviewCapaVazio('Previa indisponivel - o arquivo da capa nao carregou')">
                 <div class="cover-preview-empty" id="preview-capa-empty" style="display:none">
                   <i class="fa-solid fa-image"></i>
-                  <span>Previa indisponivel</span>
+                  <span id="preview-capa-empty-msg">Nenhuma capa definida</span>
                 </div>
               </div>
             </div>
           </div>
           <input id="file-input" type="file" accept="image/*" multiple style="display:none"
             onchange="uploadFotos(this.files)">
-          <input id="file-capa-input" type="file" accept="image/*" style="display:none"
-            onchange="uploadCapaApresentacao(this.files)">
+          <input id="file-capa-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+            style="display:none" onchange="uploadCapaApresentacao(this.files)">
           <div style="display: flex; justify-content: center; margin: 10px 24px 30px 24px;">
             <div class="search-bar" style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; padding: 0 16px; height: 44px; width: 100%; max-width: 500px; box-shadow: var(--shadow-sm);">
               <i class="fa-solid fa-magnifying-glass" style="color:var(--muted); font-size: 0.9rem;"></i>
@@ -1195,11 +1195,17 @@
       atualizarCroppersCapa();
     }
 
-    function mostrarPreviewCapaVazio() {
+    // `msg` separa dois estados que antes apareciam com o mesmo texto: a galeria
+    // ainda nao tem capa (situacao normal) e a capa existe mas o arquivo nao
+    // carregou (situacao de erro).
+    function mostrarPreviewCapaVazio(msg = 'Nenhuma capa definida') {
       const frame = document.getElementById('preview-capa-frame');
       const img = document.getElementById('preview-capa');
       const empty = document.getElementById('preview-capa-empty');
       if (!frame || !img || !empty) return;
+
+      const label = document.getElementById('preview-capa-empty-msg');
+      if (label) label.textContent = msg;
 
       frame.style.display = 'block';
       img.removeAttribute('src');
