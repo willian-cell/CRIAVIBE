@@ -38,11 +38,21 @@ define('DB_NAME', $railwayDb['name'] ?? env_val('MYSQLDATABASE', env_val('DB_NAM
 define('DB_USER', $railwayDb['user'] ?? env_val('MYSQLUSER', env_val('DB_USER', 'root')));
 define('DB_PASS', $railwayDb['pass'] ?? env_val('MYSQLPASSWORD', env_val('DB_PASSWORD', '')));
 
-define('R2_ACCESS_KEY', env_val('R2_ACCESS_KEY_ID'));
-define('R2_SECRET_KEY', env_val('R2_SECRET_KEY'));
-define('R2_BUCKET', env_val('R2_BUCKET_NAME'));
-define('R2_PUBLIC_URL', rtrim(env_val('R2_PUBLIC_URL', ''), '/'));
-define('R2_ENDPOINT', env_val('R2_ACCOUNT_ID') && R2_BUCKET ? "https://" . env_val('R2_ACCOUNT_ID') . ".r2.cloudflarestorage.com/" . R2_BUCKET : '');
+// As variaveis do R2 sao aparadas antes de virar constante. Um espaco ou uma
+// quebra de linha colada junto do valor no painel do Railway nao aparece em
+// lugar nenhum e monta um host invalido - e a Cloudflare responde a um host de
+// conta inexistente recusando o handshake TLS, nao com um erro HTTP. O sintoma
+// que chega e "ssl/tls alert handshake failure", que nao lembra em nada a causa.
+function env_r2(string $key): string {
+    return trim((string)env_val($key, ''));
+}
+
+define('R2_ACCESS_KEY', env_r2('R2_ACCESS_KEY_ID'));
+define('R2_SECRET_KEY', env_r2('R2_SECRET_KEY'));
+define('R2_BUCKET', env_r2('R2_BUCKET_NAME'));
+define('R2_PUBLIC_URL', rtrim(env_r2('R2_PUBLIC_URL'), '/'));
+define('R2_ACCOUNT_ID', env_r2('R2_ACCOUNT_ID'));
+define('R2_ENDPOINT', R2_ACCOUNT_ID && R2_BUCKET ? "https://" . R2_ACCOUNT_ID . ".r2.cloudflarestorage.com/" . R2_BUCKET : '');
 
 $redisUrl = env_val('REDIS_URL');
 if ($redisUrl) {

@@ -136,6 +136,7 @@ function storage_diagnostico(): array {
     $resultado = [
         'configuracao' => [
             'bucket'           => R2_BUCKET ?: null,
+            'account_id'       => defined('R2_ACCOUNT_ID') ? (R2_ACCOUNT_ID ?: null) : null,
             'endpoint'         => R2_ENDPOINT ?: null,
             'url_publica'      => R2_PUBLIC_URL ?: null,
             'access_key_id'    => R2_ACCESS_KEY ? substr(R2_ACCESS_KEY, 0, 6) . '...' : null,
@@ -156,6 +157,22 @@ function storage_diagnostico(): array {
     }
 
     $resultado['ambiente'] = storage_ambiente();
+
+    // O account id monta o hostname do endpoint. Errado, ele produz um host que
+    // a Cloudflare nao atende, e a recusa vem como alerta fatal de TLS - nunca
+    // como erro HTTP. Conferir o formato aqui evita perseguir credencial e CORS
+    // por causa de um caractere sobrando na variavel.
+    $accountId = defined('R2_ACCOUNT_ID') ? R2_ACCOUNT_ID : '';
+    $formatoOk = (bool)preg_match('/^[0-9a-f]{32}$/', $accountId);
+    $resultado['etapas'][] = [
+        'etapa' => 'formato do R2_ACCOUNT_ID',
+        'ok' => $formatoOk,
+        'detalhe' => $formatoOk
+            ? 'Account id com os 32 caracteres hexadecimais esperados.'
+            : 'R2_ACCOUNT_ID deveria ter 32 caracteres hexadecimais e tem '
+              . strlen($accountId) . ' ("' . $accountId . '"). Com ele errado o endpoint aponta para um host que a Cloudflare nao atende, e a conexao morre no handshake TLS.',
+    ];
+
     $resultado['transporte'] = storage_probes_tls(R2_ENDPOINT);
 
     $chave = 'diagnostico/checagem_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.png';
